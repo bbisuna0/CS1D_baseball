@@ -18,6 +18,8 @@ public:
 private slots:
     void on_pb_exit_clicked();
 
+    void on_pb_team_details_clicked();
+
 private:
     Ui::mainmenu *ui;
 };
