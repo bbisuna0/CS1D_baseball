@@ -35,5 +35,8 @@
         <file>logos/texas-rangers.png</file>
         <file>logos/toronto-blue-jays.png</file>
         <file>logos/washington-nationals.png</file>
+        <file>logos/generic-team.png</file>
+        <file>logos/baseball.jpg</file>
+        <file>logos/baseball.ico</file>
     </qresource>
 </RCC>
