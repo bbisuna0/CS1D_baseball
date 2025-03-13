@@ -1,0 +1,39 @@
+<RCC>
+    <qresource prefix="/">
+        <file>logos/american-league.png</file>
+        <file>logos/arizona-diamondbacks.png</file>
+        <file>logos/atlanta-braves.png</file>
+        <file>logos/ballgame.jpg</file>
+        <file>logos/baltimore-orioles.png</file>
+        <file>logos/bosoton-red-sox.png</file>
+        <file>logos/chicago-cubs.png</file>
+        <file>logos/chicago-white-sox.png</file>
+        <file>logos/cincinnati-reds.png</file>
+        <file>logos/cleveland-indians.png</file>
+        <file>logos/colorado-rockies.png</file>
+        <file>logos/detroit-tigers.png</file>
+        <file>logos/houston-astros.png</file>
+        <file>logos/kansas-city-royals.png</file>
+        <file>logos/las-vegas-gamblers.png</file>
+        <file>logos/los-angeles-angels.png</file>
+        <file>logos/los-angeles-dodgers.png</file>
+        <file>logos/miami-marlins.png</file>
+        <file>logos/milwaukee-brewers.png</file>
+        <file>logos/minnesota-twins.png</file>
+        <file>logos/mlb.png</file>
+        <file>logos/national-league.png</file>
+        <file>logos/new-york-mets.png</file>
+        <file>logos/new-york-yankees.png</file>
+        <file>logos/oakland-athletics.png</file>
+        <file>logos/philadelphia-phillies.png</file>
+        <file>logos/pittsburgh-pirates.png</file>
+        <file>logos/san-diego-padres.png</file>
+        <file>logos/san-francisco-giants.png</file>
+        <file>logos/seattle-mariners.png</file>
+        <file>logos/st-louis-cardinals.png</file>
+        <file>logos/tampa-bay-rays.png</file>
+        <file>logos/texas-rangers.png</file>
+        <file>logos/toronto-blue-jays.png</file>
+        <file>logos/washington-nationals.png</file>
+    </qresource>
+</RCC>
