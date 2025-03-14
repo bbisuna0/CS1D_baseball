@@ -38,5 +38,18 @@
         <file>logos/generic-team.png</file>
         <file>logos/baseball.jpg</file>
         <file>logos/baseball.ico</file>
+        <file>logos/baseball-bat-left.png</file>
+        <file>logos/baseball-bat-right.png</file>
+        <file>logos/baseball-cap.png</file>
+        <file>logos/team-pennant.png</file>
+        <file>logos/baseball-bat.png</file>
+        <file>logos/foam-hand.png</file>
+        <file>logos/team-jersey.png</file>
+        <file>logos/autographed-baseball.png</file>
+        <file>logos/baseball-joke.png</file>
+        <file>logos/pennant-banner2.png</file>
+        <file>logos/pennant-banner1.png</file>
+        <file>logos/pennant.jpg</file>
+        <file>logos/scoreboard.PNG</file>
     </qresource>
 </RCC>

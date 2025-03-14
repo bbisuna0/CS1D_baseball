@@ -6,7 +6,56 @@ teamdisplay::teamdisplay(QWidget *parent)
     , ui(new Ui::teamdisplay)
 {
     ui->setupUi(this);
-    this->setStyleSheet("background-color: darkblue;");
+    this->setStyleSheet("background-color: white;");
+    QVBoxLayout *mainLayout = new QVBoxLayout(this);
+    QFormLayout *formLayout = new QFormLayout;
+    QVBoxLayout *groupBoxLayout = new QVBoxLayout(ui->teamBox);
+
+    // Fields for MLB team information
+    teamName = new QLineEdit(this);
+    stadiumName = new QLineEdit(this);
+    seatingCapacity = new QSpinBox(this);
+    seatingCapacity->setMaximum(100000);
+    seatingCapacity->setMinimum(1);
+    location = new QLineEdit(this);
+    playingSurface = new QLineEdit(this);
+    league = new QComboBox(this);
+    league->addItems({"American", "National"});
+    dateOpened = new QSpinBox(this);
+    dateOpened->setMaximum(2100);
+    dateOpened->setMinimum(1800);
+    distanceToCenterField = new QLineEdit(this);
+    ballparkTypology = new QLineEdit(this);
+    roofType = new QLineEdit(this);
+
+    // Add fields to form layout
+    formLayout->addRow("Team Name:", teamName);
+    formLayout->addRow("Stadium Name:", stadiumName);
+    formLayout->addRow("Seating Capacity:", seatingCapacity);
+    formLayout->addRow("Location:", location);
+    formLayout->addRow("Playing Surface:", playingSurface);
+    formLayout->addRow("League:", league);
+    formLayout->addRow("Date Opened:", dateOpened);
+    formLayout->addRow("Distance to Center Field:", distanceToCenterField);
+    formLayout->addRow("Ballpark Typology:", ballparkTypology);
+    formLayout->addRow("Roof Type:", roofType);
+
+    groupBoxLayout->addLayout(formLayout);
+    ui->teamBox->setLayout(groupBoxLayout);
+    // mainLayout->addLayout(formLayout);
+    // ui->teamBox->layout(mainLayout);
+
+    // Buttons
+    // QPushButton *submitButton = new QPushButton("Submit", this);
+    // QPushButton *cancelButton = new QPushButton("Cancel", this);
+
+    // connect(cancelButton, &QPushButton::clicked, this, &QDialog::reject);
+    // connect(submitButton, &QPushButton::clicked, this, &teamdisplay::validateAndSubmit);
+
+    //QHBoxLayout *buttonLayout = new QHBoxLayout;
+    //buttonLayout->addWidget(submitButton);
+    //buttonLayout->addWidget(cancelButton);
+    //mainLayout->addLayout(buttonLayout);
 }
 
 teamdisplay::~teamdisplay()
