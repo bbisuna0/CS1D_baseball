@@ -20,6 +20,8 @@ private slots:
 
     void on_pb_team_details_clicked();
 
+    void on_pb_plan_vacation_clicked();
+
 private:
     Ui::mainmenu *ui;
 };

@@ -7,6 +7,15 @@ teamdisplay::teamdisplay(QWidget *parent)
 {
     ui->setupUi(this);
     this->setStyleSheet("background-color: white;");
+    // Apply color scheme
+    // QPalette palette;
+    // palette.setColor(QPalette::Window, QColor(251, 252, 254)); // background
+    // palette.setColor(QPalette::WindowText, QColor(12, 13, 23)); // text
+    // palette.setColor(QPalette::Button, QColor(60, 81, 201)); // primary
+    // palette.setColor(QPalette::ButtonText, QColor(12, 13, 23));
+    // palette.setColor(QPalette::Highlight, QColor(132, 147, 232)); // secondary
+    // palette.setColor(QPalette::Base, QColor(89, 111, 237)); // accent
+    // this->setPalette(palette);
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     QFormLayout *formLayout = new QFormLayout;
     QVBoxLayout *groupBoxLayout = new QVBoxLayout(ui->teamBox);

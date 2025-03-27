@@ -26,6 +26,9 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         logos.qrc
         mainmenu.h mainmenu.cpp mainmenu.ui
         teamdisplay.h teamdisplay.cpp teamdisplay.ui
+        plantour.ui
+        plantour.h
+        plantour.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET CS1D_baseball APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
