@@ -29,6 +29,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         plantour.ui
         plantour.h
         plantour.cpp
+        graph.h
+        display_dfs_bfs.h display_dfs_bfs.cpp display_dfs_bfs.ui
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET CS1D_baseball APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
