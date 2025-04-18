@@ -10,6 +10,9 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QMessageBox>
+#include <qcombobox.h>
+#include "stadium.h"
+#include "display_souvenirs.h"
 
 namespace Ui {
 class teamdisplay;
@@ -41,6 +44,8 @@ private slots:
         accept();
     }
 
+    //void on_pushButton_3_clicked(const QComboBox* obj); //for displaying souvenirs
+
 private:
     Ui::teamdisplay *ui;
     QLineEdit *teamName;
@@ -53,6 +58,7 @@ private:
     QLineEdit *distanceToCenterField;
     QLineEdit *ballparkTypology;
     QLineEdit *roofType;
+    //display_souvenirs *display_items;
 };
 
 #endif // TEAMDISPLAY_H

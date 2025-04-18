@@ -71,3 +71,28 @@ teamdisplay::~teamdisplay()
 {
     delete ui;
 }
+
+// void teamdisplay::on_pushButton_3_clicked(const QComboBox* obj)
+// {
+//     display_items = new display_souvenirs(this);
+//     display_items->show();
+
+//     QString selectedTeam = obj->currentText();  // Get selected team name
+//     std::string teamStr = selectedTeam.toStdString();
+
+//     for (Stadium* stadium : Stadium::object_list) {
+//         if (stadium->getTeamName() == teamStr) {
+//             // Found the matching stadium — now display souvenirs
+//             const std::map<std::string, double>& souvenirs = stadium->getSouvenirs();
+
+//             for (const auto& [name, price] : souvenirs) {
+//                 display_items->appendSouvenirText(
+//                     QString::fromStdString(name + ": $" + std::to_string(price))
+//                     );
+//             }
+
+//             break; // Done — no need to check further
+//         }
+//     }
+// }
+
