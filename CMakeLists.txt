@@ -17,6 +17,7 @@ set(PROJECT_SOURCES
         loginwindow.cpp
         loginwindow.h
         loginwindow.ui
+
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -30,7 +31,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         plantour.h
         plantour.cpp
         graph.h
-        display_dfs_bfs.h display_dfs_bfs.cpp display_dfs_bfs.ui
+        display_dfs.h display_dfs.cpp display_dfs.ui
         stadium.h stadium.cpp
         display_souvenirs.h display_souvenirs.cpp display_souvenirs.ui
         user.h user.cpp

@@ -2,7 +2,7 @@
 #define PLANTOUR_H
 
 #include <QWidget>
-#include "display_dfs_bfs.h"
+#include "display_dfs.h"
 #include "tripplanner.h"
 
 namespace Ui {
@@ -27,6 +27,8 @@ private slots:
     void on_pushButton_clicked();
 
     void on_pushButton_2_clicked();
+
+    void on_pb_stadium_report_clicked();
 
 private:
     Ui::plantour *ui;

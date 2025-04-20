@@ -1,5 +1,5 @@
-#include "display_dfs_bfs.h"
-#include "ui_display_dfs_bfs.h"
+#include "display_dfs.h"
+#include "ui_display_dfs.h"
 
 display_dfs::display_dfs(QWidget *parent) :
     QDialog(parent),
