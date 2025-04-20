@@ -1,11 +1,21 @@
 #include "loginwindow.h"
 #include "stadium.h"
+#include "user.h"
+#include "admin.h"
+#include "tripplanner.h"
+#include "plantour.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     a.setWindowIcon(QIcon(":/logos/baseball.ico")); // From qrc
+
+    User user("Robin Hood"); //user
+
+    Admin admin; //admin
+
+    plantour obj;
 
     // Create Stadium objects with team names (stack objects)
     Stadium obj1("Arizona Diamondbacks");

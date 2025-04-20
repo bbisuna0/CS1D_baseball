@@ -33,6 +33,9 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         display_dfs_bfs.h display_dfs_bfs.cpp display_dfs_bfs.ui
         stadium.h stadium.cpp
         display_souvenirs.h display_souvenirs.cpp display_souvenirs.ui
+        user.h user.cpp
+        tripplanner.h tripplanner.cpp
+        admin.h admin.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET CS1D_baseball APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

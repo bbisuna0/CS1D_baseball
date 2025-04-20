@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include "display_dfs_bfs.h"
+#include "tripplanner.h"
 
 namespace Ui {
 class plantour;
@@ -29,7 +30,9 @@ private slots:
 
 private:
     Ui::plantour *ui;
-    display_dfs *print_ptr;
+    display_dfs *print_ptr; //for displaying dfs and bfs
+    TripPlanner plan; //object for planning trip
+
 };
 
 #endif // PLANTOUR_H

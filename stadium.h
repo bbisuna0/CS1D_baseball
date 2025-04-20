@@ -17,9 +17,23 @@ private:
     double distanceToCenterField;
     std::string typology;
     std::string roofType;
+    double total_spent;
     std::map<std::string, double> souvenirs;
     void addSouvenir(const std::string& name, double price);
     void removeSouvenir(const std::string& name);
+    Stadium(const std::string& name,
+            int capacity,
+            const std::string& location,
+            const std::string& playingSurface,
+            const std::string& teamName,
+            const std::string& league,
+            const std::string& dateOpened,
+            double distanceToCenterField,
+            const std::string& typology,
+            const std::string& roofType,
+            double total_spent,
+            const std::map<std::string, double>& souvenirs);
+
 
 
 public:
@@ -35,6 +49,7 @@ public:
     double getDistanceToCenterField() const;
     std::string getTeamName() const;
     const std::map<std::string, double>& getSouvenirs() const;
+    const double money_spent() const;
 
     // Setters
     void setCapacity(int newCap);
