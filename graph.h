@@ -218,25 +218,9 @@ public:
             }
         }
 
-        double totalMileage = 0;
-        output->append("\nDijkstra (Shortest Paths from " + QString::fromStdString(start_vertex) + "):");
-
-        for (int i = 0; i < cityCount; ++i) {
-            QString cityName = QString::fromStdString(indexToCity[i]);
-            if (distance[i] == std::numeric_limits<double>::max()) {
-                output->append("Shortest distance from " + QString::fromStdString(start_vertex) + " to " + cityName + " is: Unreachable");
-            } else {
-                output->append("Shortest distance from " + QString::fromStdString(start_vertex) + " to " + cityName + " is: " + QString::number(distance[i]));
-                if (i != start) {
-                    totalMileage += distance[i];
-                }
-            }
-        }
-
-        output->append("\nTotal mileage to all reachable cities from " + QString::fromStdString(start_vertex) + ": " + QString::number(totalMileage) + " miles");
-
-        output->append("\nPaths from " + QString::fromStdString(start_vertex) + ":");
+        output->append("Shortest paths from " + QString::fromStdString(start_vertex) + " to all other cities:\n");
         double totalPathDistance = 0;
+
         for (int i = 0; i < cityCount; ++i) {
             if (i == start || distance[i] == std::numeric_limits<double>::max()) continue;
 
@@ -246,30 +230,88 @@ public:
             }
             std::reverse(path.begin(), path.end());
 
+            if (path.size() <= 1) continue;  // No actual path
+
+            // Build path string (skip start_vertex)
             QString pathStr;
-            double pathDistance = 0;
-            for (size_t j = 0; j < path.size(); ++j) {
+            for (size_t j = 1; j < path.size(); ++j) {
                 pathStr += QString::fromStdString(path[j]);
                 if (j < path.size() - 1) pathStr += " -> ";
-
-                // compute segment distance
-                if (j > 0) {
-                    int u = cityToIndex[path[j - 1]];
-                    int v = cityToIndex[path[j]];
-                    if (adjMatrix[u][v] != -1)
-                        pathDistance += adjMatrix[u][v];
-                }
             }
 
+            double pathDistance = distance[i];
             totalPathDistance += pathDistance;
-            output->append(QString::fromStdString(start_vertex) + " -> " + QString::fromStdString(indexToCity[i]) + ": " + pathStr + " (Distance: " + QString::number(pathDistance) + ")");
+
+            output->append(pathStr + " (Distance: " + QString::number(pathDistance) + ")");
         }
 
         output->append("\nTotal overall distance (sum of all shortest paths): " + QString::number(totalPathDistance) + " miles");
     }
 
 
+//       void run_dijkstra(const T& start_vertex, QTextEdit* output) {
+//     if (cityToIndex.find(start_vertex) == cityToIndex.end()) {
+//         output->append("Start vertex not found.");
+//         return;
+//     }
 
+//     std::vector<bool> visited(cityCount, false);
+//     std::vector<double> distance(cityCount, std::numeric_limits<double>::max());
+//     std::vector<int> parent(cityCount, -1);
+
+//     int start = cityToIndex[start_vertex];
+//     distance[start] = 0;
+
+//     for (int i = 0; i < cityCount; ++i) {
+//         int u = -1;
+//         double minDist = std::numeric_limits<double>::max();
+//         for (int j = 0; j < cityCount; ++j) {
+//             if (!visited[j] && distance[j] < minDist) {
+//                 minDist = distance[j];
+//                 u = j;
+//             }
+//         }
+
+//         if (u == -1) break;
+//         visited[u] = true;
+
+//         for (int v = 0; v < cityCount; ++v) {
+//             double weight = adjMatrix[u][v];
+//             if (weight != -1 && distance[u] + weight < distance[v]) {
+//                 distance[v] = distance[u] + weight;
+//                 parent[v] = u;
+//             }
+//         }
+//     }
+
+//     output->append("Shortest paths from " + QString::fromStdString(start_vertex) + ":\n");
+//     double totalPathDistance = 0;
+
+//     for (int i = 0; i < cityCount; ++i) {
+//         if (i == start || distance[i] == std::numeric_limits<double>::max()) continue;
+
+//         std::vector<T> path;
+//         for (int v = i; v != -1; v = parent[v]) {
+//             path.push_back(indexToCity[v]);
+//         }
+//         std::reverse(path.begin(), path.end());
+
+//         QString pathStr;
+//         for (size_t j = 0; j < path.size(); ++j) {
+//             pathStr += QString::fromStdString(path[j]);
+//             if (j < path.size() - 1) pathStr += " -> ";
+//         }
+
+//         double pathDistance = distance[i];
+//         totalPathDistance += pathDistance;
+
+//         output->append(pathStr + " (Distance: " + QString::number(pathDistance) + ")");
+//     }
+
+//     output->append("\nTotal overall distance (sum of all shortest paths): " + QString::number(totalPathDistance) + " miles");
+// }
+
+//
 
 };
 
