@@ -37,6 +37,9 @@ teamdisplay::teamdisplay(QWidget *parent)
     ballparkTypology = new QLineEdit(this);
     roofType = new QLineEdit(this);
 
+    // Set label alignment to left
+    formLayout->setLabelAlignment(Qt::AlignLeft);
+
     // Add fields to form layout
     formLayout->addRow("Team Name:", teamName);
     formLayout->addRow("Stadium Name:", stadiumName);
