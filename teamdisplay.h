@@ -10,6 +10,14 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QMessageBox>
+#include <QSqlTableModel>
+#include <QDataWidgetMapper>
+#include <QSqlRelationalTableModel>
+
+#include "main.h"
+
+/// Global instance representing the logged-in user.
+extern User myUser;
 
 namespace Ui {
 class teamdisplay;
@@ -41,6 +49,14 @@ private slots:
         accept();
     }
 
+    void onRecordChanged(int index);
+
+    void on_buttonBox_accepted();
+
+    void on_buttonBox_rejected();
+
+    void on_pushButton_clicked();
+
 private:
     Ui::teamdisplay *ui;
     QLineEdit *teamName;
@@ -53,6 +69,25 @@ private:
     QLineEdit *distanceToCenterField;
     QLineEdit *ballparkTypology;
     QLineEdit *roofType;
+    QSqlTableModel *teamModel;
+    QDataWidgetMapper *mapper;
+    // QSqlRelationalTableModel *souvenirModel;
+    QSqlTableModel *souvenirModel;
+};
+
+#include <QStyledItemDelegate>
+#include <QLocale>
+
+class CurrencyDelegate : public QStyledItemDelegate
+{
+public:
+    using QStyledItemDelegate::QStyledItemDelegate;
+
+    QString displayText(const QVariant &value, const QLocale &locale) const override {
+        // Format as USD currency with 2 decimal places
+        double amount = value.toDouble();
+        return locale.toCurrencyString(amount, "$", 2);
+    }
 };
 
 #endif // TEAMDISPLAY_H

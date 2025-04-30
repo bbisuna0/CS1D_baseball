@@ -87,6 +87,13 @@
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
          <widget class="QPushButton" name="pb_souvenir_add">
+          <property name="font">
+           <font>
+            <family>Segoe UI</family>
+            <pointsize>12</pointsize>
+            <bold>true</bold>
+           </font>
+          </property>
           <property name="text">
            <string>Add</string>
           </property>
@@ -94,6 +101,13 @@
         </item>
         <item>
          <widget class="QPushButton" name="pb_souvenir_delete">
+          <property name="font">
+           <font>
+            <family>Segoe UI</family>
+            <pointsize>12</pointsize>
+            <bold>true</bold>
+           </font>
+          </property>
           <property name="text">
            <string>Delete</string>
           </property>
@@ -111,7 +125,7 @@
        <property name="font">
         <font>
          <family>Segoe UI</family>
-         <pointsize>9</pointsize>
+         <pointsize>12</pointsize>
          <bold>true</bold>
         </font>
        </property>
@@ -125,12 +139,26 @@
        <property name="font">
         <font>
          <family>Segoe UI</family>
-         <pointsize>9</pointsize>
+         <pointsize>12</pointsize>
          <bold>true</bold>
         </font>
        </property>
        <property name="text">
         <string>Image</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton">
+       <property name="font">
+        <font>
+         <family>Segoe UI</family>
+         <pointsize>12</pointsize>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Delete</string>
        </property>
       </widget>
      </item>
@@ -185,8 +213,8 @@
      <property name="font">
       <font>
        <family>Segoe UI</family>
-       <pointsize>9</pointsize>
-       <bold>true</bold>
+       <pointsize>12</pointsize>
+       <bold>false</bold>
       </font>
      </property>
      <property name="orientation">
@@ -216,8 +244,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>248</x>
-     <y>254</y>
+     <x>114</x>
+     <y>581</y>
     </hint>
     <hint type="destinationlabel">
      <x>157</x>
@@ -232,8 +260,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>316</x>
-     <y>260</y>
+     <x>182</x>
+     <y>581</y>
     </hint>
     <hint type="destinationlabel">
      <x>286</x>
