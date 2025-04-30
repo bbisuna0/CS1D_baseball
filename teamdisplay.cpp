@@ -52,10 +52,15 @@ teamdisplay::teamdisplay(QWidget *parent)
     formLayout->addRow("Ballpark Typology:", ballparkTypology);
     formLayout->addRow("Roof Type:", roofType);
 
+    formLayout->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
+    formLayout->setLabelAlignment(Qt::AlignLeft);
+
     groupBoxLayout->addLayout(formLayout, /*stretch=*/0);
     groupBoxLayout->setAlignment(formLayout, Qt::AlignLeft);
 
     ui->teamBox->setLayout(groupBoxLayout);
+    ui->teamBox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+
     // mainLayout->addLayout(formLayout);
     // ui->teamBox->layout(mainLayout);
 
