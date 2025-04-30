@@ -42,6 +42,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         maintenance.ui
         maintenance.h
         maintenance.cpp
+        map.h map.cpp map.ui
 
 
     )

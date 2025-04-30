@@ -53,5 +53,6 @@
         <file>logos/scoreboard.PNG</file>
         <file>logos/baseball-tours.png</file>
         <file>logos/system-maintenance.png</file>
+        <file>logos/usa-map.png</file>
     </qresource>
 </RCC>

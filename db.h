@@ -34,10 +34,24 @@ struct TeamEntry {
     QString roofType;
 };
 
+
+struct Souvenir {
+    QString name;
+    double price;
+};
+
 // Function headers
 bool insertStadiumDistances(QSqlDatabase& db);
 bool createStadiumDistancesTable(QSqlDatabase& db);
 bool createTeamsTable(QSqlDatabase& db);
+bool createSouvenirsTable(QSqlDatabase& db);
 bool insertTeamsData(QSqlDatabase& db);
+bool addDefaultSouvenirs(QSqlDatabase& db);
+bool resetContent(QSqlDatabase& db);
+bool resetAllContent(QSqlDatabase& db);
+bool addTeamsData(QSqlDatabase& db);
+bool addStadiumDistances(QSqlDatabase& db);
+bool addBulkData(QSqlDatabase& db);
+
 
 #endif // DB_H

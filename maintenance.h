@@ -28,6 +28,8 @@ private slots:
 
     void on_pb_full_reset_clicked();
 
+    void on_pb_res1_clicked();
+
 private:
     Ui::maintenance *ui;
 };

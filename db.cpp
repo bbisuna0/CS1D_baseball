@@ -235,6 +235,43 @@ bool createTeamsTable(QSqlDatabase& db) {
 }
 
 
+bool createSouvenirsTable(QSqlDatabase& db) {
+    if (!db.isOpen()) {
+        qWarning() << "Database is not open!";
+        return false;
+    }
+
+    QSqlQuery query(db);
+
+    // Check if table exists
+    if (db.tables().contains("souvenirs")) {
+        qDebug() << "Table 'souvenirs' already exists.";
+        return false;
+    }
+
+    // Create the souvenirs table
+    // Step 1: Create the souvenirs table if it doesn't exist
+    const QString createTableSQL = R"(
+        CREATE TABLE IF NOT EXISTS souvenirs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            team_name TEXT NOT NULL,
+            item_name TEXT NOT NULL,
+            price REAL NOT NULL,
+            FOREIGN KEY(team_name) REFERENCES teams(team_name),
+            UNIQUE(team_name, item_name)
+        )
+    )";
+
+    if (!query.exec(createTableSQL)) {
+        qWarning() << "Failed to create 'souvenirs' table:" << query.lastError().text();
+        return false;
+    }
+
+    qDebug() << "'souvenirs' table created successfully!";
+    return true;
+}
+
+
 bool insertTeamsData(QSqlDatabase& db) {
     if (!db.isOpen()) {
         qWarning() << "Database is not open!";
@@ -324,5 +361,243 @@ bool insertTeamsData(QSqlDatabase& db) {
 }
 
 
+bool addDefaultSouvenirs(QSqlDatabase& db) {
+    if (!db.isOpen()) {
+        qWarning() << "Database is not open!";
+        return false;
+    }
+
+    QSqlQuery query(db);
+
+    QList<Souvenir> defaultItems = {
+        {"Baseball cap", 19.99},
+        {"Baseball bat", 89.39},
+        {"Team pennant", 17.99},
+        {"Autographed baseball", 29.99},
+        {"Team jersey", 199.99}
+    };
+
+    // Step 1: Query all teams from the teams table
+    if (!query.exec("SELECT team_name FROM teams")) {
+        qWarning() << "Failed to query teams:" << query.lastError().text();
+        return false;
+    }
+
+    // Step 2: Insert default souvenirs for each team
+    QSqlQuery insertQuery(db);
+    insertQuery.prepare("INSERT INTO souvenirs (team_name, item_name, price) VALUES (?, ?, ?)");
+
+    db.transaction(); // Begin transaction for speed and atomicity
+
+    while (query.next()) {
+        QString teamName = query.value(0).toString();
+
+        for (const Souvenir& item : defaultItems) {
+            insertQuery.bindValue(0, teamName);
+            insertQuery.bindValue(1, item.name);
+            insertQuery.bindValue(2, item.price);
+
+            if (!insertQuery.exec()) {
+                qWarning() << "Insert failed for" << teamName << "/" << item.name << ":" << insertQuery.lastError().text();
+                db.rollback();
+            //    return false;
+            }
+        }
+    }
+
+    return db.commit(); // Commit if all inserts succeed
+}
+
+
+bool resetContent(QSqlDatabase& db) {
+    if (!db.isOpen()) {
+        qWarning() << "Database is not open!";
+        return false;
+    }
+
+    QSqlQuery query(db);
+
+    // Check if table exists
+    if (db.tables().contains("teams")) {
+        if (!query.exec("DROP TABLE IF EXISTS teams")) {
+            qWarning() << "Failed to drop table:" << query.lastError().text();
+        } else {
+            qDebug() << "Table teams dropped successfully.";
+            createTeamsTable(db);
+            insertTeamsData(db);
+        }
+    }
+
+    // Check if table exists
+    if (db.tables().contains("stadium_distances")) {
+        if (!query.exec("DROP TABLE IF EXISTS stadium_distances")) {
+            qWarning() << "Failed to drop table:" << query.lastError().text();
+        } else {
+            qDebug() << "Table stadium_distances dropped successfully.";
+            createStadiumDistancesTable(db);
+            insertStadiumDistances(db);
+        }
+    }
+
+    // Check if table exists
+    if (db.tables().contains("souvenirs")) {
+        if (!query.exec("DROP TABLE IF EXISTS souvenirs")) {
+            qWarning() << "Failed to drop table:" << query.lastError().text();
+        } else {
+            qDebug() << "Table souvenirs dropped successfully.";
+            createSouvenirsTable(db);
+            addDefaultSouvenirs(db);
+        }
+    }
+
+    return true;
+}
+
+bool resetAllContent(QSqlDatabase& db) {
+    if (!db.isOpen()) {
+        qWarning() << "Database is not open!";
+        return false;
+    }
+
+    QSqlQuery query(db);
+
+    // Check if table exists
+    if (db.tables().contains("user")) {
+        if (!query.exec("DROP TABLE IF EXISTS user")) {
+            qWarning() << "Failed to drop table:" << query.lastError().text();
+        } else {
+            qDebug() << "Table user dropped successfully.";
+        }
+    }
+
+    resetContent(db);
+
+    return true;
+}
+
+bool addStadiumDistances(QSqlDatabase& db) {
+    if (!db.isOpen()) {
+        qWarning() << "Database is not open!";
+        return false;
+    }
+
+    QSqlQuery insertQuery(db);
+    QSqlQuery checkQuery(db);
+
+    insertQuery.prepare(R"(
+        INSERT INTO stadium_distances (origin, destination, distance)
+        VALUES (?, ?, ?)
+    )");
+
+    checkQuery.prepare("SELECT COUNT(*) FROM stadium_distances "
+                       "WHERE origin = ? AND destination = ? AND distance = ?");
+
+
+    QList<DistanceEntry> entries = {
+        {"Las Vegas Stadium", "Oakland–Alameda County Coliseum", 325},
+        {"Las Vegas Stadium", "Dodger Stadium", 300},
+        {"Las Vegas Stadium", "Chase Field", 250}
+    };
+
+    db.transaction(); // faster batch insert
+
+    for (const DistanceEntry& entry : entries) {
+        // Check if this entry already exists
+        checkQuery.bindValue(0, entry.origin);
+        checkQuery.bindValue(1, entry.destination);
+        checkQuery.bindValue(2, entry.distance);
+
+        if (!checkQuery.exec()) {
+            qWarning() << "Check failed for" << entry.origin << "->" << entry.destination << ":" << checkQuery.lastError().text();
+            db.rollback();
+            return false;
+        }
+
+        if (checkQuery.next() && checkQuery.value(0).toInt() == 0) {
+            // Doesn't exist, insert
+            insertQuery.bindValue(0, entry.origin);
+            insertQuery.bindValue(1, entry.destination);
+            insertQuery.bindValue(2, entry.distance);
+
+            if (!insertQuery.exec()) {
+                qWarning() << "Insert failed for" << entry.origin << "->" << entry.destination << ":" << insertQuery.lastError().text();
+                db.rollback();
+                return false;
+            }
+        } else {
+            qDebug() << "Distance already exists:" << entry.origin << "->" << entry.destination;
+        }
+
+    }
+
+    return db.commit();
+}
+
+
+bool addTeamsData(QSqlDatabase& db) {
+    if (!db.isOpen()) {
+        qWarning() << "Database is not open!";
+        return false;
+    }
+
+    QSqlQuery query(db);
+    QSqlQuery checkQuery(db);  // Separate query for checking existence
+
+    query.prepare(R"(
+        INSERT INTO teams (team_name, stadium_name, seating_capacity, location, playing_surface,
+                           league, date_opened, distance_to_center_field, ballpark_typology, roof_type)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+    )");
+
+    QList<TeamEntry> entries = {
+        {"Las Vegas Gamblers", "Las Vegas Stadium", 44444, "Las Vegas, Nevada", "Grass", "National", 2022, "400 feet (122 m)", "Retro Modern", "Open"}
+    };
+
+    db.transaction(); // optional: faster
+
+    for (const TeamEntry& entry : entries) {
+        checkQuery.prepare(R"(
+            SELECT COUNT(*) FROM teams WHERE team_name = ?
+        )");
+        checkQuery.addBindValue(entry.teamName);
+
+        if (!checkQuery.exec()) {
+            qWarning() << "Check query failed for" << entry.teamName << ":" << checkQuery.lastError().text();
+            db.rollback();
+            return false;
+        }
+
+        if (checkQuery.next() && checkQuery.value(0).toInt() == 0) {
+            // Team does not exist, safe to insert
+            query.addBindValue(entry.teamName);
+            query.addBindValue(entry.stadiumName);
+            query.addBindValue(entry.seatingCapacity);
+            query.addBindValue(entry.location);
+            query.addBindValue(entry.playingSurface);
+            query.addBindValue(entry.league);
+            query.addBindValue(entry.dateOpened);
+            query.addBindValue(entry.distanceToCenterField);
+            query.addBindValue(entry.ballparkTypology);
+            query.addBindValue(entry.roofType);
+
+            if (!query.exec()) {
+                qWarning() << "Insert failed for" << entry.teamName << ":" << query.lastError().text();
+                db.rollback();
+                return false;
+            }
+        } else {
+            qDebug() << "Team already exists:" << entry.teamName;
+        }
+    }
+
+    return db.commit();
+}
+
+bool addBulkData(QSqlDatabase& db) {
+    addTeamsData(db);
+    addStadiumDistances(db);
+    addDefaultSouvenirs(db);
+    return true;
+}
 
 // db::db() {}

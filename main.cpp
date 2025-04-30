@@ -43,6 +43,11 @@ int main(int argc, char *argv[])
     if (create)
         insertTeamsData(db);
 
+    create = false;
+    create = createSouvenirsTable(db);
+    if (create)
+        addDefaultSouvenirs(db);
+
     a.setWindowIcon(QIcon(":/logos/baseball.ico")); // From qrc
     LoginWindow w;
     w.setWindowModality(Qt::ApplicationModal);
