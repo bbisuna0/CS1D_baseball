@@ -52,7 +52,9 @@ teamdisplay::teamdisplay(QWidget *parent)
     formLayout->addRow("Ballpark Typology:", ballparkTypology);
     formLayout->addRow("Roof Type:", roofType);
 
-    groupBoxLayout->addLayout(formLayout);
+    groupBoxLayout->addLayout(formLayout, /*stretch=*/0);
+    groupBoxLayout->setAlignment(formLayout, Qt::AlignLeft);
+
     ui->teamBox->setLayout(groupBoxLayout);
     // mainLayout->addLayout(formLayout);
     // ui->teamBox->layout(mainLayout);
