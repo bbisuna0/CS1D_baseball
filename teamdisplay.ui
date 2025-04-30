@@ -51,10 +51,10 @@
   <widget class="QLabel" name="teamlogo">
    <property name="geometry">
     <rect>
-     <x>215</x>
-     <y>65</y>
-     <width>60</width>
-     <height>60</height>
+     <x>10</x>
+     <y>20</y>
+     <width>81</width>
+     <height>81</height>
     </rect>
    </property>
    <property name="autoFillBackground">
@@ -65,63 +65,6 @@
    </property>
    <property name="pixmap">
     <pixmap resource="logos.qrc">:/logos/chicago-cubs.png</pixmap>
-   </property>
-   <property name="scaledContents">
-    <bool>true</bool>
-   </property>
-  </widget>
-  <widget class="QLabel" name="teamlogo_2">
-   <property name="geometry">
-    <rect>
-     <x>360</x>
-     <y>100</y>
-     <width>121</width>
-     <height>71</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-   <property name="pixmap">
-    <pixmap resource="logos.qrc">:/logos/pennant-banner1.png</pixmap>
-   </property>
-   <property name="scaledContents">
-    <bool>true</bool>
-   </property>
-  </widget>
-  <widget class="QLabel" name="teamlogo_3">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>100</y>
-     <width>121</width>
-     <height>71</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-   <property name="pixmap">
-    <pixmap resource="logos.qrc">:/logos/pennant-banner2.png</pixmap>
-   </property>
-   <property name="scaledContents">
-    <bool>true</bool>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label">
-   <property name="geometry">
-    <rect>
-     <x>150</x>
-     <y>10</y>
-     <width>191</width>
-     <height>161</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-   <property name="pixmap">
-    <pixmap resource="logos.qrc">:/logos/scoreboard.PNG</pixmap>
    </property>
    <property name="scaledContents">
     <bool>true</bool>
@@ -193,7 +136,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>190</y>
+     <y>110</y>
      <width>471</width>
      <height>300</height>
     </rect>
@@ -218,11 +161,8 @@
    </property>
   </widget>
   <zorder>teamBox</zorder>
-  <zorder>label</zorder>
   <zorder>buttonBox</zorder>
   <zorder>teamlogo</zorder>
-  <zorder>teamlogo_2</zorder>
-  <zorder>teamlogo_3</zorder>
   <zorder>line_2</zorder>
   <zorder>pushButton</zorder>
   <zorder>pushButton_2</zorder>

@@ -5,7 +5,7 @@
         <file>logos/atlanta-braves.png</file>
         <file>logos/ballgame.jpg</file>
         <file>logos/baltimore-orioles.png</file>
-        <file>logos/bosoton-red-sox.png</file>
+        <file>logos/boston-red-sox.png</file>
         <file>logos/chicago-cubs.png</file>
         <file>logos/chicago-white-sox.png</file>
         <file>logos/cincinnati-reds.png</file>
@@ -30,7 +30,7 @@
         <file>logos/san-diego-padres.png</file>
         <file>logos/san-francisco-giants.png</file>
         <file>logos/seattle-mariners.png</file>
-        <file>logos/st-louis-cardinals.png</file>
+        <file>logos/st.-louis-cardinals.png</file>
         <file>logos/tampa-bay-rays.png</file>
         <file>logos/texas-rangers.png</file>
         <file>logos/toronto-blue-jays.png</file>
@@ -52,5 +52,6 @@
         <file>logos/pennant.jpg</file>
         <file>logos/scoreboard.PNG</file>
         <file>logos/baseball-tours.png</file>
+        <file>logos/system-maintenance.png</file>
     </qresource>
 </RCC>

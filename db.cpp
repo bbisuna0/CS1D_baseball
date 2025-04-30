@@ -1,0 +1,328 @@
+#include "db.h"
+
+bool insertStadiumDistances(QSqlDatabase& db) {
+    if (!db.isOpen()) {
+        qWarning() << "Database is not open!";
+        return false;
+    }
+
+    QSqlQuery insertQuery(db);
+    QSqlQuery checkQuery(db);
+
+    insertQuery.prepare(R"(
+        INSERT INTO stadium_distances (origin, destination, distance)
+        VALUES (?, ?, ?)
+    )");
+
+    checkQuery.prepare("SELECT COUNT(*) FROM stadium_distances "
+                       "WHERE origin = ? AND destination = ? AND distance = ?");
+
+
+    QList<DistanceEntry> entries = {
+        {"Angel Stadium", "Petco Park", 110},
+        {"Angel Stadium", "Dodger Stadium", 50},
+        {"Busch Stadium", "Minute Maid Park", 680},
+        {"Busch Stadium", "Great American Ball Park", 310},
+        {"Busch Stadium", "Target Field", 465},
+        {"Busch Stadium", "Kauffman Stadium", 235},
+        {"Chase Field", "Coors Field", 580},
+        {"Chase Field", "Globe Life Park in Arlington", 870},
+        {"Chase Field", "Minute Maid Park", 1115},
+        {"Chase Field", "Oakland–Alameda County Coliseum", 650},
+        {"Chase Field", "Petco Park", 300},
+        {"Citi Field", "Fenway Park", 195},
+        {"Citi Field", "Yankee Stadium", 50},
+        {"Citizens Bank Park", "Yankee Stadium", 80},
+        {"Citizens Bank Park", "Oriole Park at Camden Yards", 90},
+        {"Comerica Park", "Guaranteed Rate Field", 240},
+        {"Comerica Park", "Rogers Centre", 210},
+        {"Comerica Park", "Progressive Field", 90},
+        {"Coors Field", "Kauffman Stadium", 560},
+        {"Coors Field", "Globe Life Park in Arlington", 650},
+        {"Coors Field", "Chase Field", 580},
+        {"Coors Field", "Petco Park", 830},
+        {"Dodger Stadium", "Angel Stadium", 50},
+        {"Dodger Stadium", "Target Field", 1500},
+        {"Dodger Stadium", "Oakland–Alameda County Coliseum", 340},
+        {"Fenway Park", "Citi Field", 195},
+        {"Fenway Park", "Marlins Park", 1255},
+        {"Fenway Park", "Rogers Centre", 430},
+        {"Globe Life Park in Arlington", "Chase Field", 870},
+        {"Globe Life Park in Arlington", "Kauffman Stadium", 460},
+        {"Globe Life Park in Arlington", "SunTrust Park", 740},
+        {"Globe Life Park in Arlington", "Minute Maid Park", 230},
+        {"Globe Life Park in Arlington", "Coors Field", 650},
+        {"Great American Ball Park", "PNC Park", 260},
+        {"Great American Ball Park", "Progressive Field", 225},
+        {"Great American Ball Park", "Guaranteed Rate Field", 250},
+        {"Great American Ball Park", "Tropicana Field", 790},
+        {"Great American Ball Park", "SunTrust Park", 375},
+        {"Great American Ball Park", "Busch Stadium", 310},
+        {"Guaranteed Rate Field", "Comerica Park", 240},
+        {"Guaranteed Rate Field", "Great American Ball Park", 250},
+        {"Guaranteed Rate Field", "Wrigley Field", 50},
+        {"Kauffman Stadium", "Busch Stadium", 235},
+        {"Kauffman Stadium", "Globe Life Park in Arlington", 460},
+        {"Kauffman Stadium", "Wrigley Field", 415},
+        {"Kauffman Stadium", "Coors Field", 560},
+        {"Marlins Park", "SunTrust Park", 600},
+        {"Marlins Park", "Tropicana Field", 210},
+        {"Marlins Park", "Nationals Park", 930},
+        {"Marlins Park", "Fenway Park", 1255},
+        {"Marlins Park", "Minute Maid Park", 965},
+        {"Miller Park", "Rogers Centre", 430},
+        {"Miller Park", "Wrigley Field", 80},
+        {"Miller Park", "Target Field", 300},
+        {"Minute Maid Park", "Globe Life Park in Arlington", 230},
+        {"Minute Maid Park", "Tropicana Field", 790},
+        {"Minute Maid Park", "Marlins Park", 965},
+        {"Minute Maid Park", "Busch Stadium", 680},
+        {"Minute Maid Park", "Chase Field", 1115},
+        {"Nationals Park", "Oriole Park at Camden Yards", 50},
+        {"Nationals Park", "PNC Park", 195},
+        {"Nationals Park", "SunTrust Park", 560},
+        {"Nationals Park", "Marlins Park", 930},
+        {"Oakland–Alameda County Coliseum", "Oracle Park", 50},
+        {"Oakland–Alameda County Coliseum", "Dodger Stadium", 340},
+        {"Oakland–Alameda County Coliseum", "Chase Field", 650},
+        {"Oracle Park", "Safeco Field", 680},
+        {"Oracle Park", "Oakland–Alameda County Coliseum", 50},
+        {"Oriole Park at Camden Yards", "Nationals Park", 50},
+        {"Oriole Park at Camden Yards", "Citizens Bank Park", 90},
+        {"Petco Park", "Coors Field", 830},
+        {"Petco Park", "Chase Field", 300},
+        {"Petco Park", "Angel Stadium", 110},
+        {"PNC Park", "Nationals Park", 195},
+        {"PNC Park", "Rogers Centre", 225},
+        {"PNC Park", "Progressive Field", 115},
+        {"PNC Park", "Great American Ball Park", 260},
+        {"PNC Park", "Yankee Stadium", 315},
+        {"Progressive Field", "PNC Park", 115},
+        {"Progressive Field", "Comerica Park", 90},
+        {"Progressive Field", "Great American Ball Park", 225},
+        {"Rogers Centre", "PNC Park", 225},
+        {"Rogers Centre", "Miller Park", 430},
+        {"Rogers Centre", "Comerica Park", 210},
+        {"Rogers Centre", "Fenway Park", 430},
+        {"Rogers Centre", "Safeco Field", 2070},
+        {"Safeco Field", "Rogers Centre", 2070},
+        {"Safeco Field", "Target Field", 1390},
+        {"Safeco Field", "Oracle Park", 680},
+        {"SunTrust Park", "Great American Ball Park", 375},
+        {"SunTrust Park", "Nationals Park", 560},
+        {"SunTrust Park", "Marlins Park", 600},
+        {"SunTrust Park", "Globe Life Park in Arlington", 740},
+        {"Target Field", "Dodger Stadium", 1500},
+        {"Target Field", "Busch Stadium", 465},
+        {"Target Field", "Miller Park", 300},
+        {"Target Field", "Safeco Field", 1390},
+        {"Tropicana Field", "Great American Ball Park", 790},
+        {"Tropicana Field", "Marlins Park", 210},
+        {"Tropicana Field", "Minute Maid Park", 790},
+        {"Wrigley Field", "Guaranteed Rate Field", 50},
+        {"Wrigley Field", "Miller Park", 80},
+        {"Wrigley Field", "Kauffman Stadium", 415},
+        {"Yankee Stadium", "PNC Park", 315},
+        {"Yankee Stadium", "Citizens Bank Park", 80},
+        {"Yankee Stadium", "Citi Field", 50}
+    };
+
+    db.transaction(); // faster batch insert
+
+    for (const DistanceEntry& entry : entries) {
+        // Check if this entry already exists
+        checkQuery.bindValue(0, entry.origin);
+        checkQuery.bindValue(1, entry.destination);
+        checkQuery.bindValue(2, entry.distance);
+
+        if (!checkQuery.exec()) {
+            qWarning() << "Check failed for" << entry.origin << "->" << entry.destination << ":" << checkQuery.lastError().text();
+            db.rollback();
+            return false;
+        }
+
+        if (checkQuery.next() && checkQuery.value(0).toInt() == 0) {
+            // Doesn't exist, insert
+            insertQuery.bindValue(0, entry.origin);
+            insertQuery.bindValue(1, entry.destination);
+            insertQuery.bindValue(2, entry.distance);
+
+            if (!insertQuery.exec()) {
+                qWarning() << "Insert failed for" << entry.origin << "->" << entry.destination << ":" << insertQuery.lastError().text();
+                db.rollback();
+                return false;
+            }
+        } else {
+            qDebug() << "Distance already exists:" << entry.origin << "->" << entry.destination;
+        }
+
+    }
+
+    return db.commit();
+}
+
+
+
+bool createStadiumDistancesTable(QSqlDatabase& db) {
+    if (!db.isOpen()) {
+        qWarning() << "Database is not open!";
+        return false;
+    }
+
+    QSqlQuery query(db);
+
+    // Check if table exists
+    if (db.tables().contains("stadium_distances")) {
+        qDebug() << "Table 'stadium_distances' already exists.";
+        return false;
+    }
+
+    QString createTableSQL = R"(
+        CREATE TABLE IF NOT EXISTS stadium_distances (
+            origin TEXT,
+            destination TEXT,
+            distance INTEGER
+        );
+    )";
+
+    if (!query.exec(createTableSQL)) {
+        qWarning() << "Failed to create table:" << query.lastError().text();
+        return false;
+    }
+
+    qDebug() << "stadium_distances table created successfully!";
+    return true;
+}
+
+
+bool createTeamsTable(QSqlDatabase& db) {
+    if (!db.isOpen()) {
+        qWarning() << "Database is not open!";
+        return false;
+    }
+
+    QSqlQuery query(db);
+
+    // Check if table exists
+    if (db.tables().contains("teams")) {
+        qDebug() << "Table 'teams' already exists.";
+        return false;
+    }
+
+    // Create the teams table
+    QString createTableSQL = R"(
+        CREATE TABLE teams (
+            team_name TEXT,
+            stadium_name TEXT,
+            seating_capacity INTEGER,
+            location TEXT,
+            playing_surface TEXT,
+            league TEXT,
+            date_opened INTEGER,
+            distance_to_center_field TEXT,
+            ballpark_typology TEXT,
+            roof_type TEXT
+        );
+    )";
+
+    if (!query.exec(createTableSQL)) {
+        qWarning() << "Failed to create 'teams' table:" << query.lastError().text();
+        return false;
+    }
+
+    qDebug() << "'teams' table created successfully!";
+    return true;
+}
+
+
+bool insertTeamsData(QSqlDatabase& db) {
+    if (!db.isOpen()) {
+        qWarning() << "Database is not open!";
+        return false;
+    }
+
+    QSqlQuery query(db);
+    QSqlQuery checkQuery(db);  // Separate query for checking existence
+
+    query.prepare(R"(
+        INSERT INTO teams (team_name, stadium_name, seating_capacity, location, playing_surface,
+                           league, date_opened, distance_to_center_field, ballpark_typology, roof_type)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+    )");
+
+    QList<TeamEntry> entries = {
+        {"Arizona Diamondbacks", "Chase Field", 48686, "Phoenix, Arizona", "Grass", "National", 1998, "407 feet (124 m)", "Retro Modern", "Retractable"},
+        {"Atlanta Braves", "SunTrust Park", 41149, "Cumberland, Georgia", "Grass", "National", 2017, "400 feet (122 m)", "Retro Modern", "Open"},
+        {"Baltimore Orioles", "Oriole Park at Camden Yards", 45971, "Baltimore, Maryland", "Grass", "American", 1992, "410 feet (125 m)", "Retro Classic", "Open"},
+        {"Boston Red Sox", "Fenway Park", 37731, "Boston, Massachusetts", "Grass", "American", 1912, "420 feet (128 m)", "Jewel Box", "Open"},
+        {"Chicago Cubs", "Wrigley Field", 41268, "Chicago, Illinois", "Grass", "National", 1914, "400 feet (122 m)", "Jewel Box", "Open"},
+        {"Chicago White Sox", "Guaranteed Rate Field", 40615, "Chicago, Illinois", "Grass", "American", 1991, "400 feet (122 m)", "Retro Classic", "Open"},
+        {"Cincinnati Reds", "Great American Ball Park", 42319, "Cincinnati, Ohio", "Grass", "National", 2003, "404 feet (123 m)", "Retro Modern", "Open"},
+        {"Cleveland Indians", "Progressive Field", 35051, "Cleveland, Ohio", "Grass", "American", 1994, "410 feet (125 m)", "Retro Modern", "Open"},
+        {"Colorado Rockies", "Coors Field", 50398, "Denver, Colorado", "Grass", "National", 1995, "415 feet (126 m)", "Retro Classic", "Open"},
+        {"Detroit Tigers", "Comerica Park", 41299, "Detroit, Michigan", "Grass", "American", 2000, "420 feet (128 m)", "Retro Classic", "Open"},
+        {"Houston Astros", "Minute Maid Park", 41168, "Houston, Texas", "Grass", "American", 2000, "409 feet (125 m)", "Retro Modern", "Retractable"},
+        {"Kansas City Royals", "Kauffman Stadium", 37903, "Kansas City, Missouri", "Grass", "American", 1973, "410 feet (125 m)", "Retro Modern", "Open"},
+        {"Los Angeles Angels", "Angel Stadium", 45477, "Anaheim, California", "Grass", "American", 1966, "396 feet (121 m)", "Retro Modern", "Open"},
+        {"Los Angeles Dodgers", "Dodger Stadium", 56000, "Los Angeles, California", "Grass", "National", 1962, "400 feet (122 m)", "Modern", "Open"},
+        {"Miami Marlins", "Marlins Park", 36742, "Miami, Florida", "Grass", "National", 2012, "407 feet (124 m)", "Contemporary", "Retractable"},
+        {"Milwaukee Brewers", "Miller Park", 41900, "Milwaukee, Wisconsin", "Grass", "National", 2001, "400 feet (122 m)", "Retro Modern", "Retractable"},
+        {"Minnesota Twins", "Target Field", 38885, "Minneapolis, Minnesota", "Grass", "American", 2010, "404 feet (123 m)", "Retro Modern", "Open"},
+        {"New York Mets", "Citi Field", 41922, "Queens, New York", "Grass", "National", 2009, "408 feet (124 m)", "Retro Classic", "Open"},
+        {"New York Yankees", "Yankee Stadium", 47422, "Bronx, New York", "Grass", "American", 2009, "408 feet (124 m)", "Retro Classic", "Open"},
+        {"Oakland Athletics", "Oakland–Alameda County Coliseum", 47170, "Oakland, California", "Grass", "American", 1966, "400 feet (122 m)", "Multipurpose", "Open"},
+        {"Philadelphia Phillies", "Citizens Bank Park", 43651, "Philadelphia, Pennsylvania", "Grass", "National", 2004, "401 feet (122 m)", "Retro Classic", "Open"},
+        {"Pittsburgh Pirates", "PNC Park", 38362, "Pittsburgh, Pennsylvania", "Grass", "National", 2001, "399 feet (122 m)", "Retro Classic", "Open"},
+        {"San Diego Padres", "Petco Park", 40209, "San Diego, California", "Grass", "National", 2004, "396 feet (121 m)", "Retro Modern", "Open"},
+        {"San Francisco Giants", "Oracle Park", 41915, "San Francisco, California", "Grass", "National", 2000, "399 feet (122 m)", "Retro Classic", "Open"},
+        {"Seattle Mariners", "Safeco Field", 47943, "Seattle, Washington", "Grass", "American", 1999, "401 feet (122 m)", "Retro Modern", "Retractable"},
+        {"St. Louis Cardinals", "Busch Stadium", 45529, "St. Louis, Missouri", "Grass", "National", 2006, "400 feet (122 m)", "Retro Classic", "Open"},
+        {"Tampa Bay Rays", "Tropicana Field", 31042, "St. Petersburg, Florida", "AstroTurf GameDay Grass", "American", 1990, "404 feet (123 m)", "Multipurpose", "Fixed"},
+        {"Texas Rangers", "Globe Life Park in Arlington", 48114, "Arlington, Texas", "Grass", "American", 1994, "400 feet (122 m)", "Retro Classic", "Open"},
+        {"Toronto Blue Jays", "Rogers Centre", 49282, "Toronto, Ontario", "AstroTurf GameDay Grass 3D", "American", 1989, "400 feet (122 m)", "Multipurpose", "Retractable"},
+        {"Washington Nationals", "Nationals Park", 41339, "Washington, D.C.", "Grass", "National", 2008, "402 feet (123 m)", "Retro Modern", "Open"}
+    };
+
+    db.transaction(); // optional: faster
+
+    for (const TeamEntry& entry : entries) {
+        checkQuery.prepare(R"(
+            SELECT COUNT(*) FROM teams WHERE team_name = ?
+        )");
+        checkQuery.addBindValue(entry.teamName);
+
+        if (!checkQuery.exec()) {
+            qWarning() << "Check query failed for" << entry.teamName << ":" << checkQuery.lastError().text();
+            db.rollback();
+            return false;
+        }
+
+        if (checkQuery.next() && checkQuery.value(0).toInt() == 0) {
+            // Team does not exist, safe to insert
+            query.addBindValue(entry.teamName);
+            query.addBindValue(entry.stadiumName);
+            query.addBindValue(entry.seatingCapacity);
+            query.addBindValue(entry.location);
+            query.addBindValue(entry.playingSurface);
+            query.addBindValue(entry.league);
+            query.addBindValue(entry.dateOpened);
+            query.addBindValue(entry.distanceToCenterField);
+            query.addBindValue(entry.ballparkTypology);
+            query.addBindValue(entry.roofType);
+
+            if (!query.exec()) {
+                qWarning() << "Insert failed for" << entry.teamName << ":" << query.lastError().text();
+                db.rollback();
+                return false;
+            }
+        } else {
+            qDebug() << "Team already exists:" << entry.teamName;
+        }
+    }
+
+    return db.commit();
+}
+
+
+
+// db::db() {}
