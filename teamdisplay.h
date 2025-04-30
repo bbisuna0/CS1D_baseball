@@ -32,12 +32,12 @@ private slots:
             return;
         }
 
-        bool isNumeric;
-        distanceToCenterField->text().toInt(&isNumeric);
-        if (!isNumeric) {
-            QMessageBox::warning(this, "Validation Error", "Distance to center field must be numeric.");
-            return;
-        }
+        // bool isNumeric;
+        // distanceToCenterField->text().toInt(&isNumeric);
+        // if (!isNumeric) {
+        //     QMessageBox::warning(this, "Validation Error", "Distance to center field must be numeric.");
+        //     return;
+        // }
         accept();
     }
 

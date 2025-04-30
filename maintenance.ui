@@ -54,7 +54,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Maint 1</string>
+      <string>Map</string>
      </property>
     </widget>
    </item>
@@ -170,7 +170,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Maint 2</string>
+      <string>Show Souvenirs</string>
      </property>
     </widget>
    </item>
