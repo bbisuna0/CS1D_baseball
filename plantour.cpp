@@ -69,6 +69,28 @@ void plantour::on_pb_stadium_report_clicked()
     outputWidget->clear();
 
     // Run Dijkstra from "Oracle Park" and print to the QTextEdit
-    plan.getGraph()->run_dijkstra("Marlins Park", outputWidget);
+    plan.getGraph()->Dijkstra("Marlins Park", outputWidget);
+}
+
+
+void plantour::on_pb_maintenance_clicked()
+{
+    print_ptr  = new display_dfs(this);  // or display_graph_algorithms if renamed
+    print_ptr->show();
+
+    // Find the QTextEdit named "textEdit" inside the UI
+    QTextEdit* outputWidget = print_ptr->findChild<QTextEdit*>("textEdit");
+
+    // Safety check in case textEdit was not found
+    if (!outputWidget) {
+        qWarning("Could not find QTextEdit named 'textEdit' in display window.");
+        return;
+    }
+
+    // Clear any previous content before printing
+    outputWidget->clear();
+
+    // Run Dijkstra from "Oracle Park" and print to the QTextEdit
+    plan.getGraph()->mst("Marlins Park", outputWidget);
 }
 

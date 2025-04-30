@@ -30,6 +30,8 @@ private slots:
 
     void on_pb_stadium_report_clicked();
 
+    void on_pb_maintenance_clicked();
+
 private:
     Ui::plantour *ui;
     display_dfs *print_ptr; //for displaying dfs and bfs

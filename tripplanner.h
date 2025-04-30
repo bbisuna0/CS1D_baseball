@@ -3,6 +3,7 @@
 
 #include "graph.h"
 #include <string>
+#include <QTextEdit>
 
 class TripPlanner {
 private:
@@ -21,6 +22,8 @@ public:
     // Traversals
     void performDFS(const std::string& start_vertex, QTextEdit* output);
     void performBFS(const std::string& start_vertex, QTextEdit* output);
+    void performDijkstra(const std::string& start_vertex, QTextEdit* output);
+    void performMST(const std::string& start_vertex, QTextEdit* output);
 
     // Accessor
     Graph<std::string>* getGraph();
