@@ -55,7 +55,9 @@ private slots:
 
     void on_buttonBox_rejected();
 
-    void on_pushButton_clicked();
+    void on_pb_delete_clicked();
+
+    void on_pb_location_clicked();
 
 private:
     Ui::teamdisplay *ui;

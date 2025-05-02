@@ -2,8 +2,71 @@
 #include "main.h"
 #include "mainmenu.h"
 #include "utility.h"
-
 #include <QApplication>
+
+QString themeStyle = R"(
+    QWidget {
+        //background-color: #f0f0f0;
+        //color: #333333;
+        font-family: Segoe UI, sans-serif;
+        font-size: 10pt;
+    }
+
+    // QMainWindow {
+    //     background-color: #e8e8e8;
+    // }
+
+    // QPushButton {
+    //     background-color: #4a90e2;
+    //     color: white;
+    //     border: 1px solid #357ab7;
+    //     border-radius: 4px;
+    //     padding: 4px 8px;
+    // }
+
+    // QPushButton:hover {
+    //     background-color: #357ab7;
+    // }
+
+    // QPushButton:disabled {
+    //     background-color: #cccccc;
+    //     color: #666666;
+    //     border: 1px solid #aaaaaa;
+    // }
+
+    QLineEdit, QComboBox, QSpinBox {
+        background-color: white;
+        border: 1px solid #cccccc;
+        border-radius: 3px;
+        padding: 2px;
+    }
+
+    // QLineEdit:read-only,
+    // QComboBox[readonlyMode="true"],
+    // QSpinBox[readonlyMode="true"] {
+    //     // background-color: #f0f0f0;
+    //     // color: #777;
+    // background-color: #f5f5f5;
+    // color: #666;
+    // border: 1px solid #ccc;
+    // padding-left: 20px; /* room for icon */
+    // background-image: url(:/logos/delete.png);  /* must be in your resources */
+    // background-repeat: no-repeat;
+    // background-position: left center;
+    // }
+
+    QTableView {
+        background-color: white;
+        alternate-background-color: #f9f9f9;
+        gridline-color: #dddddd;
+    }
+
+    QHeaderView::section {
+        background-color: #d0d0d0;
+        padding: 4px;
+        border: 1px solid #bbbbbb;
+    }
+)";
 
 User myUser;
 QSqlDatabase db;
@@ -11,6 +74,8 @@ QSqlDatabase db;
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+
+    a.setStyleSheet(themeStyle);
 
     db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName(DBNAME);

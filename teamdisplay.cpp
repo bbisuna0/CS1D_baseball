@@ -3,6 +3,8 @@
 #include <QSqlTableModel>
 #include <QDataWidgetMapper>
 #include <QSqlRelationalDelegate>
+#include "ui_map.h"
+#include "map.h"
 
 void teamdisplay::onRecordChanged(int index)
 {
@@ -24,8 +26,14 @@ void teamdisplay::onRecordChanged(int index)
     int row = mapper->currentIndex();
     QModelIndex rindex = teamModel->index(row,0);
     bool markedDeletion = teamModel->isDirty(rindex);
-    if (markedDeletion)
-        qDebug() << "Marked Row";
+    if (markedDeletion) {
+        // ui->lb_markdelete->show();
+        ui->lb_markdelete->setVisible(true);
+    }
+    else {
+        //ui->lb_markdelete->hide();
+        ui->lb_markdelete->setVisible(false);
+    }
 
     // int teamId = teamModel->record(index).value("id").toInt();
 
@@ -41,7 +49,7 @@ teamdisplay::teamdisplay(QWidget *parent)
     , ui(new Ui::teamdisplay)
 {
     ui->setupUi(this);
-    this->setStyleSheet("background-color: white;");
+    //this->setStyleSheet("background-color: white;");
     // Apply color scheme
     // QPalette palette;
     // palette.setColor(QPalette::Window, QColor(251, 252, 254)); // background
@@ -54,6 +62,17 @@ teamdisplay::teamdisplay(QWidget *parent)
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     QFormLayout *formLayout = new QFormLayout;
     QVBoxLayout *groupBoxLayout = new QVBoxLayout(ui->teamBox);
+
+    //ui->lb_markdelete->hide();
+
+    if (!myUser.admin)
+    {
+        ui->pb_delete->setEnabled(false);
+        ui->pb_image->setEnabled(false);
+        ui->pb_location->setEnabled(false);
+        ui->pb_souvenir_add->setEnabled(false);
+        ui->pb_souvenir_delete->setEnabled(false);
+    }
 
     // Fields for MLB team information
     teamName = new QLineEdit(this);
@@ -226,15 +245,34 @@ void teamdisplay::on_buttonBox_rejected()
 }
 
 
-void teamdisplay::on_pushButton_clicked()
+void teamdisplay::on_pb_delete_clicked()
 {
     int row = mapper->currentIndex();
-    teamModel->removeRow(row);  // Marks the row for deletion only
     QModelIndex index = teamModel->index(row,0);
     bool markedDeletion = teamModel->isDirty(index);
-    if (markedDeletion)
-        qDebug() << "Marked Row";
-    //teamModel->revertRow(row);
 
+    if (markedDeletion) {
+        teamModel->revertRow(row);
+        //ui->lb_markdelete->hide();
+        // ui->lb_markdelete->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        // ui->lb_markdelete->setVisible(false);
+        ui->lb_markdelete->setVisible(false);
+        // ui->lb_markdelete->clear();
+    }
+    else {
+        teamModel->removeRow(row);  // Marks the row for deletion only
+        //ui->lb_markdelete->show();
+        // ui->lb_markdelete->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        ui->lb_markdelete->setVisible(true);
+    }
+}
+
+
+void teamdisplay::on_pb_location_clicked()
+{
+    int x = 500;
+    int y = 170;
+    map *mapWin = new map(false, x, y);
+    mapWin->show();
 }
 

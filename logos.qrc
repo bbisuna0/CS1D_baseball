@@ -54,5 +54,6 @@
         <file>logos/baseball-tours.png</file>
         <file>logos/system-maintenance.png</file>
         <file>logos/usa-map.png</file>
+        <file>logos/delete.png</file>
     </qresource>
 </RCC>
