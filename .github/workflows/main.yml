@@ -1,54 +1,71 @@
-name: Build Qt C++ Project
-
-on:
-  push:
-    branches: [ feature ]
-  pull_request:
-    branches: [ feature ]
+name: Build Qt CS1D C++ Project 2 Baseball
 
 jobs:
   build:
-    name: Build on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-
-    env:
-      BUILD_DIR: build
-
+    runs-on: windows-latest
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Check out repository
+        uses: actions/checkout@v4
 
-    - name: Install Qt
-      uses: jurplel/install-qt-action@v3
-      with:
-        version: 6.5.2
-        target: desktop
-        modules: qtbase qttools
-        install-deps: true
+      - name: Install Qt (Windows - MinGW)
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: "6.5.2"
+          host: windows
+          target: desktop
+          arch: win64_mingw81
+          archives: 'qttools qtsvg qtbase'
+          install-deps: true
 
-    - name: Install CMake and build tools (Linux)
-      if: runner.os == 'Linux'
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y cmake build-essential
+      - name: Install CMake (Windows/macOS)
+        uses: jwlawson/actions-setup-cmake@v1
 
-    - name: Install CMake (Windows/macOS)
-      if: runner.os != 'Linux'
-      uses: jwlawson/actions-setup-cmake@v1
+      - name: Install Doxygen
+        run: choco install doxygen.install -y
+        shell: powershell
 
-    - name: Configure project
-      run: cmake -S . -B ${{ env.BUILD_DIR }} -DCMAKE_PREFIX_PATH="${{ env.Qt6_DIR }}"
+      - name: Add Doxygen to PATH
+        run: |
+          echo "C:\Program Files\doxygen\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8
+        shell: powershell
 
-    - name: Build project
-      run: cmake --build ${{ env.BUILD_DIR }} --parallel
+      - name: Verify Doxygen Installation
+        run: doxygen --version
+        shell: cmd
 
-    - name: (Optional) Run tests
-      run: |
-        if [ -f "${{ env.BUILD_DIR }}/tests/my_tests" ]; then
-          ${{ env.BUILD_DIR }}/tests/my_tests
-        fi
-      shell: bash
+      - name: Configure project
+        run: cmake -S . -B ${{ env.BUILD_DIR }} -DCMAKE_PREFIX_PATH="${{ env.Qt6_DIR }}"
+
+      - name: Build project
+        run: cmake --build ${{ env.BUILD_DIR }} --parallel
+
+      - name: (Optional) Run tests
+        run: |
+          if [ -f "${{ env.BUILD_DIR }}/tests/my_tests" ]; then
+            ${{ env.BUILD_DIR }}/tests/my_tests
+          fi
+        shell: bash
+
+      - name: Generate Documentation with Doxygen
+        run: doxygen Doxyfile
+        shell: cmd
+
+      - name: Upload Documentation Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Doxygen-Docs
+          path: docs/html
+
+      - name: Create Windows Artifact
+        run: |
+          mkdir windows_build
+          copy build\release\college.exe windows_build\
+          7z a college-Windows.zip windows_build\*
+        shell: cmd
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: college-Windows
+          path: college-Windows.zip
+
+
