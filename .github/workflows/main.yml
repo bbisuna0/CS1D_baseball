@@ -1,0 +1,54 @@
+name: Build Qt C++ Project
+
+on:
+  push:
+    branches: [ feature ]
+  pull_request:
+    branches: [ feature ]
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    env:
+      BUILD_DIR: build
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: 6.5.2
+        target: desktop
+        modules: qtbase qttools
+        install-deps: true
+
+    - name: Install CMake and build tools (Linux)
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake build-essential
+
+    - name: Install CMake (Windows/macOS)
+      if: runner.os != 'Linux'
+      uses: jwlawson/actions-setup-cmake@v1
+
+    - name: Configure project
+      run: cmake -S . -B ${{ env.BUILD_DIR }} -DCMAKE_PREFIX_PATH="${{ env.Qt6_DIR }}"
+
+    - name: Build project
+      run: cmake --build ${{ env.BUILD_DIR }} --parallel
+
+    - name: (Optional) Run tests
+      run: |
+        if [ -f "${{ env.BUILD_DIR }}/tests/my_tests" ]; then
+          ${{ env.BUILD_DIR }}/tests/my_tests
+        fi
+      shell: bash
