@@ -16,10 +16,15 @@ jobs:
       - name: Install Qt (Windows - MinGW)
         uses: jurplel/install-qt-action@v3
         with:
-          version: "6.8.1"
-          host: windows
-          target: desktop
-          arch: win64_mingw81
+          aqtversion: '==3.1.*'
+          version: '6.8.2'
+          host: 'windows'
+          target: 'desktop'
+          arch: 'win64_mingw'
+          #version: "6.8.1"
+          #host: windows
+          #target: desktop
+          #arch: win64_mingw81
           archives: 'qttools qtsvg qtbase'
           install-deps: true
 
