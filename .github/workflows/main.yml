@@ -1,5 +1,11 @@
 name: Build Qt CS1D C++ Project 2 Baseball
 
+on:
+  push:
+    branches: [ feature ]
+  pull_request:
+    branches: [ feature ]
+
 jobs:
   build:
     runs-on: windows-latest
