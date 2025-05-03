@@ -108,14 +108,14 @@
     <widget class="QLabel" name="label_logo">
      <property name="minimumSize">
       <size>
-       <width>220</width>
-       <height>200</height>
+       <width>210</width>
+       <height>195</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>220</width>
-       <height>200</height>
+       <width>210</width>
+       <height>195</height>
       </size>
      </property>
      <property name="text">
