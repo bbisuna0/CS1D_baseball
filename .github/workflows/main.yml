@@ -9,6 +9,9 @@ on:
 jobs:
   build:
     runs-on: windows-latest
+    env:
+      BUILD_DIR: ${{ github.workspace }}\build
+
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -17,45 +20,44 @@ jobs:
         uses: jurplel/install-qt-action@v3
         with:
           aqtversion: '==3.1.*'
-          version: '6.8'
+          version: '6.6.2' # Use a known working version
           host: 'windows'
           target: 'desktop'
           arch: 'win64_mingw'
-          #version: "6.8.1"
-          #host: windows
-          #target: desktop
-          #arch: win64_mingw81
-          archives: 'qttools qtsvg qtbase'
+          archives: 'qtbase qttools qtsvg'
           install-deps: true
 
-      - name: Install CMake (Windows/macOS)
+      - name: Install CMake
         uses: jwlawson/actions-setup-cmake@v1
+
+      - name: Add MinGW to PATH
+        run: echo "${{ env.Qt6_DIR }}\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8
+        shell: powershell
 
       - name: Install Doxygen
         run: choco install doxygen.install -y
         shell: powershell
 
       - name: Add Doxygen to PATH
-        run: |
-          echo "C:\Program Files\doxygen\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8
+        run: echo "C:\Program Files\doxygen\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8
         shell: powershell
 
       - name: Verify Doxygen Installation
         run: doxygen --version
         shell: cmd
 
-      - name: Configure project
-        run: cmake -S . -B ${{ env.BUILD_DIR }} -DCMAKE_PREFIX_PATH="${{ env.Qt6_DIR }}"
+      - name: Configure project with MinGW Makefiles
+        run: cmake -S . -B "${{ env.BUILD_DIR }}" -G "MinGW Makefiles" -DCMAKE_PREFIX_PATH="${{ env.Qt6_DIR }}"
 
       - name: Build project
-        run: cmake --build ${{ env.BUILD_DIR }} --parallel
+        run: cmake --build "${{ env.BUILD_DIR }}" --parallel
 
       - name: (Optional) Run tests
         run: |
-          if [ -f "${{ env.BUILD_DIR }}/tests/my_tests" ]; then
-            ${{ env.BUILD_DIR }}/tests/my_tests
-          fi
-        shell: bash
+          if exist "${{ env.BUILD_DIR }}\tests\my_tests.exe" (
+            "${{ env.BUILD_DIR }}\tests\my_tests.exe"
+          )
+        shell: cmd
 
       - name: Generate Documentation with Doxygen
         run: doxygen Doxyfile
@@ -74,9 +76,8 @@ jobs:
           7z a college-Windows.zip windows_build\*
         shell: cmd
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload Executable Zip
+        uses: actions/upload-artifact@v4
         with:
           name: college-Windows
           path: college-Windows.zip
-
-
