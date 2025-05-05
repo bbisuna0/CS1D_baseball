@@ -20,6 +20,8 @@ private slots:
 
     void on_pb_team_details_clicked();
 
+    void on_pb_team_report_clicked();
+
 private:
     Ui::plantour *ui;
 };

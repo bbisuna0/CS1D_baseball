@@ -1,6 +1,7 @@
 #include "plantour.h"
 #include "ui_plantour.h"
 #include "teamdisplay.h"
+#include "utility.h"
 
 plantour::plantour(QWidget *parent)
     : QWidget(parent)
@@ -24,5 +25,12 @@ void plantour::on_pb_team_details_clicked()
 {
     teamdisplay *teamWin = new teamdisplay();
     teamWin->show();
+}
+
+
+void plantour::on_pb_team_report_clicked()
+{
+    StadiumSelectionDialog *stadiumDialog = new StadiumSelectionDialog();
+    stadiumDialog->show();
 }
 

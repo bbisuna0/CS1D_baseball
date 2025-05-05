@@ -59,6 +59,10 @@ private slots:
 
     void on_pb_location_clicked();
 
+    void on_pb_souvenir_delete_clicked();
+
+    void on_pb_souvenir_add_clicked();
+
 private:
     Ui::teamdisplay *ui;
     QLineEdit *teamName;

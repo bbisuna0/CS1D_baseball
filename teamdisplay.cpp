@@ -5,6 +5,7 @@
 #include <QSqlRelationalDelegate>
 #include "ui_map.h"
 #include "map.h"
+#include <QSqlDatabase>
 
 void teamdisplay::onRecordChanged(int index)
 {
@@ -274,5 +275,35 @@ void teamdisplay::on_pb_location_clicked()
     int y = 170;
     map *mapWin = new map(false, x, y);
     mapWin->show();
+}
+
+
+void teamdisplay::on_pb_souvenir_delete_clicked()
+{
+    QModelIndex currentIndex = ui->tv_souvenirs->currentIndex();
+    if (currentIndex.isValid()) {
+        souvenirModel->removeRow(currentIndex.row());
+    }
+}
+
+
+void teamdisplay::on_pb_souvenir_add_clicked()
+{
+    int row = souvenirModel->rowCount();
+    souvenirModel->insertRow(row);
+
+    // Fill in team_name from the currently displayed team
+    QString currentTeam = teamName->text();
+    QModelIndex teamNameIndex = souvenirModel->index(row, souvenirModel->fieldIndex("team_name"));
+    souvenirModel->setData(teamNameIndex, currentTeam);
+
+    // Optionally generate and set a new ID if not auto-incremented (optional)
+    // int nextId = generateNextSouvenirId(); // implement if needed
+    // souvenirModel->setData(souvenirModel->index(row, souvenirModel->fieldIndex("id")), nextId);
+
+    // Focus and begin editing item_name
+    QModelIndex itemNameIndex = souvenirModel->index(row, souvenirModel->fieldIndex("item_name"));
+    ui->tv_souvenirs->setCurrentIndex(itemNameIndex);
+    ui->tv_souvenirs->edit(itemNameIndex);
 }
 

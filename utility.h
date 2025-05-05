@@ -215,4 +215,109 @@ public:
         return QStyledItemDelegate::sizeHint(option, index);
     }
 };
+
+
+#include <QDialog>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QListWidget>
+#include <QPushButton>
+#include <QSqlTableModel>
+#include <QSqlRecord>
+#include <QSqlDatabase>
+#include <QSet>
+
+class StadiumSelectionDialog : public QDialog {
+public:
+    StadiumSelectionDialog(QWidget* parent = nullptr) : QDialog(parent) {
+        setWindowTitle("Select Stadiums to Visit");
+
+        QVBoxLayout* mainLayout = new QVBoxLayout(this);
+
+        QHBoxLayout* listLayout = new QHBoxLayout();
+
+        availableList = new QListWidget();
+        selectedList = new QListWidget();
+
+        listLayout->addWidget(availableList);
+        listLayout->addWidget(selectedList);
+
+        mainLayout->addLayout(listLayout);
+
+        QHBoxLayout* buttonLayout = new QHBoxLayout();
+
+        addButton = new QPushButton("Add");
+        removeButton = new QPushButton("Remove");
+        okButton = new QPushButton("OK");
+        cancelButton = new QPushButton("Cancel");
+
+        buttonLayout->addWidget(addButton);
+        buttonLayout->addWidget(removeButton);
+        buttonLayout->addStretch();
+        buttonLayout->addWidget(okButton);
+        buttonLayout->addWidget(cancelButton);
+
+        mainLayout->addLayout(buttonLayout);
+
+        connect(addButton, &QPushButton::clicked, this, &StadiumSelectionDialog::addSelected);
+        connect(removeButton, &QPushButton::clicked, this, &StadiumSelectionDialog::removeSelected);
+        connect(okButton, &QPushButton::clicked, this, &StadiumSelectionDialog::accept);
+        connect(cancelButton, &QPushButton::clicked, this, &StadiumSelectionDialog::reject);
+
+        populateAvailableListFromModel();
+    }
+
+    QStringList getSelectedStadiums() const {
+        QStringList selected;
+        for (int i = 0; i < selectedList->count(); ++i) {
+            selected.append(selectedList->item(i)->text());
+        }
+        return selected;
+    }
+
+private:
+    void populateAvailableListFromModel() {
+        QSqlTableModel model;
+        model.setTable("stadium_distances");
+        model.select();
+
+        QSet<QString> uniqueStadiums;
+        for (int i = 0; i < model.rowCount(); ++i) {
+            QSqlRecord record = model.record(i);
+            QString origin = record.value("origin").toString();
+            QString destination = record.value("destination").toString();
+
+            uniqueStadiums.insert(origin);
+            uniqueStadiums.insert(destination);
+        }
+
+        for (const QString& stadium : uniqueStadiums) {
+            availableList->addItem(stadium);
+        }
+    }
+
+    void addSelected() {
+        QListWidgetItem* item = availableList->currentItem();
+        if (item) {
+            selectedList->addItem(item->clone());
+            delete availableList->takeItem(availableList->currentRow());
+        }
+    }
+
+    void removeSelected() {
+        QListWidgetItem* item = selectedList->currentItem();
+        if (item) {
+            availableList->addItem(item->clone());
+            delete selectedList->takeItem(selectedList->currentRow());
+        }
+    }
+
+    QListWidget* availableList;
+    QListWidget* selectedList;
+    QPushButton* addButton;
+    QPushButton* removeButton;
+    QPushButton* okButton;
+    QPushButton* cancelButton;
+};
+
 #endif // UTILITY_H
