@@ -1,5 +1,5 @@
-#ifndef MAP_H
-#define MAP_H
+#ifndef MAPDISP_H
+#define MAPDISP_H
 
 #include <QWidget>
 #include <QPainter>
@@ -149,16 +149,16 @@ private:
 
 
 namespace Ui {
-class map;
+class mapdisp;
 }
 
-class map : public QWidget
+class mapdisp : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit map(bool disp = true, const int &x = 570, const int &y = 270 , QWidget *parent = nullptr);
-    ~map();
+    explicit mapdisp(bool disp = true, const int &x = 570, const int &y = 270 , QWidget *parent = nullptr);
+    ~mapdisp();
 
 private slots:
     void on_pb_exit_clicked();
@@ -174,9 +174,9 @@ private slots:
     void on_pb_all_clicked();
 
 private:
-    Ui::map *ui;
+    Ui::mapdisp *ui;
     QVector<DiamondWidget*> diamonds;
     QVector<ConnectionLine*> lines;
 };
 
-#endif // MAP_H
+#endif // MAPDISP_H

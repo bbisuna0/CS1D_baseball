@@ -28,7 +28,7 @@ bool insertStadiumDistances(QSqlDatabase& db) {
         {"Chase Field", "Coors Field", 580},
         {"Chase Field", "Globe Life Park in Arlington", 870},
         {"Chase Field", "Minute Maid Park", 1115},
-        {"Chase Field", "Oakland–Alameda County Coliseum", 650},
+        {"Chase Field", "Oakland-Alameda County Coliseum", 650},
         {"Chase Field", "Petco Park", 300},
         {"Citi Field", "Fenway Park", 195},
         {"Citi Field", "Yankee Stadium", 50},
@@ -43,7 +43,7 @@ bool insertStadiumDistances(QSqlDatabase& db) {
         {"Coors Field", "Petco Park", 830},
         {"Dodger Stadium", "Angel Stadium", 50},
         {"Dodger Stadium", "Target Field", 1500},
-        {"Dodger Stadium", "Oakland–Alameda County Coliseum", 340},
+        {"Dodger Stadium", "Oakland-Alameda County Coliseum", 340},
         {"Fenway Park", "Citi Field", 195},
         {"Fenway Park", "Marlins Park", 1255},
         {"Fenway Park", "Rogers Centre", 430},
@@ -82,11 +82,11 @@ bool insertStadiumDistances(QSqlDatabase& db) {
         {"Nationals Park", "PNC Park", 195},
         {"Nationals Park", "SunTrust Park", 560},
         {"Nationals Park", "Marlins Park", 930},
-        {"Oakland–Alameda County Coliseum", "Oracle Park", 50},
-        {"Oakland–Alameda County Coliseum", "Dodger Stadium", 340},
-        {"Oakland–Alameda County Coliseum", "Chase Field", 650},
+        {"Oakland-Alameda County Coliseum", "Oracle Park", 50},
+        {"Oakland-Alameda County Coliseum", "Dodger Stadium", 340},
+        {"Oakland-Alameda County Coliseum", "Chase Field", 650},
         {"Oracle Park", "Safeco Field", 680},
-        {"Oracle Park", "Oakland–Alameda County Coliseum", 50},
+        {"Oracle Park", "Oakland-Alameda County Coliseum", 50},
         {"Oriole Park at Camden Yards", "Nationals Park", 50},
         {"Oriole Park at Camden Yards", "Citizens Bank Park", 90},
         {"Petco Park", "Coors Field", 830},
@@ -307,7 +307,7 @@ bool insertTeamsData(QSqlDatabase& db) {
         {"Minnesota Twins", "Target Field", 38885, "Minneapolis, Minnesota", "Grass", "American", 2010, "404 feet (123 m)", "Retro Modern", "Open"},
         {"New York Mets", "Citi Field", 41922, "Queens, New York", "Grass", "National", 2009, "408 feet (124 m)", "Retro Classic", "Open"},
         {"New York Yankees", "Yankee Stadium", 47422, "Bronx, New York", "Grass", "American", 2009, "408 feet (124 m)", "Retro Classic", "Open"},
-        {"Oakland Athletics", "Oakland–Alameda County Coliseum", 47170, "Oakland, California", "Grass", "American", 1966, "400 feet (122 m)", "Multipurpose", "Open"},
+        {"Oakland Athletics", "Oakland-Alameda County Coliseum", 47170, "Oakland, California", "Grass", "American", 1966, "400 feet (122 m)", "Multipurpose", "Open"},
         {"Philadelphia Phillies", "Citizens Bank Park", 43651, "Philadelphia, Pennsylvania", "Grass", "National", 2004, "401 feet (122 m)", "Retro Classic", "Open"},
         {"Pittsburgh Pirates", "PNC Park", 38362, "Pittsburgh, Pennsylvania", "Grass", "National", 2001, "399 feet (122 m)", "Retro Classic", "Open"},
         {"San Diego Padres", "Petco Park", 40209, "San Diego, California", "Grass", "National", 2004, "396 feet (121 m)", "Retro Modern", "Open"},
@@ -494,7 +494,7 @@ bool addStadiumDistances(QSqlDatabase& db) {
 
 
     QList<DistanceEntry> entries = {
-        {"Las Vegas Stadium", "Oakland–Alameda County Coliseum", 325},
+        {"Las Vegas Stadium", "Oakland-Alameda County Coliseum", 325},
         {"Las Vegas Stadium", "Dodger Stadium", 300},
         {"Las Vegas Stadium", "Chase Field", 250}
     };

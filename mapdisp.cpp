@@ -1,5 +1,5 @@
-#include "map.h"
-#include "ui_map.h"
+#include "mapdisp.h"
+#include "ui_mapdisp.h"
 #include <QTimer>
 
 ConnectionLine* drawLine(QWidget *container, DiamondWidget *from, DiamondWidget *to, const QString &modeStr) {
@@ -21,9 +21,9 @@ ConnectionLine* drawLine(QWidget *container, DiamondWidget *from, DiamondWidget 
 
 
 
-map::map(bool disp, const int& x, const int& y, QWidget *parent)
+mapdisp::mapdisp(bool disp, const int& x, const int& y, QWidget *parent)
     : QWidget(parent)
-    , ui(new Ui::map)
+    , ui(new Ui::mapdisp)
 {
     ui->setupUi(this);
     if (disp) {
@@ -40,18 +40,18 @@ map::map(bool disp, const int& x, const int& y, QWidget *parent)
     }
 }
 
-map::~map()
+mapdisp::~mapdisp()
 {
     delete ui;
 }
 
-void map::on_pb_exit_clicked()
+void mapdisp::on_pb_exit_clicked()
 {
     close();
 }
 
 
-void map::on_pb_route_clicked()
+void mapdisp::on_pb_route_clicked()
 {
     for (int i = 0; i < 10; ++i) {
         auto *diamond = new DiamondWidget(QString("Team %1").arg(i + 1), ui->label);
@@ -70,7 +70,7 @@ void map::on_pb_route_clicked()
 }
 
 
-void map::on_pb_animate_clicked()
+void mapdisp::on_pb_animate_clicked()
 {
     ConnectionLine *lineA = drawLine(ui->label, diamonds[0], diamonds[1], "blink");
     QTimer::singleShot(500, this, SLOT(on_pb_animate_clicked()));
@@ -90,19 +90,19 @@ void map::on_pb_animate_clicked()
 }
 
 
-void map::on_pb_cancel_clicked()
+void mapdisp::on_pb_cancel_clicked()
 {
     close();
 }
 
 
-void map::on_pb_save_clicked()
+void mapdisp::on_pb_save_clicked()
 {
     close();
 }
 
 
-void map::on_pb_all_clicked()
+void mapdisp::on_pb_all_clicked()
 {
     QVector<QPair<QWidget*, QWidget*>> pendingLines = {
         {diamonds[0], diamonds[1]},

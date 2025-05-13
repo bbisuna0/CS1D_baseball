@@ -3,8 +3,8 @@
 #include <QSqlTableModel>
 #include <QDataWidgetMapper>
 #include <QSqlRelationalDelegate>
-#include "ui_map.h"
-#include "map.h"
+#include "ui_mapdisp.h"
+#include "mapdisp.h"
 #include <QSqlDatabase>
 
 void teamdisplay::onRecordChanged(int index)
@@ -273,8 +273,8 @@ void teamdisplay::on_pb_location_clicked()
 {
     int x = 500;
     int y = 170;
-    map *mapWin = new map(false, x, y);
-    mapWin->show();
+    //map *mapWin = new map(false, x, y);
+    //mapWin->show();
 }
 
 

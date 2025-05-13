@@ -1,8 +1,8 @@
 #include "maintenance.h"
 #include "ui_maintenance.h"
 #include "db.h"
-#include "map.h"
-#include "ui_map.h"
+#include "mapdisp.h"
+#include "ui_mapdisp.h"
 
 maintenance::maintenance(QWidget *parent)
     : QWidget(parent)
@@ -58,7 +58,7 @@ void maintenance::on_pb_full_reset_clicked()
 
 void maintenance::on_pb_res1_clicked()
 {
-    map *mapWin = new map();
+    mapdisp *mapWin = new mapdisp();
     mapWin->show();
 }
 

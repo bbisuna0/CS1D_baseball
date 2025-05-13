@@ -6,6 +6,7 @@
 #include <QStandardItemModel>
 #include <QSortFilterProxyModel>
 #include "db.h"
+#include <QRegularExpression>
 
 namespace Ui {
 class tripdisplay;
@@ -59,9 +60,35 @@ public slots:
      */
     void filterTable(QString filter) {
         QString filterString = filter;
-        QRegExp regex(QRegExp::escape(filterString), Qt::CaseSensitive, QRegExp::FixedString);
+        QString pattern = QRegularExpression::escape(filterString);
+        QRegularExpression regex(pattern);
+        //QRegExp regex(QRegExp::escape(filterString), Qt::CaseSensitive, QRegExp::FixedString);
         proxyModel->setFilterKeyColumn(0); // Filter by column 0
-        proxyModel->setFilterRegExp(regex);
+        //proxyModel->setFilterRegExp(regex);
+        regex.setPatternOptions(QRegularExpression::NoPatternOption); // Case-sensitive
+        proxyModel->setFilterRegularExpression(regex);
+    }
+
+    /**
+ * @brief Checks if a given college name is present in the model.
+ * @param model The QStandardItemModel containing the college data.
+ * @param searchValue The college name to search for.
+ * @return True if the college is found, otherwise false.
+ */
+    bool isCollegeMatch(QStandardItemModel* model, const QString& searchValue) {
+        if (!model) return false;
+
+        for (int row = 0; row < model->rowCount(); ++row) {
+            QStandardItem* startItem = model->item(row, 0); // Column 0: collegeStart
+            QStandardItem* endItem = model->item(row, 1);   // Column 1: collegeEnd
+
+            if (startItem && startItem->text() == searchValue) {
+                return true; // Match found
+            } else if (endItem && endItem->text() == searchValue) {
+                return true; // Match found
+            }
+        }
+        return false; // No match found
     }
 
 private:

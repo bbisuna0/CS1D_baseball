@@ -42,7 +42,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         maintenance.ui
         maintenance.h
         maintenance.cpp
-        map.h map.cpp map.ui
+        mapdisp.h mapdisp.cpp mapdisp.ui
         tripdisplay.cpp tripdisplay.h tripdisplay.ui
         #purchasesouvenirs.cpp purchasesouvenirs.h purchasesouvenirs.ui
         #mergedtableview.h

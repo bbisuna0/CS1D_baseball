@@ -28,6 +28,7 @@
 #include <set>
 #include <QLabel>
 #include <QSqlTableModel>
+#include "db.h"
 
 
 // Function declarations
@@ -323,4 +324,144 @@ private:
     QPushButton* cancelButton;
 };
 
+#include <iostream>
+#include <vector>
+#include <string>
+#include <map>
+#include <algorithm>
+#include <queue>
+#include <functional>
+
+using namespace std;
+
+class GraphMST {
+private:
+    vector<string> vertices;
+    map<string, int> vertexIndex;
+    vector<vector<int>> adjMatrix;
+    vector<TripEntry> trip;
+    int total_cost;
+
+public:
+
+    int totalCost() {
+        return total_cost;
+    }
+
+    std::vector<TripEntry> getTrips() {
+        return trip;
+    }
+
+
+    GraphMST(const vector<string>& nodes) {
+        vertices = nodes;
+        int n = nodes.size();
+        adjMatrix.resize(n, vector<int>(n, -1));
+        for (int i = 0; i < n; i++) {
+            vertexIndex[nodes[i]] = i;
+        }
+    }
+
+    void addEdge(const string& from, const string& to, int cost) {
+        int u = vertexIndex[from];
+        int v = vertexIndex[to];
+        adjMatrix[u][v] = cost;
+        adjMatrix[v][u] = cost;
+    }
+
+    void computeKruskalMST() {
+        int n = vertices.size();
+        vector<tuple<int, int, int>> edges;
+
+        // Collect all undirected edges
+        for (int u = 0; u < n; ++u) {
+            for (int v = u + 1; v < n; ++v) {
+                if (adjMatrix[u][v] != -1) {
+                    edges.emplace_back(adjMatrix[u][v], u, v);
+                }
+            }
+        }
+
+        // Sort by weight
+        sort(edges.begin(), edges.end());
+
+        // Union-Find structure
+        vector<int> parent(n), rank(n, 0);
+        for (int i = 0; i < n; ++i) parent[i] = i;
+
+        function<int(int)> find = [&](int u) {
+            if (u != parent[u])
+                parent[u] = find(parent[u]);
+            return parent[u];
+        };
+
+        auto unite = [&](int u, int v) {
+            u = find(u);
+            v = find(v);
+            if (u == v) return false;
+            if (rank[u] < rank[v]) parent[u] = v;
+            else if (rank[u] > rank[v]) parent[v] = u;
+            else {
+                parent[v] = u;
+                rank[u]++;
+            }
+            return true;
+        };
+
+        int totalCost = 0;
+        //cout << "Kruskal's MST:\n";
+        for (auto& [cost, u, v] : edges) {
+            if (unite(u, v)) {
+                cout << vertices[u] << " - " << vertices[v] << " (" << cost << " miles)\n";
+                TripEntry trip_detail;
+                trip_detail.origin = QString::fromStdString(vertices[u]);
+                trip_detail.destination = QString::fromStdString(vertices[v]);
+                trip_detail.distance = cost;
+                trip_detail.type = "forward";
+                trip.push_back(trip_detail);
+                totalCost += cost;
+            }
+        }
+        total_cost = totalCost;
+        //cout << "Total Mileage of MST: " << totalCost << " miles\n";
+    }
+
+    void computePrimMST() {
+        int n = vertices.size();
+        vector<int> key(n, INT_MAX);
+        vector<int> parent(n, -1);
+        vector<bool> inMST(n, false);
+        key[0] = 0;
+
+        using pii = pair<int, int>;
+        priority_queue<pii, vector<pii>, greater<>> pq;
+        pq.push({0, 0}); // (key, vertex)
+
+        while (!pq.empty()) {
+            int u = pq.top().second; pq.pop();
+            if (inMST[u]) continue;
+            inMST[u] = true;
+
+            for (int v = 0; v < n; ++v) {
+                if (adjMatrix[u][v] != -1 && !inMST[v] && adjMatrix[u][v] < key[v]) {
+                    key[v] = adjMatrix[u][v];
+                    pq.push({key[v], v});
+                    parent[v] = u;
+                }
+            }
+        }
+
+        int totalCost = 0;
+        cout << "Prim's MST:\n";
+        for (int v = 1; v < n; ++v) {
+            if (parent[v] != -1) {
+                cout << vertices[parent[v]] << " - " << vertices[v]
+                     << " (" << adjMatrix[parent[v]][v] << " miles)\n";
+                totalCost += adjMatrix[parent[v]][v];
+            }
+        }
+
+        cout << "Total Mileage of MST: " << totalCost << " miles\n";
+    }
+};
 #endif // UTILITY_H
