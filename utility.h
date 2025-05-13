@@ -749,4 +749,232 @@ public:
     }
 };
 
+#include <iostream>
+#include <map>
+#include <vector>
+#include <queue>
+#include <algorithm>
+#include <set>
+#include <climits>
+#include <stack>
+
+using namespace std;
+
+class GraphDijkstra {
+private:
+    vector<string> vertices;
+    map<string, int> vertexIndex;
+    vector<vector<int>> adjMatrix;
+    vector<TripEntry> trip;
+    int total_cost;
+
+public:
+    int totalCost() {
+        return total_cost;
+    }
+
+    std::vector<TripEntry> getTrips() {
+        return trip;
+    }
+
+    GraphDijkstra(const vector<string>& nodes) {
+        vertices = nodes;
+        int n = nodes.size();
+        adjMatrix.resize(n, vector<int>(n, -1));
+        for (int i = 0; i < n; i++) {
+            vertexIndex[nodes[i]] = i;
+        }
+    }
+
+    void addEdge(const string& from, const string& to, int cost) {
+        int u = vertexIndex[from];
+        int v = vertexIndex[to];
+        adjMatrix[u][v] = cost;
+        adjMatrix[v][u] = cost; // Remove this line if making graph directed
+    }
+
+    void dijkstra(const string& source) {
+        int n = vertices.size();
+        vector<int> dist(n, INT_MAX);
+        vector<int> prev(n, -1);
+        vector<bool> visited(n, false);
+
+        int srcIdx = vertexIndex[source];
+        dist[srcIdx] = 0;
+
+        // Min-priority queue: (distance, vertex index)
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>> pq;
+        pq.push({0, srcIdx});
+
+        while (!pq.empty()) {
+            auto [d, u] = pq.top(); pq.pop();
+
+            if (visited[u]) continue;
+            visited[u] = true;
+
+            for (int v = 0; v < n; ++v) {
+                if (adjMatrix[u][v] != -1 && !visited[v]) {
+                    int alt = dist[u] + adjMatrix[u][v];
+                    if (alt < dist[v]) {
+                        dist[v] = alt;
+                        prev[v] = u;
+                        pq.push({alt, v});
+                    }
+                }
+            }
+        }
+
+        // Output results
+        //cout << "Dijkstra’s Shortest Paths from " << source << ":\n";
+        TripEntry trip_detail;
+        trip_detail.origin = QString::fromStdString("Starting:");
+        trip_detail.destination = QString::fromStdString(source);
+        trip_detail.distance = 0;
+        trip_detail.type = "level";
+        trip.push_back(trip_detail);
+        for (int i = 0; i < n; ++i) {
+            if (i == srcIdx) continue;
+            //cout << "Path to " << vertices[i] << ": ";
+            TripEntry trip_detail;
+            trip_detail.type = "path";
+            string travelpath;
+
+            if (dist[i] == INT_MAX) {
+                //cout << "Unreachable\n";
+                trip_detail.destination = QString::fromStdString("Unreachable");
+                continue;
+            }
+
+            stack<string> path;
+            for (int at = i; at != -1; at = prev[at]) {
+                path.push(vertices[at]);
+            }
+
+            // if (!path.empty())
+            //     trip_detail.origin = QString::fromStdString(path.top());
+            while (!path.empty()) {
+                string dest = path.top();
+                travelpath += path.top();
+                path.pop();
+                if (!path.empty())
+                    travelpath += " -> ";
+                else
+                    trip_detail.origin = QString::fromStdString(dest);
+            }
+
+            //cout << " (Distance: " << dist[i] << " miles)\n";
+            trip_detail.distance = dist[i];
+            trip_detail.destination = QString::fromStdString(travelpath);
+            trip.push_back(trip_detail);
+        }
+    }
+
+    void dijkstraPath(int srcIdx, vector<int>& dist, vector<int>& prev) {
+        int n = vertices.size();
+        dist.assign(n, INT_MAX);
+        prev.assign(n, -1);
+        vector<bool> visited(n, false);
+
+        dist[srcIdx] = 0;
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>> pq;
+        pq.push({0, srcIdx});
+
+        while (!pq.empty()) {
+            auto [d, u] = pq.top(); pq.pop();
+            if (visited[u]) continue;
+            visited[u] = true;
+
+            for (int v = 0; v < n; ++v) {
+                if (adjMatrix[u][v] != -1 && !visited[v]) {
+                    int alt = dist[u] + adjMatrix[u][v];
+                    if (alt < dist[v]) {
+                        dist[v] = alt;
+                        prev[v] = u;
+                        pq.push({alt, v});
+                    }
+                }
+            }
+        }
+    }
+
+    void traverseAllFrom(const string& startCity) {
+        int totalDiscovery = 0;
+        int start = vertexIndex[startCity];
+        set<pair<int, int>> visitedEdges;
+        set<int> visitedNodes;
+        map<int, int> parent;
+
+        int current = start;
+        visitedNodes.insert(current);
+        parent[current] = -1;
+
+        cout << "Traversal Path from " << startCity << " to Visit All Cities:\n";
+
+        while (visitedNodes.size() < vertices.size()) {
+            vector<int> dist, prev;
+            dijkstraPath(current, dist, prev);
+
+            // Find closest unvisited city
+            int minDist = INT_MAX, nextCity = -1;
+            for (int i = 0; i < vertices.size(); ++i) {
+                if (!visitedNodes.count(i) && dist[i] < minDist) {
+                    minDist = dist[i];
+                    nextCity = i;
+                }
+            }
+
+            if (nextCity == -1) break;
+
+            // Build path from current to nextCity
+            vector<int> path;
+            for (int at = nextCity; at != -1; at = prev[at])
+                path.push_back(at);
+            reverse(path.begin(), path.end());
+
+            // Traverse the path and classify edges
+            for (size_t i = 0; i < path.size() - 1; ++i) {
+                int u = path[i], v = path[i + 1];
+                pair<int, int> edge1 = {u, v}, edge2 = {v, u};
+                bool alreadyVisited = visitedNodes.count(v);
+                bool edgeVisited = visitedEdges.count(edge1) || visitedEdges.count(edge2);
+
+                if (!edgeVisited) {
+                    if (!alreadyVisited) {
+                        // Discovery edge
+                        cout << "Discovery Edge: " << vertices[u] << " -> " << vertices[v]
+                             << " (" << adjMatrix[u][v] << " miles, Total Cost to "
+                             << vertices[v] << ": " << dist[nextCity] << " miles)\n";
+                        totalDiscovery += adjMatrix[u][v];
+                        parent[v] = u;
+                    } else {
+                        // Back or cross edge
+                        int p = u;
+                        bool isBack = false;
+                        while (p != -1) {
+                            if (p == v) {
+                                isBack = true;
+                                break;
+                            }
+                            p = parent[p];
+                        }
+                        string edgeType = isBack ? "Back Edge" : "Cross Edge";
+                        cout << edgeType << ": " << vertices[u] << " -> " << vertices[v]
+                             << " (" << adjMatrix[u][v] << " miles, Total Cost to "
+                             << vertices[v] << ": " << dist[nextCity] << " miles)\n";
+                    }
+                    visitedEdges.insert(edge1);
+                }
+            }
+
+            current = nextCity;
+            visitedNodes.insert(current);
+        }
+
+        cout << "Total Discovery Distance: " << totalDiscovery << " miles\n";
+        total_cost = totalDiscovery;
+    }
+
+
+};
+
 #endif // UTILITY_H
