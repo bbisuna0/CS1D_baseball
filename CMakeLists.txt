@@ -44,6 +44,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         maintenance.cpp
         mapdisp.h mapdisp.cpp mapdisp.ui
         tripdisplay.cpp tripdisplay.h tripdisplay.ui
+        teamselectdialog.h
         #purchasesouvenirs.cpp purchasesouvenirs.h purchasesouvenirs.ui
         #mergedtableview.h
         #souvenirdialog.cpp souvenirdialog.h

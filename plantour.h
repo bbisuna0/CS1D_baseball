@@ -28,6 +28,8 @@ private slots:
 
     void on_pushButton_2_clicked();
 
+    void on_pb_plan_vacation_clicked();
+
 private:
     Ui::plantour *ui;
 };

@@ -228,6 +228,105 @@ public:
 #include <QSqlDatabase>
 #include <QSet>
 
+class TeamOnlySelectionDialog : public QDialog {
+public:
+    TeamOnlySelectionDialog(QWidget* parent = nullptr) : QDialog(parent) {
+        setWindowTitle("Select Teams to Visit");
+
+        QVBoxLayout* mainLayout = new QVBoxLayout(this);
+
+        QHBoxLayout* listLayout = new QHBoxLayout();
+
+        availableList = new QListWidget();
+        selectedList = new QListWidget();
+
+        listLayout->addWidget(availableList);
+        listLayout->addWidget(selectedList);
+
+        mainLayout->addLayout(listLayout);
+
+        QHBoxLayout* buttonLayout = new QHBoxLayout();
+
+        addButton = new QPushButton("Add");
+        removeButton = new QPushButton("Remove");
+        okButton = new QPushButton("OK");
+        cancelButton = new QPushButton("Cancel");
+
+        buttonLayout->addWidget(addButton);
+        buttonLayout->addWidget(removeButton);
+        buttonLayout->addStretch();
+        buttonLayout->addWidget(okButton);
+        buttonLayout->addWidget(cancelButton);
+
+        mainLayout->addLayout(buttonLayout);
+
+        connect(addButton, &QPushButton::clicked, this, &TeamOnlySelectionDialog::addSelected);
+        connect(removeButton, &QPushButton::clicked, this, &TeamOnlySelectionDialog::removeSelected);
+        connect(okButton, &QPushButton::clicked, this, &TeamOnlySelectionDialog::accept);
+        connect(cancelButton, &QPushButton::clicked, this, &TeamOnlySelectionDialog::reject);
+
+        populateAvailableListFromModel();
+    }
+
+    QStringList getSelectedStadiums() const {
+        QStringList selected;
+        for (int i = 0; i < selectedList->count(); ++i) {
+            selected.append(selectedList->item(i)->text());
+        }
+        return selected;
+    }
+
+private:
+    void populateAvailableListFromModel() {
+        QSqlTableModel model;
+        model.setTable("teams");
+        model.select();
+
+        QSet<QString> uniqueStadiums;
+        for (int i = 0; i < model.rowCount(); ++i) {
+            QSqlRecord record = model.record(i);
+            // QString origin = record.value("origin").toString();
+            // QString destination = record.value("destination").toString();
+            QString origin = record.value("team_name").toString();
+            QString stadium_name = record.value("stadium_name").toString();
+
+            uniqueStadiums.insert(origin);
+            // uniqueStadiums.insert(destination);
+        }
+
+        for (const QString& stadium : uniqueStadiums) {
+            availableList->addItem(stadium);
+        }
+        availableList->sortItems();
+    }
+
+    void addSelected() {
+        QListWidgetItem* item = availableList->currentItem();
+        if (item) {
+            selectedList->addItem(item->clone());
+            delete availableList->takeItem(availableList->currentRow());
+        }
+        availableList->sortItems();
+    }
+
+    void removeSelected() {
+        QListWidgetItem* item = selectedList->currentItem();
+        if (item) {
+            availableList->addItem(item->clone());
+            delete selectedList->takeItem(selectedList->currentRow());
+        }
+        availableList->sortItems();
+    }
+
+    QListWidget* availableList;
+    QListWidget* selectedList;
+    QPushButton* addButton;
+    QPushButton* removeButton;
+    QPushButton* okButton;
+    QPushButton* cancelButton;
+};
+
+
 class StadiumSelectionDialog : public QDialog {
 public:
     StadiumSelectionDialog(QWidget* parent = nullptr) : QDialog(parent) {
@@ -323,6 +422,7 @@ private:
     QPushButton* okButton;
     QPushButton* cancelButton;
 };
+
 
 #include <iostream>
 #include <vector>
