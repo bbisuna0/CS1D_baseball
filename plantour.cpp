@@ -29,11 +29,14 @@ void plantour::on_pb_exit_clicked()
 void plantour::on_pb_team_details_clicked()
 {
     TeamSelectionDialog *teamDialog = new TeamSelectionDialog();
+    teamDialog->excludeTeam("Los Angeles Dodgers");
     if (teamDialog->exec() == QDialog::Accepted) {
         QStringList selectedTeams = teamDialog->getSelectedStadiums();
-
+        std::vector<std::string> stadiumstovisit;
+        stadiumstovisit.push_back("Dodger Stadium");
         for (const QString& team : selectedTeams) {
-            qDebug() << "Selected team:" << team;
+            //qDebug() << "Selected team:" << team;
+            stadiumstovisit.push_back(team.toStdString());
         }
         // teamdisplay *teamWin = new teamdisplay();
         // teamWin->show();
@@ -75,8 +78,10 @@ void plantour::on_pb_team_details_clicked()
             graph.addEdge(origin, destination, distance);
         }
 
-        graph.traverseAllFrom("Dodger Stadium");
-        graph.dijkstra("Dodger Stadium");
+        //graph.traverseAllFrom("Dodger Stadium");
+        //graph.dijkstra("Dodger Stadium");
+        graph.dijkstraOptimizedRoute(stadiumstovisit);
+
         //cout << "-----------------------------\n";
         //graph.computePrimMST();
         //     explicit tripdisplay(const std::vector<TripEntry>& data, float totalDistance,
@@ -86,7 +91,7 @@ void plantour::on_pb_team_details_clicked()
         }
         int total_distance = graph.totalCost();
 
-        tripdisplay *tripWin = new tripdisplay(trip, total_distance, false);
+        tripdisplay *tripWin = new tripdisplay(trip, total_distance, true);
         tripWin->show();
     }
 }

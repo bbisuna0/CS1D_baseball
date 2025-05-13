@@ -45,12 +45,11 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         mapdisp.h mapdisp.cpp mapdisp.ui
         tripdisplay.cpp tripdisplay.h tripdisplay.ui
         teamselectdialog.h
-        #purchasesouvenirs.cpp purchasesouvenirs.h purchasesouvenirs.ui
-        #mergedtableview.h
+        purchasesouvenirs.cpp purchasesouvenirs.h purchasesouvenirs.ui
+        mergedtableview.h
         #souvenirdialog.cpp souvenirdialog.h
-
-
     )
+
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET CS1D_baseball APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
 #                 ${CMAKE_CURRENT_SOURCE_DIR}/android)

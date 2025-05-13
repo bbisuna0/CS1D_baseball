@@ -1074,6 +1074,104 @@ public:
         total_cost = totalDiscovery;
     }
 
+    void dijkstraOptimizedRoute(const vector<string>& stadiums) {
+        int k = stadiums.size();
+        if (k < 2) return;
+
+        // Step 1: Build distance and path tables
+        vector<vector<int>> distMatrix(k, vector<int>(k, INT_MAX));
+        vector<vector<vector<int>>> pathMatrix(k, vector<vector<int>>(k));
+
+        for (int i = 0; i < k; ++i) {
+            int srcIdx = vertexIndex[stadiums[i]];
+            vector<int> dist(vertices.size(), INT_MAX);
+            vector<int> prev(vertices.size(), -1);
+            priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>> pq;
+            dist[srcIdx] = 0;
+            pq.push({0, srcIdx});
+
+            while (!pq.empty()) {
+                auto [d, u] = pq.top(); pq.pop();
+                for (int v = 0; v < vertices.size(); ++v) {
+                    if (adjMatrix[u][v] != -1) {
+                        int alt = dist[u] + adjMatrix[u][v];
+                        if (alt < dist[v]) {
+                            dist[v] = alt;
+                            prev[v] = u;
+                            pq.push({alt, v});
+                        }
+                    }
+                }
+            }
+
+            for (int j = 0; j < k; ++j) {
+                if (i == j) continue;
+                int destIdx = vertexIndex[stadiums[j]];
+                if (dist[destIdx] == INT_MAX) continue;
+
+                distMatrix[i][j] = dist[destIdx];
+                // Reconstruct path from i to j
+                vector<int> path;
+                for (int at = destIdx; at != -1; at = prev[at])
+                    path.push_back(at);
+                reverse(path.begin(), path.end());
+                pathMatrix[i][j] = path;
+            }
+        }
+
+        // Step 2: Try all permutations of stadium visits
+        vector<int> perm(k);
+        iota(perm.begin(), perm.end(), 0);
+        int bestCost = INT_MAX;
+        vector<int> bestPath;
+
+        do {
+            int cost = 0;
+            bool valid = true;
+            for (int i = 0; i < k - 1; ++i) {
+                int from = perm[i], to = perm[i + 1];
+                if (distMatrix[from][to] == INT_MAX) {
+                    valid = false;
+                    break;
+                }
+                cost += distMatrix[from][to];
+            }
+            if (valid && cost < bestCost) {
+                bestCost = cost;
+                bestPath = perm;
+            }
+        } while (next_permutation(perm.begin(), perm.end()));
+
+        // Step 3: Reconstruct trip path
+        trip.clear();
+        total_cost = 0;
+
+        for (int i = 0; i < bestPath.size() - 1; ++i) {
+            int from = bestPath[i], to = bestPath[i + 1];
+            auto& path = pathMatrix[from][to];
+            QString travelPath;
+            for (int j = 0; j < path.size(); ++j) {
+                travelPath += QString::fromStdString(vertices[path[j]]);
+                if (j < path.size() - 1) travelPath += " -> ";
+            }
+
+            TripEntry trip_entry;
+            trip_entry.origin = QString::fromStdString(stadiums[bestPath[i]]);
+            trip_entry.destination = travelPath;
+            trip_entry.distance = distMatrix[from][to];
+            trip_entry.type = "segment";
+            trip.push_back(trip_entry);
+
+            total_cost += distMatrix[from][to];
+
+            cout << "Optimized Path: " << travelPath.toStdString()
+                 << " (" << distMatrix[from][to] << " miles)\n";
+        }
+
+        cout << "Total Optimized Route Distance: " << total_cost << " miles\n";
+    }
+
+
 
 };
 

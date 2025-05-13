@@ -62,6 +62,17 @@ public:
         return selectedStadiums;
     }
 
+    // Removes a team from the available list based on team name
+    void excludeTeam(const QString& teamName) {
+        for (int i = 0; i < availableList->count(); ++i) {
+            QListWidgetItem* item = availableList->item(i);
+            if (item->text() == teamName) {
+                delete availableList->takeItem(i);
+                break;  // Stop after removing one match
+            }
+        }
+    }
+
 private:
     void populateAvailableListFromModel() {
         QSqlTableModel model;
@@ -102,6 +113,7 @@ private:
         }
         availableList->sortItems();
     }
+
 
     QListWidget* availableList;
     QListWidget* selectedList;

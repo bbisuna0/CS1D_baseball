@@ -99,7 +99,7 @@ void tripdisplay::on_saddlebackPB_clicked()
         }
     }
 
-    //purchasesouvenirs c(editData, this);
-    //c.exec();
+    purchasesouvenirs c(editData, this);
+    c.exec();
 }
 
