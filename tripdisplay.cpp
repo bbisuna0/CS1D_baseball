@@ -93,6 +93,7 @@ void tripdisplay::on_saddlebackPB_clicked()
         index = souvenir_data->index(row, 3); //price
         value = souvenir_data->data(index);
         editRow.price = value.toFloat();
+        editRow.quantity = 0;
         if (isCollegeMatch(model, editRow.team)){
             editData.push_back(editRow);
             qDebug() << editRow.team;

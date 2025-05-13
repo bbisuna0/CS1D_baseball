@@ -39,7 +39,7 @@
     </widget>
    </item>
    <item>
-    <widget class="MergedTableView" name="tableView"/>
+    <widget class="QTableView" name="tableView"/>
    </item>
    <item>
     <widget class="QPushButton" name="purchaseButton">
@@ -66,13 +66,6 @@
    </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>MergedTableView</class>
-   <extends>QTableView</extends>
-   <header>mergedtableview.h</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections>
   <connection>

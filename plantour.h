@@ -30,6 +30,8 @@ private slots:
 
     void on_pb_plan_vacation_clicked();
 
+    void on_pb_stadium_report_clicked();
+
 private:
     Ui::plantour *ui;
 };

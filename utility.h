@@ -1170,9 +1170,217 @@ public:
 
         cout << "Total Optimized Route Distance: " << total_cost << " miles\n";
     }
+};
+
+/**
+ * @class PurchaseSummaryDialog
+ * @brief Dialog for summarizing purchases.
+ */
+class PurchaseSummaryDialog : public QDialog {
+public:
+    /**
+     * @brief Constructs a PurchaseSummaryDialog.
+     * @param model The data model containing purchase information.
+     * @param parent Optional parent widget.
+     */
+    PurchaseSummaryDialog(QStandardItemModel* model, QWidget* parent = nullptr) : QDialog(parent) {
+        setWindowTitle("Purchase Summary");
+        resize(650, 400); // Increase dialog size to fit data
+
+        QVBoxLayout* mainLayout = new QVBoxLayout(this);
+
+        tableView = new QTableView(this);
+        tableView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        mainLayout->addWidget(tableView);
+
+        summaryModel = new QStandardItemModel(this);
+        summaryModel->setHorizontalHeaderLabels({"College", "Total Purchases ($)"});
+        tableView->setModel(summaryModel);
+
+        grandTotalLabel = new QLabel(this);
+        grandTotalLabel->setAlignment(Qt::AlignCenter);
+        grandTotalLabel->setStyleSheet("font-weight: bold; font-size: 14px;");
+        mainLayout->addWidget(grandTotalLabel);
+
+        calculateSummary(model);
+
+        // Set column widths
+        tableView->setColumnWidth(0, 400); // School column
+        tableView->setColumnWidth(1, 180); // Total Purchases column
+
+        // Connect itemChanged signal to update summary dynamically
+        connect(model, &QStandardItemModel::itemChanged, this, &PurchaseSummaryDialog::onItemChanged);
+    }
+
+private:
+    /// @brief Converts a string with a dollar sign to a float.
+    float stringToFloatDollar(const QString& str) {
+        QString modifiedStr = str.trimmed();
+        if (!modifiedStr.isEmpty() && modifiedStr[0] == '$') {
+            modifiedStr.remove(0, 1); // Remove dollar sign
+        }
+        bool ok;
+        float result = modifiedStr.toFloat(&ok);
+        return ok ? result : 0.0f; // Return 0.0 if conversion fails
+    }
+
+    /// @brief Calculates the total purchases per college.
+    void calculateSummary(QStandardItemModel* model) {
+        if (!model) return;
+
+        QMap<QString, float> schoolTotals;
+        float grandTotal = 0.0f;
+
+        QString currentSchool; // Keep track of the last valid college name
+
+        for (int row = 0; row < model->rowCount(); ++row) {
+            QStandardItem* schoolItem = model->item(row, 0);
+            QStandardItem* souvenirItem = model->item(row, 1);
+            QStandardItem* costItem = model->item(row, 2);
+            QStandardItem* quantityItem = model->item(row, 3);
+
+            if (!costItem || !quantityItem) continue; // Skip invalid rows
+
+            // If the college name exists, update our tracking variable
+            QString school = schoolItem ? schoolItem->text().trimmed() : "";
+            if (!school.isEmpty()) {
+                currentSchool = school; // Store the latest valid school name
+            }
+
+            // Skip invalid rows (must have a valid school & souvenir)
+            if (currentSchool.isEmpty() || !souvenirItem) continue;
+
+            float cost = stringToFloatDollar(costItem->text());
+
+            // Get latest quantity entered
+            bool ok;
+            int quantity = quantityItem->text().toInt(&ok);
+            if (!ok || quantity < 0) quantity = 0; // Prevent invalid/negative values
+
+            float totalPurchase = cost * quantity;
+            schoolTotals[currentSchool] += totalPurchase;
+            grandTotal += totalPurchase;
+        }
+
+        // Clear and repopulate summary table
+        summaryModel->clear();
+        summaryModel->setHorizontalHeaderLabels({"Team", "Total Purchases ($)"});
+
+        for (auto it = schoolTotals.constBegin(); it != schoolTotals.constEnd(); ++it) {
+            QList<QStandardItem*> rowItems;
+            rowItems.append(new QStandardItem(it.key())); // School name
+            rowItems.append(new QStandardItem(QString("$%1").arg(QString::number(it.value(), 'f', 2)))); // Total purchase
+            summaryModel->appendRow(rowItems);
+        }
+
+        // Display Grand Total
+        grandTotalLabel->setText(QString("Grand Total: $%1").arg(QString::number(grandTotal, 'f', 2)));
+    }
 
 
+    /// @brief Updates the purchase summary when an item changes.
+    void onItemChanged(QStandardItem* item) {
+        if (item->column() == 3) { // Only react to quantity changes
+            calculateSummary(item->model()); // Recalculate totals with updated data
+        }
+    }
 
+    QTableView* tableView;
+    QStandardItemModel* summaryModel;
+    QLabel* grandTotalLabel;
+};
+
+#include <iostream>
+#include <vector>
+#include <map>
+#include <set>
+#include <climits>
+
+using namespace std;
+
+class GraphGreedy {
+private:
+    vector<string> vertices;
+    map<string, int> vertexIndex;
+    vector<vector<int>> adjMatrix;
+    vector<TripEntry> trip;
+    int total_cost = 0;
+
+public:
+    GraphGreedy(const vector<string>& nodes) {
+        vertices = nodes;
+        int n = nodes.size();
+        adjMatrix.resize(n, vector<int>(n, -1));
+        for (int i = 0; i < n; i++) {
+            vertexIndex[nodes[i]] = i;
+        }
+    }
+
+    void addEdge(const string& from, const string& to, int cost) {
+        int u = vertexIndex[from];
+        int v = vertexIndex[to];
+        adjMatrix[u][v] = cost;
+        adjMatrix[v][u] = cost; // undirected
+    }
+
+    void greedyRouteThroughStadiums(const string& startStadium, const vector<string>& stadiumsToVisit) {
+        if (stadiumsToVisit.empty()) return;
+
+        trip.clear();
+        total_cost = 0;
+
+        // Add all stadiums to visit into a set
+        set<string> remaining(stadiumsToVisit.begin(), stadiumsToVisit.end());
+        remaining.insert(startStadium); // Ensure start is included
+        string current = startStadium;
+        remaining.erase(current);
+
+        //cout << "Greedy Route Starting from: " << current << "\n";
+
+        while (!remaining.empty()) {
+            int u = vertexIndex[current];
+            string nextStadium;
+            int shortest = INT_MAX;
+
+            for (const string& candidate : remaining) {
+                int v = vertexIndex[candidate];
+                int dist = adjMatrix[u][v];
+                if (dist != -1 && dist < shortest) {
+                    shortest = dist;
+                    nextStadium = candidate;
+                }
+            }
+
+            if (nextStadium.empty()) {
+                cout << "No reachable unvisited stadiums from " << current << ".\n";
+                break;
+            }
+
+            // Record the trip
+            TripEntry trip_entry;
+            trip_entry.origin = QString::fromStdString(current);
+            trip_entry.destination = QString::fromStdString(nextStadium);
+            trip_entry.distance = shortest;
+            trip_entry.type = "forward";
+            trip.push_back(trip_entry);
+
+            //cout << current << " -> " << nextStadium << " (" << shortest << " miles)\n";
+
+            total_cost += shortest;
+            current = nextStadium;
+            remaining.erase(current);
+        }
+
+        cout << "Total Greedy Distance: " << total_cost << " miles\n";
+    }
+
+    int getTotalCost() const {
+        return total_cost;
+    }
+
+    vector<TripEntry> getTripDetails() const {
+        return trip;
+    }
 };
 
 #endif // UTILITY_H

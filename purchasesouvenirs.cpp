@@ -3,6 +3,7 @@
 #include "mergedtableview.h"
 #include <QStandardItemModel>
 #include "utility.h"
+#include "db.h"
 
 purchasesouvenirs::purchasesouvenirs(QWidget *parent)
     : QDialog(parent)
@@ -19,28 +20,28 @@ purchasesouvenirs::purchasesouvenirs(const std::vector<SouvenirPurchase>& data, 
     ui->setupUi(this);
     model = new QStandardItemModel(this);
 
-    model->setHorizontalHeaderLabels({"College", "Souvenir", "Cost", "Quantity"});
+    model->setHorizontalHeaderLabels({"Team", "Souvenir", "Cost", "Quantity"});
 
     // Populate Table
     for (const auto& entry : data) {
         QList<QStandardItem*> rowItems;
 
         // College
-        rowItems.append(new QStandardItem(QString::fromStdString(entry.college)));
+        rowItems.append(new QStandardItem(entry.team));
 
         // Souvenir
-        rowItems.append(new QStandardItem(QString::fromStdString(entry.souvenir)));
+        rowItems.append(new QStandardItem(entry.souvenir));
 
         // Cost (converted to float)
-        rowItems.append(new QStandardItem(QString::fromStdString(entry.cost)));
+        rowItems.append(new QStandardItem(entry.price));
 
         // Quantity
-        QStandardItem* quantityItem = new QStandardItem(QString::number(entry.quantity));
+        QStandardItem* quantityItem = new QStandardItem(entry.quantity);
         quantityItem->setData(entry.quantity, Qt::UserRole); // Store the int value for data integrity
         rowItems.append(quantityItem);
 
-        qDebug() << QString::fromStdString(entry.college);
-        qDebug() << QString::fromStdString(entry.souvenir);
+/*        qDebug() << QString::fromStdString(entry.college);
+        qDebug() << QString::fromStdString(entry.souvenir)*/;
 
         model->appendRow(rowItems);
     }

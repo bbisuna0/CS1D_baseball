@@ -47,6 +47,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         teamselectdialog.h
         purchasesouvenirs.cpp purchasesouvenirs.h purchasesouvenirs.ui
         mergedtableview.h
+        mergedtableview.h
         #souvenirdialog.cpp souvenirdialog.h
     )
 
