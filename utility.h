@@ -612,4 +612,141 @@ public:
     }
 };
 
+
+#include <iostream>
+#include <map>
+#include <vector>
+#include <queue>
+#include <algorithm>
+#include <set>
+#include <tuple>
+
+using namespace std;
+
+class GraphBFS {
+private:
+    vector<string> vertices;
+    map<string, int> vertexIndex;
+    vector<vector<int>> adjMatrix;
+    set<pair<string, string>> printed;
+    int totalDiscoveryDistance = 0;
+    vector<TripEntry> trip;
+    int total_cost;
+
+public:
+    int totalCost() {
+        return total_cost;
+    }
+
+    std::vector<TripEntry> getTrips() {
+        return trip;
+    }
+
+    GraphBFS(const vector<string>& nodes) {
+        vertices = nodes;
+        int n = nodes.size();
+        adjMatrix.resize(n, vector<int>(n, -1));
+        for (int i = 0; i < n; i++) {
+            vertexIndex[nodes[i]] = i;
+        }
+    }
+
+    void addEdge(const string& from, const string& to, int cost) {
+        int u = vertexIndex[from];
+        int v = vertexIndex[to];
+        adjMatrix[u][v] = cost; // directed only
+    }
+
+    void bfs(const string& start, bool discovery_only = false) {
+        set<string> visited;
+        queue<string> q;
+        printed.clear();
+        totalDiscoveryDistance = 0;
+
+        visited.insert(start);
+        q.push(start);
+        //cout << "BFS Traversal (from Chicago):\n";
+        //cout << "Level 0: " << start << "\n";
+        TripEntry trip_detail;
+        trip_detail.origin = QString::fromStdString("Level");
+        trip_detail.destination = QString::number(0);
+        trip_detail.distance = 0;
+        trip_detail.type = "level";
+        trip.push_back(trip_detail);
+
+        int level = 1;
+
+        while (!q.empty()) {
+            int levelSize = q.size();
+            vector<string> nextLevel;
+
+            for (int i = 0; i < levelSize; ++i) {
+                string curr = q.front();
+                q.pop();
+
+                int u = vertexIndex[curr];
+
+                vector<pair<string, int>> neighbors;
+                for (int v = 0; v < vertices.size(); ++v) {
+                    if (adjMatrix[u][v] != -1) {
+                        neighbors.emplace_back(vertices[v], adjMatrix[u][v]);
+                    }
+                }
+
+                sort(neighbors.begin(), neighbors.end(), [](auto& a, auto& b) {
+                    return a.second < b.second;
+                });
+
+                for (auto& [neighbor, cost] : neighbors) {
+                    if (!visited.count(neighbor)) {
+                        visited.insert(neighbor);
+                        q.push(neighbor);
+                        nextLevel.push_back(neighbor);
+                        if (!printed.count({curr, neighbor})) {
+                            //cout << "Discovery Edge: " << curr << " -> " << neighbor << "\n";
+                            TripEntry trip_detail;
+                            trip_detail.origin = QString::fromStdString(curr);
+                            trip_detail.destination = QString::fromStdString(neighbor);
+                            trip_detail.distance = cost;
+                            trip_detail.type = "discovery";
+                            trip.push_back(trip_detail);
+                            totalDiscoveryDistance += cost;
+                            printed.insert({curr, neighbor});
+                        }
+                    } else {
+                        if (!printed.count({curr, neighbor})) {
+                            if (!discovery_only)
+                                //cout << "Cross Edge: " << curr << " -> " << neighbor << "\n";
+                            {
+                                TripEntry trip_detail;
+                                trip_detail.origin = QString::fromStdString(curr);
+                                trip_detail.destination = QString::fromStdString(neighbor);
+                                trip_detail.distance = cost;
+                                trip_detail.type = "cross";
+                                trip.push_back(trip_detail);
+                            }
+                            printed.insert({curr, neighbor});
+                        }
+                    }
+                }
+            }
+
+            if (!nextLevel.empty()) {
+                //cout << "Level " << level++ << ": ";
+                level++;
+                TripEntry trip_detail;
+                trip_detail.origin = QString::fromStdString("Level");
+                trip_detail.destination = QString::number(level);
+                trip_detail.distance = 0;
+                trip_detail.type = "level";
+                trip.push_back(trip_detail);
+                //for (const string& s : nextLevel) cout << s << ", ";
+                //cout << "\b\b  \n";
+            }
+        }
+        total_cost = totalDiscoveryDistance;
+        //cout << "Total Discovery Distance: " << totalDiscoveryDistance << " miles\n";
+    }
+};
+
 #endif // UTILITY_H
