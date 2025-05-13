@@ -464,4 +464,152 @@ public:
         cout << "Total Mileage of MST: " << totalCost << " miles\n";
     }
 };
+
+
+#include <iostream>
+#include <vector>
+#include <string>
+#include <unordered_map>
+#include <set>
+#include <algorithm>
+
+using namespace std;
+
+// Adjacency list node
+struct AdjNode {
+    string vertex;
+    int weight;
+    AdjNode* next;
+    AdjNode(const string& v, int w) : vertex(v), weight(w), next(nullptr) {}
+};
+
+// Vertex structure
+struct Vertex {
+    string name;
+    AdjNode* adjHead;
+    Vertex(const string& n) : name(n), adjHead(nullptr) {}
+};
+
+class Graph {
+private:
+    vector<Vertex*> vertices;
+    unordered_map<string, int> vertexIndex;
+    set<pair<string, string>> printed;
+    unordered_map<string, string> parent;
+    unordered_map<string, int> discoverTime;
+    unordered_map<string, int> finishTime;
+    int totalDiscoveryDistance = 0;
+    int time = 0;
+    vector<TripEntry> trip;
+    int total_cost;
+
+public:
+    int totalCost() {
+        return total_cost;
+    }
+
+    std::vector<TripEntry> getTrips() {
+        return trip;
+    }
+
+    Graph(const vector<string>& names) {
+        for (const auto& name : names) {
+            vertices.push_back(new Vertex(name));
+            vertexIndex[name] = vertices.size() - 1;
+        }
+    }
+
+    void addEdge(const string& from, const string& to, int weight) {
+        insertSorted(vertices[vertexIndex[from]]->adjHead, to, weight);  // Directed only
+    }
+
+    void insertSorted(AdjNode*& head, const string& to, int weight) {
+        AdjNode* newNode = new AdjNode(to, weight);
+        if (!head || weight < head->weight || (weight == head->weight && to < head->vertex)) {
+            newNode->next = head;
+            head = newNode;
+            return;
+        }
+
+        AdjNode* current = head;
+        while (current->next && (current->next->weight < weight ||
+                                 (current->next->weight == weight && current->next->vertex < to))) {
+            current = current->next;
+        }
+        newNode->next = current->next;
+        current->next = newNode;
+    }
+
+    void dfs(const string& start) {
+        set<string> visited;
+        printed.clear();
+        parent.clear();
+        discoverTime.clear();
+        finishTime.clear();
+        totalDiscoveryDistance = 0;
+        time = 0;
+
+        //cout << "DFS Traversal (Directed):\n";
+        dfsUtil(start, visited);
+        //cout << "Total Discovery Distance: " << totalDiscoveryDistance << "\n";
+        total_cost = totalDiscoveryDistance;
+    }
+
+private:
+    void dfsUtil(const string& node, set<string>& visited) {
+        visited.insert(node);
+        discoverTime[node] = ++time;
+
+        AdjNode* neighbor = vertices[vertexIndex[node]]->adjHead;
+        while (neighbor) {
+            const string& dest = neighbor->vertex;
+            int weight = neighbor->weight;
+
+            if (!visited.count(dest)) {
+                parent[dest] = node;
+                if (!printed.count({node, dest})) {
+                    //cout << "Discovery Edge: " << node << " -> " << dest << "\n";
+                    TripEntry trip_detail;
+                    trip_detail.origin = QString::fromStdString(node);
+                    trip_detail.destination = QString::fromStdString(dest);
+                    trip_detail.distance = weight;
+                    trip_detail.type = "discovery";
+                    trip.push_back(trip_detail);
+                    totalDiscoveryDistance += weight;
+                    printed.insert({node, dest});
+                }
+                dfsUtil(dest, visited);
+            } else if (finishTime.count(dest)) {
+                if (!printed.count({node, dest})) {
+                    //cout << "Cross Edge: " << node << " -> " << dest << "\n";
+                    TripEntry trip_detail;
+                    trip_detail.origin = QString::fromStdString(node);
+                    trip_detail.destination = QString::fromStdString(dest);
+                    trip_detail.distance = weight;
+                    trip_detail.type = "cross";
+                    trip.push_back(trip_detail);
+                    printed.insert({node, dest});
+                }
+            }
+
+            neighbor = neighbor->next;
+        }
+
+        finishTime[node] = ++time;
+    }
+
+public:
+    ~Graph() {
+        for (auto v : vertices) {
+            AdjNode* curr = v->adjHead;
+            while (curr) {
+                AdjNode* temp = curr;
+                curr = curr->next;
+                delete temp;
+            }
+            delete v;
+        }
+    }
+};
+
 #endif // UTILITY_H

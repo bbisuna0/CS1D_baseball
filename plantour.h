@@ -24,6 +24,8 @@ private slots:
 
     void on_pb_maintenance_clicked();
 
+    void on_pushButton_clicked();
+
 private:
     Ui::plantour *ui;
 };
