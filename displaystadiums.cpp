@@ -253,7 +253,7 @@ void DisplayStadiums::on_pb_seating_clicked()
 void DisplayStadiums::on_pb_largedistance_clicked()
 {
     team_data->setSort(team_data->fieldIndex("distance_to_center_field"), Qt::DescendingOrder);
-    team_data->setFilter("");
+    team_data->setFilter("distance_to_center_field = (SELECT MAX(distance_to_center_field) FROM teams)");
     team_data->select();
 
     TeamLogoDelegate *logoDelegate = new TeamLogoDelegate(ui->tableView);
@@ -288,7 +288,7 @@ void DisplayStadiums::on_pb_largedistance_clicked()
 void DisplayStadiums::on_pb_smalldistance_clicked()
 {
     team_data->setSort(team_data->fieldIndex("distance_to_center_field"), Qt::AscendingOrder);
-    team_data->setFilter("");
+    team_data->setFilter("distance_to_center_field = (SELECT MIN(distance_to_center_field) FROM teams)");
     team_data->select();
 
     TeamLogoDelegate *logoDelegate = new TeamLogoDelegate(ui->tableView);

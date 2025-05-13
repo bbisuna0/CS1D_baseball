@@ -5,6 +5,7 @@
 #include "utility.h"
 #include <QStandardItemModel>
 #include <QSortFilterProxyModel>
+#include "db.h"
 
 namespace Ui {
 class tripdisplay;
@@ -35,8 +36,8 @@ public:
      * @param souvenirListParm Reference to a list of souvenirs purchased.
      * @param parent Optional parent widget.
      */
-    explicit tripdisplay(const std::vector<CollegeData>& data, float totalDistance,
-                         std::vector<SouvenirData>& souvenirListParm, QWidget *parent = nullptr);
+    explicit tripdisplay(const std::vector<TripEntry>& data, float totalDistance,
+                         bool souvenirDisp = true, QWidget *parent = nullptr);
 
     /// @brief Destructor for tripdisplay.
     ~tripdisplay();

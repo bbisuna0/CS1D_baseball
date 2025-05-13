@@ -294,6 +294,7 @@ private:
         for (const QString& stadium : uniqueStadiums) {
             availableList->addItem(stadium);
         }
+        availableList->sortItems();
     }
 
     void addSelected() {
@@ -302,6 +303,7 @@ private:
             selectedList->addItem(item->clone());
             delete availableList->takeItem(availableList->currentRow());
         }
+        availableList->sortItems();
     }
 
     void removeSelected() {
@@ -310,6 +312,7 @@ private:
             availableList->addItem(item->clone());
             delete selectedList->takeItem(selectedList->currentRow());
         }
+        availableList->sortItems();
     }
 
     QListWidget* availableList;

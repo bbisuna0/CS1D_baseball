@@ -23,7 +23,7 @@ tripdisplay::tripdisplay(const std::vector<CollegeData>& data, float totalDistan
     //ui->tableView->setModel(model);
 
 
-    model->setHorizontalHeaderLabels({"College Start", "College End", "Distance"});
+    model->setHorizontalHeaderLabels({"Origin", "Destination", "Distance", "Type"});
 
     // Populate Table
     for (const auto& entry : data) {
