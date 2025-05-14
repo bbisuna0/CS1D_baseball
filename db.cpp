@@ -523,16 +523,27 @@ bool resetContent(QSqlDatabase& db) {
         }
     }
 
-    query.prepare(R"(
-    DELETE FROM stadium_location
-    WHERE stadium_name = ?;)");
-    query.addBindValue("Las Vegas Stadium");
-
-    if (!query.exec()) {
-        qWarning() << "Failed to delete stadium:" << query.lastError().text();
-    } else {
-        qDebug() << "Las Vegas Stadium deleted from stadium_location.";
+    // Check if table exists
+    if (db.tables().contains("stadium_location")) {
+        if (!query.exec("DROP TABLE IF EXISTS stadium_location")) {
+            qWarning() << "Failed to drop table:" << query.lastError().text();
+        } else {
+            qDebug() << "Table stadium_location dropped successfully.";
+            createStadiumLocationTable(db);
+            insertStadiumLocationData(db);
+        }
     }
+
+    // query.prepare(R"(
+    // DELETE FROM stadium_location
+    // WHERE stadium_name = ?;)");
+    // query.addBindValue("Las Vegas Stadium");
+
+    // if (!query.exec()) {
+    //     qWarning() << "Failed to delete stadium:" << query.lastError().text();
+    // } else {
+    //     qDebug() << "Las Vegas Stadium deleted from stadium_location.";
+    // }
 
     return true;
 }
