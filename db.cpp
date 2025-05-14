@@ -648,43 +648,43 @@ bool insertStadiumLocationData(QSqlDatabase& db) {
         VALUES (?, ?, ?);
     )");
 
-    QStringList stadiums = {
-        "Chase Field",
-        "SunTrust Park",
-        "Oriole Park at Camden Yards",
-        "Fenway Park",
-        "Wrigley Field",
-        "Guaranteed Rate Field",
-        "Great American Ball Park",
-        "Progressive Field",
-        "Coors Field",
-        "Comerica Park",
-        "Minute Maid Park",
-        "Kauffman Stadium",
-        "Angel Stadium",
-        "Dodger Stadium",
-        "Marlins Park",
-        "Miller Park",
-        "Target Field",
-        "Citi Field",
-        "Yankee Stadium",
-        "Oakland-Alameda County Coliseum",
-        "Citizens Bank Park",
-        "PNC Park",
-        "Petco Park",
-        "Oracle Park",
-        "Safeco Field",
-        "Busch Stadium",
-        "Tropicana Field",
-        "Globe Life Park in Arlington",
-        "Rogers Centre",
-        "Nationals Park"
+    const QList<std::tuple<QString, int, int>> stadiumCoordinates = {
+        {"Chase Field", 222, 368},
+        {"SunTrust Park", 841, 369},
+        {"Oriole Park at Camden Yards", 971, 232},
+        {"Fenway Park", 1078, 146},
+        {"Wrigley Field", 701, 207},
+        {"Guaranteed Rate Field", 745, 230},
+        {"Great American Ball Park", 836, 255},
+        {"Progressive Field", 847, 207},
+        {"Coors Field", 398, 241},
+        {"Comerica Park", 794, 187},
+        {"Minute Maid Park", 607, 452},
+        {"Kauffman Stadium", 610, 268},
+        {"Angel Stadium", 69, 318},
+        {"Dodger Stadium", 31, 288},
+        {"Marlins Park", 961, 520},
+        {"Miller Park", 722, 164},
+        {"Target Field", 605, 125},
+        {"Citi Field", 1047, 183},
+        {"Yankee Stadium", 1007, 161},
+        {"Oakland-Alameda County Coliseum", 19, 237},
+        {"Citizens Bank Park", 992, 200},
+        {"PNC Park", 908, 204},
+        {"Petco Park", 96, 354},
+        {"Oracle Park", 1, 206},
+        {"Safeco Field", 70, 49},
+        {"Busch Stadium", 693, 277},
+        {"Tropicana Field", 910, 490},
+        {"Globe Life Park in Arlington", 547, 394},
+        {"Rogers Centre", 888, 103},
+        {"Nationals Park", 954, 272}
     };
 
-    for (const QString& stadium : stadiums) {
-        query.addBindValue(stadium);
-        query.addBindValue(100);  // default x_loc
-        query.addBindValue(100);  // default y_loc
+    for (const auto& [name, x, y] : stadiumCoordinates) {
+        query.addBindValue(name);
+        query.addBindValue(x);
+        query.addBindValue(y);
 
         if (!query.exec()) {
             qWarning() << "Failed to insert into 'stadium_location':" << query.lastError().text();
