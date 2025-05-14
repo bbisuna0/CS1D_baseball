@@ -1546,6 +1546,98 @@ public:
     }
 
 
+    int getDistanceBetween(int from, int to) {
+        vector<int> path;
+        return dijkstraShortestPath(from, to, path);
+    }
+
+
+    void visitAllFromMarlins2Opt() {
+        const string startStadium = "Marlins Park";
+        if (vertexIndex.find(startStadium) == vertexIndex.end()) {
+            cout << "Error: Marlins Park not found in graph.\n";
+            return;
+        }
+
+        trip.clear();
+        total_cost = 0;
+
+        // Step 1: Build initial greedy tour
+        set<int> unvisited;
+        for (int i = 0; i < vertices.size(); ++i)
+            if (vertices[i] != startStadium)
+                unvisited.insert(i);
+
+        vector<int> tour;
+        int current = vertexIndex[startStadium];
+        tour.push_back(current);
+
+        while (!unvisited.empty()) {
+            int next = -1;
+            int minCost = INT_MAX;
+            vector<int> tempPath;
+
+            for (int candidate : unvisited) {
+                vector<int> path;
+                int cost = dijkstraShortestPath(current, candidate, path);
+                if (cost != -1 && cost < minCost) {
+                    minCost = cost;
+                    next = candidate;
+                }
+            }
+
+            if (next == -1) break;
+            tour.push_back(next);
+            unvisited.erase(next);
+            current = next;
+        }
+
+        // Step 2: Apply 2-opt optimization to tour
+        bool improved = true;
+        while (improved) {
+            improved = false;
+            for (size_t i = 1; i < tour.size() - 2; ++i) {
+                for (size_t j = i + 1; j < tour.size() - 1; ++j) {
+                    int A = tour[i - 1], B = tour[i];
+                    int C = tour[j], D = tour[j + 1];
+
+                    int before = getDistanceBetween(A, B) + getDistanceBetween(C, D);
+                    int after = getDistanceBetween(A, C) + getDistanceBetween(B, D);
+
+                    if (after < before) {
+                        reverse(tour.begin() + i, tour.begin() + j + 1);
+                        improved = true;
+                    }
+                }
+            }
+        }
+
+        // Step 3: Build final trip details with full Dijkstra paths
+        for (size_t i = 0; i < tour.size() - 1; ++i) {
+            vector<int> path;
+            int cost = dijkstraShortestPath(tour[i], tour[i + 1], path);
+            if (cost == -1) continue;
+
+            for (size_t k = 0; k < path.size() - 1; ++k) {
+                int from = path[k], to = path[k + 1];
+                TripEntry entry;
+                entry.origin = QString::fromStdString(vertices[from]);
+                entry.destination = QString::fromStdString(vertices[to]);
+                entry.distance = adjMatrix[from][to];
+                entry.type = "2-opt";
+                trip.push_back(entry);
+                total_cost += adjMatrix[from][to];
+
+                cout << "\"" << vertices[from] << "\"  -  \"" << vertices[to] << "\"  =   "
+                     << adjMatrix[from][to] << "  :  \"2-opt\"\n";
+            }
+        }
+
+        cout << "Total 2-opt Optimized Distance from Marlins Park: " << total_cost << " miles\n";
+    }
+
+
+
     void visitAllFromMarlinsGreedy() {
         const string startStadium = "Marlins Park";
         if (vertexIndex.find(startStadium) == vertexIndex.end()) {

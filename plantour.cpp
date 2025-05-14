@@ -448,7 +448,7 @@ void plantour::on_pb_stadium_report_clicked()
         QSqlRecord record = model.record(i);
         QString teamName = record.value("stadium_name").toString();
         if (!seenTeams.contains(teamName)) {
-            if (teamName != "Marlins Park")
+            //if (teamName != "Marlins Park")
                 seenTeams.insert(teamName);
             qDebug() << teamName << " = " << record.value("team_name");
         }
@@ -458,7 +458,7 @@ void plantour::on_pb_stadium_report_clicked()
     //stadiumstovisit.push_back("Marlins Stadium");
     for (const QString& team : seenTeams) {
         qDebug() << "Selected team:" << team;
-        if (team != "Marlins Park")
+        //if (team != "Marlins Park")
             stadiumstovisit.push_back(team.toStdString());
     }
     // teamdisplay *teamWin = new teamdisplay();
@@ -507,8 +507,8 @@ void plantour::on_pb_stadium_report_clicked()
     //graph.dijkstra("Dodger Stadium");
     //graph.greedyRouteThroughStadiums("Marlins Park", stadiumstovisit);
 
-    //graph.visitAllFromMarlinsGreedy();
     graph.visitAllFromMarlinsGreedy();
+    //graph.visitAllFromMarlins2Opt();
 
     //cout << "-----------------------------\n";
     //graph.computePrimMST();
