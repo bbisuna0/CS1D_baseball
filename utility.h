@@ -1709,15 +1709,27 @@ public:
 
 using namespace std;
 
+/**
+ * @class GraphGreedyThrough
+ * @brief Implements various greedy and optimized traversal algorithms for visiting stadiums in a weighted graph.
+ *
+ * This class includes algorithms such as BFS shortest path, 2-opt optimization,
+ * Held-Karp TSP variant, and greedy routing to compute efficient routes
+ * through a network of stadiums represented as vertices in an undirected graph.
+ */
 class GraphGreedyThrough {
 private:
-    vector<string> vertices;
-    map<string, int> vertexIndex;
-    vector<vector<int>> adjMatrix;
-    vector<TripEntry> trip;
-    int total_cost = 0;
+    std::vector<std::string> vertices;              /**< List of stadiums (graph vertices). */
+    std::map<std::string, int> vertexIndex;         /**< Mapping from stadium names to indices. */
+    std::vector<std::vector<int>> adjMatrix;        /**< Adjacency matrix storing distances. */
+    std::vector<TripEntry> trip;                    /**< Stores the details of the traversal. */
+    int total_cost = 0;                             /**< Total distance of the traversal. */
 
 public:
+    /**
+     * @brief Constructs the graph from a list of stadium names.
+     * @param nodes Vector of stadium names.
+     */
     GraphGreedyThrough(const vector<string>& nodes) {
         vertices = nodes;
         int n = nodes.size();
@@ -1727,6 +1739,12 @@ public:
         }
     }
 
+    /**
+     * @brief Adds a bidirectional edge between two stadiums.
+     * @param from Source stadium.
+     * @param to Destination stadium.
+     * @param cost Distance between stadiums.
+     */
     void addEdge(const string& from, const string& to, int cost) {
         int u = vertexIndex[from];
         int v = vertexIndex[to];
@@ -1734,6 +1752,13 @@ public:
         adjMatrix[v][u] = cost; // undirected
     }
 
+    /**
+     * @brief Finds the shortest path using BFS between two stadium indices.
+     * @param start Starting index.
+     * @param end Ending index.
+     * @param path Output parameter to store the shortest path.
+     * @return Total distance of the path or -1 if unreachable.
+     */
     int bfsShortestPath(int start, int end, vector<int>& path) {
         int n = vertices.size();
         vector<bool> visited(n, false);
@@ -1770,7 +1795,9 @@ public:
         return total;
     }
 
-
+    /**
+     * @brief Computes shortest path through all stadiums from Marlins Park using Held-Karp algorithm.
+     */
     void visitAllFromMarlinsShortest() {
         const string startStadium = "Marlins Park";
         int startIdx = vertexIndex[startStadium];
@@ -1858,13 +1885,17 @@ public:
         cout << "Total Distance (shortest path through all stadiums): " << total_cost << " miles\n";
     }
 
-
+    /**
+     * @brief Returns shortest path distance between two nodes using Dijkstra's algorithm.
+     */
     int getDistanceBetween(int from, int to) {
         vector<int> path;
         return dijkstraShortestPath(from, to, path);
     }
 
-
+    /**
+     * @brief Computes a 2-opt optimized tour starting from Marlins Park.
+     */
     void visitAllFromMarlins2Opt() {
         const string startStadium = "Marlins Park";
         if (vertexIndex.find(startStadium) == vertexIndex.end()) {
@@ -1950,7 +1981,9 @@ public:
     }
 
 
-
+    /**
+     * @brief Computes a greedy route from Marlins Park using Dijkstra-based routing.
+     */
     void visitAllFromMarlinsGreedy() {
         const string startStadium = "Marlins Park";
         if (vertexIndex.find(startStadium) == vertexIndex.end()) {
@@ -2016,7 +2049,13 @@ public:
         cout << "Total Greedy Distance from Marlins Park (Dijkstra routing): " << total_cost << " miles\n";
     }
 
-
+    /**
+     * @brief Standard Dijkstra implementation to find the shortest path between two nodes.
+     * @param start Starting index.
+     * @param end Ending index.
+     * @param path Output vector to store the path indices.
+     * @return Distance of the shortest path or -1 if not found.
+     */
     int dijkstraShortestPath(int start, int end, vector<int>& path) {
         int n = vertices.size();
         vector<int> dist(n, INT_MAX);
@@ -2054,6 +2093,11 @@ public:
         return dist[end];
     }
 
+    /**
+     * @brief Computes the dream vacation route by visiting a sequence of stadiums.
+     * @param startStadium Starting stadium name.
+     * @param orderedDestinations Sequence of stadium names to visit in order.
+     */
     void dreamVacationRoute(const string& startStadium, const vector<string>& orderedDestinations) {
         trip.clear();
         total_cost = 0;
@@ -2102,7 +2146,11 @@ public:
         cout << "Total Dream Vacation Distance: " << total_cost << " miles\n";
     }
 
-
+    /**
+     * @brief Computes a greedy route through a list of stadiums using BFS shortest paths.
+     * @param startStadium The starting stadium.
+     * @param stadiumsToVisit List of stadiums to include in the path.
+     */
     void greedyRouteThroughStadiums(const string& startStadium, const vector<string>& stadiumsToVisit) {
         if (stadiumsToVisit.empty()) return;
 
@@ -2164,10 +2212,16 @@ public:
         cout << "Total Greedy Distance: " << total_cost << " miles\n";
     }
 
+    /**
+     * @brief Returns the total distance of the last computed route.
+     */
     int getTotalCost() const {
         return total_cost;
     }
 
+    /**
+     * @brief Returns the trip details from the last traversal.
+     */
     vector<TripEntry> getTripDetails() const {
         return trip;
     }
