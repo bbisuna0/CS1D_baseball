@@ -1,8 +1,25 @@
+/**
+ * @file mapdisp.cpp
+ * @brief Implements stadium map visualization and interaction for planning or displaying routes.
+ *
+ * Provides a draggable diamond widget interface to represent stadiums,
+ * allowing routes to be visualized and positions to be saved to the database.
+ */
+
 #include "mapdisp.h"
 #include "ui_mapdisp.h"
 #include <QTimer>
 #include <QSqlTableModel>
 
+
+/**
+ * @brief Draws a line between two DiamondWidgets with a specified mode.
+ * @param container The widget on which the line will be drawn.
+ * @param from Source diamond widget.
+ * @param to Destination diamond widget.
+ * @param modeStr A string indicating the line mode ("solid", "dashed", "blink", or "remove").
+ * @return A pointer to the newly created ConnectionLine.
+ */
 ConnectionLine* drawLine(QWidget *container, DiamondWidget *from, DiamondWidget *to, const QString &modeStr) {
     ConnectionLine::LineMode mode;
 
@@ -21,7 +38,18 @@ ConnectionLine* drawLine(QWidget *container, DiamondWidget *from, DiamondWidget 
 }
 
 
+/**
+ * @class mapdisp
+ * @brief Visual interface for displaying and editing stadium map and route overlays.
+ */
 
+/**
+ * @brief Constructs the mapdisp widget and populates it with stadium diamond widgets.
+ * @param disp If true, display-only mode; if false, enables editing/saving.
+ * @param x Optional initial X offset.
+ * @param y Optional initial Y offset.
+ * @param parent Optional parent widget.
+ */
 mapdisp::mapdisp(bool disp, const int& x, const int& y, QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::mapdisp)
@@ -62,17 +90,28 @@ mapdisp::mapdisp(bool disp, const int& x, const int& y, QWidget *parent)
     }
 }
 
+
+/**
+ * @brief Destructor for mapdisp.
+ */
 mapdisp::~mapdisp()
 {
     delete ui;
 }
 
+
+/**
+ * @brief Closes the map display window.
+ */
 void mapdisp::on_pb_exit_clicked()
 {
     close();
 }
 
 
+/**
+ * @brief Draws all "blink" type route edges as solid lines.
+ */
 void mapdisp::on_pb_route_clicked()
 {
     // Display Route
@@ -96,6 +135,9 @@ void mapdisp::on_pb_route_clicked()
 }
 
 
+/**
+ * @brief Draws all "dashed" type route edges as dashed lines.
+ */
 void mapdisp::on_pb_animate_clicked()
 {
     // Display Cross/Back Edges
@@ -120,12 +162,18 @@ void mapdisp::on_pb_animate_clicked()
 }
 
 
+/**
+ * @brief Cancels and closes the map editing window without saving.
+ */
 void mapdisp::on_pb_cancel_clicked()
 {
     close();
 }
 
 
+/**
+ * @brief Saves the current diamond widget positions to the stadium_location table.
+ */
 void mapdisp::on_pb_save_clicked()
 {
     QSqlTableModel *stadium_loc;
@@ -157,6 +205,9 @@ void mapdisp::on_pb_save_clicked()
 }
 
 
+/**
+ * @brief Animates the route by drawing blink lines one at a time with a timer.
+ */
 void mapdisp::on_pb_all_clicked()
 {
     // Animate Route
@@ -196,6 +247,9 @@ void mapdisp::on_pb_all_clicked()
 }
 
 
+/**
+ * @brief Draws all edges in the route: "blink" edges as solid, others as dashed.
+ */
 void mapdisp::on_pb_backedges_clicked()
 {
     // Display all

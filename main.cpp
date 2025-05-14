@@ -1,9 +1,21 @@
+/**
+ * @file main.cpp
+ * @brief Entry point for the Baseball Stadium Management application.
+ *
+ * Initializes the Qt application, database connection, required tables, and launches
+ * the login window. If login is successful, the main menu is shown.
+ */
+
 #include "loginwindow.h"
 #include "main.h"
 #include "mainmenu.h"
 #include "utility.h"
 #include <QApplication>
 
+/**
+ * @var themeStyle
+ * @brief Global stylesheet used to style the entire application UI.
+ */
 QString themeStyle = R"(
     QWidget {
         //background-color: #f0f0f0;
@@ -68,9 +80,33 @@ QString themeStyle = R"(
     }
 )";
 
+
+/**
+ * @var myUser
+ * @brief Global instance of User that tracks login status and credentials.
+ */
 User myUser;
+
+
+/**
+ * @var db
+ * @brief Global QSqlDatabase connection used throughout the application.
+ */
 QSqlDatabase db;
 
+
+/**
+ * @brief Main entry point for the Baseball Stadium Management application.
+ *
+ * - Loads the application stylesheet.
+ * - Opens or creates the SQLite database and essential tables.
+ * - Launches the login window.
+ * - If login is successful, launches the main menu window.
+ *
+ * @param argc Number of command-line arguments.
+ * @param argv Array of command-line argument strings.
+ * @return Exit code of the application.
+ */
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);

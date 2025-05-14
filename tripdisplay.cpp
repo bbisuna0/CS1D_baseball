@@ -9,6 +9,11 @@
 #include "mapdisp.h"
 #include "ui_mapdisp.h"
 
+
+/**
+ * @brief Default constructor for tripdisplay dialog.
+ * @param parent Parent widget.
+ */
 tripdisplay::tripdisplay(QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::tripdisplay)
@@ -17,6 +22,13 @@ tripdisplay::tripdisplay(QWidget *parent)
 
 }
 
+/**
+ * @brief Overloaded constructor to initialize trip data and optionally show souvenir button.
+ * @param data Vector of TripEntry representing trip route.
+ * @param totalDistance Total distance of the trip.
+ * @param souvenirDisp Boolean flag to enable souvenir purchasing button.
+ * @param parent Parent widget.
+ */
 tripdisplay::tripdisplay(const std::vector<TripEntry>& data, float totalDistance, bool souvenirDisp, QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::tripdisplay)
@@ -60,19 +72,27 @@ tripdisplay::tripdisplay(const std::vector<TripEntry>& data, float totalDistance
 }
 
 
-
-
+/**
+ * @brief Destructor for tripdisplay.
+ */
 tripdisplay::~tripdisplay()
 {
     delete ui;
 }
 
+
+/**
+ * @brief Closes the dialog when OK is clicked.
+ */
 void tripdisplay::on_buttonBox_accepted()
 {
     this->close();
 }
 
 
+/**
+ * @brief Opens the souvenir purchasing dialog filtered by visited teams.
+ */
 void tripdisplay::on_saddlebackPB_clicked()
 {
     //std::vector<SouvenirData> data;
@@ -118,6 +138,12 @@ void tripdisplay::on_saddlebackPB_clicked()
 }
 
 
+/**
+ * @brief Displays a graphical map of the trip route.
+ *
+ * Routes with type "discovery" are animated with blinking lines,
+ * while "cross" edges are shown as dashed lines.
+ */
 void tripdisplay::on_pbMap_clicked()
 {
     mapdisp *mapWin = new mapdisp();

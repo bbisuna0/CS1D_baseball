@@ -6,6 +6,11 @@
 #include "utility.h"
 #include "db.h"
 
+
+/**
+ * @brief Default constructor for purchasesouvenirs dialog.
+ * @param parent The parent widget.
+ */
 purchasesouvenirs::purchasesouvenirs(QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::purchasesouvenirs)
@@ -14,6 +19,11 @@ purchasesouvenirs::purchasesouvenirs(QWidget *parent)
 }
 
 
+/**
+ * @brief Constructor for purchasesouvenirs dialog that initializes with souvenir purchase data.
+ * @param data A vector of SouvenirPurchase entries to populate the table.
+ * @param parent The parent widget.
+ */
 purchasesouvenirs::purchasesouvenirs(const std::vector<SouvenirPurchase>& data, QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::purchasesouvenirs)
@@ -75,13 +85,19 @@ purchasesouvenirs::purchasesouvenirs(const std::vector<SouvenirPurchase>& data, 
 }
 
 
-
-
+/**
+ * @brief Destructor for purchasesouvenirs dialog.
+ */
 purchasesouvenirs::~purchasesouvenirs()
 {
     delete ui;
 }
 
+
+/**
+ * @brief Slot triggered when the purchase button is clicked.
+ *        Opens the summary dialog to review purchases.
+ */
 void purchasesouvenirs::on_purchaseButton_clicked()
 {
     PurchaseSummaryDialog c(model, this);

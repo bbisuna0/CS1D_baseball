@@ -31,25 +31,34 @@ public:
     explicit tripdisplay(QWidget *parent = nullptr);
 
     /**
-     * @brief Constructs the tripdisplay dialog with trip data.
-     * @param data Reference to a list of colleges visited.
-     * @param totalDistance The total distance traveled during the trip.
-     * @param souvenirListParm Reference to a list of souvenirs purchased.
+     * @brief Constructs a tripdisplay dialog with provided trip data.
+     * @param data Vector of trip entries (each with origin, destination, etc.)
+     * @param totalDistance Total distance traveled in the trip.
+     * @param souvenirDisp Whether to display the souvenir purchase option.
      * @param parent Optional parent widget.
      */
     explicit tripdisplay(const std::vector<TripEntry>& data, float totalDistance,
                          bool souvenirDisp = true, QWidget *parent = nullptr);
 
-    /// @brief Destructor for tripdisplay.
+    /**
+     * @brief Destructor for tripdisplay.
+     */
     ~tripdisplay();
 
 private slots:
-    /// @brief Handles the event when the accept button is clicked.
+    /**
+     * @brief Slot triggered when the user accepts (OK) the dialog.
+     */
     void on_buttonBox_accepted();
 
-    /// @brief Handles the event when the Saddleback button is clicked.
+    /**
+     * @brief Slot triggered to open the souvenir purchase dialog.
+     */
     void on_saddlebackPB_clicked();
 
+    /**
+     * @brief Slot triggered to display the trip route on a graphical map.
+     */
     void on_pbMap_clicked();
 
 public slots:
@@ -72,11 +81,11 @@ public slots:
     }
 
     /**
- * @brief Checks if a given college name is present in the model.
- * @param model The QStandardItemModel containing the college data.
- * @param searchValue The college name to search for.
- * @return True if the college is found, otherwise false.
- */
+     * @brief Checks if a given college name is present in the model.
+     * @param model The QStandardItemModel containing the college data.
+     * @param searchValue The college name to search for.
+     * @return True if the college is found, otherwise false.
+     */
     bool isCollegeMatch(QStandardItemModel* model, const QString& searchValue) {
         if (!model) return false;
 
@@ -93,6 +102,10 @@ public slots:
         return false; // No match found
     }
 
+    /**
+     * @brief Sets the list of teams involved in the trip.
+     * @param list Vector of team names.
+     */
     void setTeams(const std::vector<std::string>& list) {
         teams = list;
     }

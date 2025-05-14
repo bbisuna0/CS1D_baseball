@@ -13,10 +13,22 @@
 #include <QSet>
 #include <QStringList>
 
+
+/**
+ * @class TeamSelectionDialog
+ * @brief Dialog for selecting MLB teams to visit.
+ *
+ * Provides a dual-list interface for users to select teams from an available list,
+ * manage their selections, and retrieve either selected team names or mapped stadium names.
+ */
 class TeamSelectionDialog : public QDialog {
     Q_OBJECT
 
 public:
+    /**
+     * @brief Constructor for TeamSelectionDialog.
+     * @param parent Optional parent widget.
+     */
     TeamSelectionDialog(QWidget* parent = nullptr) : QDialog(parent) {
         setWindowTitle("Select Teams to Visit");
 
@@ -51,6 +63,10 @@ public:
         populateAvailableListFromModel();
     }
 
+    /**
+     * @brief Gets the list of selected stadiums mapped from selected team names.
+     * @return QStringList of stadium names.
+     */
     // Returns stadium names (mapped from selected team names)
     QStringList getSelectedStadiums() const {
         QStringList selectedStadiums;
@@ -62,6 +78,10 @@ public:
         return selectedStadiums;
     }
 
+    /**
+     * @brief Gets the list of selected team names.
+     * @return QStringList of team names.
+     */
     // Returns team names in the selected list
     QStringList getSelectedTeams() const {
         QStringList selectedTeams;
@@ -72,7 +92,10 @@ public:
         return selectedTeams;
     }
 
-
+    /**
+     * @brief Removes a team from the available list.
+     * @param teamName Name of the team to exclude.
+     */
     // Removes a team from the available list based on team name
     void excludeTeam(const QString& teamName) {
         for (int i = 0; i < availableList->count(); ++i) {
@@ -85,6 +108,9 @@ public:
     }
 
 private:
+    /**
+     * @brief Populates the available team list from the database model.
+     */
     void populateAvailableListFromModel() {
         QSqlTableModel model;
         model.setTable("teams");
@@ -107,6 +133,9 @@ private:
         availableList->sortItems();
     }
 
+    /**
+     * @brief Moves selected team from available to selected list.
+     */
     void addSelected() {
         QListWidgetItem* item = availableList->currentItem();
         if (item) {
@@ -116,6 +145,9 @@ private:
         availableList->sortItems();
     }
 
+    /**
+     * @brief Moves selected team from selected list back to available list.
+     */
     void removeSelected() {
         QListWidgetItem* item = selectedList->currentItem();
         if (item) {

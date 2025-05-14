@@ -25,14 +25,22 @@ public:
      */
     explicit reguser(QWidget *parent = nullptr);
 
-    /// @brief Destructor for reguser.
+    /**
+     * @brief Destructor for reguser.
+     */
     ~reguser();
 
 private slots:
-    /// @brief Handles the event when the cancel button is clicked.
+    /**
+     * @brief Handles the event when the cancel button is clicked.
+     * Closes the registration dialog without saving user data.
+     */
     void on_buttonBox_rejected();
 
-    /// @brief Handles the event when the register button is clicked.
+    /**
+     * @brief Handles the event when the register button is clicked.
+     * Submits the user data and adds a new user to the system.
+     */
     void on_buttonBox_accepted();
 
 private:

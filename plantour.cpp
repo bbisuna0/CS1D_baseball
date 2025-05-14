@@ -1,3 +1,7 @@
+/**
+ * @file plantour.cpp
+ * @brief Implementation of the Plantour class for planning baseball stadium trips.
+ */
 #include "plantour.h"
 #include "ui_plantour.h"
 #include "teamdisplay.h"
@@ -8,6 +12,11 @@
 #include "tripdisplay.h"
 #include "teamselectdialog.h"
 
+
+/**
+ * @brief Constructs the Plantour widget.
+ * @param parent The parent widget.
+ */
 plantour::plantour(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::plantour)
@@ -15,17 +24,28 @@ plantour::plantour(QWidget *parent)
     ui->setupUi(this);
 }
 
+
+/**
+ * @brief Destructor for the Plantour widget.
+ */
 plantour::~plantour()
 {
     delete ui;
 }
 
+
+/**
+ * @brief Handles the exit button click to close the window.
+ */
 void plantour::on_pb_exit_clicked()
 {
     close();
 }
 
 
+/**
+ * @brief Plans a trip starting from Dodger Stadium using Dijkstra's optimized route.
+ */
 void plantour::on_pb_team_details_clicked()
 {
     // Plan a trip from Dodgers Stadium
@@ -109,6 +129,9 @@ void plantour::on_pb_team_details_clicked()
 }
 
 
+/**
+ * @brief Plans a custom trip based on selected stadiums using a greedy approach.
+ */
 void plantour::on_pb_team_report_clicked()
 {
     // Plan shortest custom trip
@@ -205,6 +228,9 @@ void plantour::on_pb_team_report_clicked()
 }
 
 
+/**
+ * @brief Computes and displays the Minimum Spanning Tree (MST) using Kruskal's algorithm.
+ */
 void plantour::on_pb_maintenance_clicked()
 {
     // MST
@@ -262,6 +288,9 @@ void plantour::on_pb_maintenance_clicked()
 }
 
 
+/**
+ * @brief Runs a Depth-First Search (DFS) traversal starting from Oracle Park.
+ */
 void plantour::on_pushButton_clicked()
 {
 
@@ -320,6 +349,9 @@ void plantour::on_pushButton_clicked()
 }
 
 
+/**
+ * @brief Runs a Breadth-First Search (BFS) traversal starting from Target Field.
+ */
 void plantour::on_pushButton_2_clicked()
 {
     // BFS
@@ -377,6 +409,9 @@ void plantour::on_pushButton_2_clicked()
 }
 
 
+/**
+ * @brief Plans a user-defined custom trip using a greedy route through selected stadiums.
+ */
 void plantour::on_pb_plan_vacation_clicked()
 {
     // Plan a custom trip, recursive selection
@@ -467,6 +502,9 @@ void plantour::on_pb_plan_vacation_clicked()
 }
 
 
+/**
+ * @brief Plans a full stadium visit trip starting from Marlins Park using greedy TSP approximation.
+ */
 void plantour::on_pb_stadium_report_clicked()
 {
     // Plan to visit all stadiums starting at Marlins Park

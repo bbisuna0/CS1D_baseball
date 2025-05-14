@@ -2,6 +2,11 @@
 #include "ui_displayteams.h"
 #include "utility.h"
 
+
+/**
+ * @class DisplayTeams
+ * @brief A QWidget that displays MLB teams and stadium data with filtering by league.
+ */
 DisplayTeams::DisplayTeams(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::DisplayTeams)
@@ -37,12 +42,20 @@ DisplayTeams::DisplayTeams(QWidget *parent)
     ui->pb_mlbteam->click();
 }
 
+
+/**
+ * @brief Destructor for DisplayTeams. Cleans up UI and model.
+ */
 DisplayTeams::~DisplayTeams()
 {
     delete ui;
     delete team_data;
 }
 
+
+/**
+ * @brief Displays all MLB teams sorted alphabetically by team name.
+ */
 void DisplayTeams::on_pb_mlbteam_clicked()
 {
     team_data->setSort(team_data->fieldIndex("team_name"), Qt::AscendingOrder);
@@ -80,12 +93,18 @@ void DisplayTeams::on_pb_mlbteam_clicked()
 }
 
 
+/**
+ * @brief Closes the DisplayTeams window.
+ */
 void DisplayTeams::on_pb_exit_clicked()
 {
     this->close();
 }
 
 
+/**
+ * @brief Filters and displays only teams in the American League.
+ */
 void DisplayTeams::on_pb_american_clicked()
 {
     team_data->setSort(team_data->fieldIndex("team_name"), Qt::AscendingOrder);
@@ -116,6 +135,9 @@ void DisplayTeams::on_pb_american_clicked()
 }
 
 
+/**
+ * @brief Filters and displays only teams in the National League.
+ */
 void DisplayTeams::on_pb_national_clicked()
 {
     team_data->setSort(team_data->fieldIndex("stadium_name"), Qt::AscendingOrder);

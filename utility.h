@@ -32,11 +32,47 @@
 
 
 // Function declarations
+/**
+ * @brief Creates the 'user' table in the database.
+ */
 void createUserTable(); // QSqlDatabase &db
+
+/**
+ * @brief Checks if the 'user' table exists in the database.
+ * @return True if exists, false otherwise.
+ */
 bool checkUserTable(); // check if user table exists
+
+/**
+ * @brief Checks if the 'stadium_location' table exists in the database.
+ * @return True if exists, false otherwise.
+ */
 bool checkStadiumLocationTable();
+
+/**
+ * @brief Adds a new user to the 'user' table.
+ * @param ID User ID (not used, auto-incremented).
+ * @param username Username.
+ * @param password Password.
+ * @param admin Whether the user is an admin.
+ */
 void addUser(int ID, QString username, QString password, bool admin); // add user data into database
+
+/**
+ * @brief Checks if a username/password combination is valid.
+ * @param uname Username.
+ * @param pass Password.
+ * @param admin Output boolean whether the user is admin.
+ * @return True if credentials are valid.
+ */
 bool checkPassword(QString uname, QString pass, bool &admin); // check if user table exists
+
+/**
+ * @brief Checks if a specific table exists in a database.
+ * @param db Database reference.
+ * @param tableName Name of the table.
+ * @return True if the table exists.
+ */
 bool tableExists(QSqlDatabase& db, const QString& tableName);
 // class utility
 // {
@@ -151,11 +187,29 @@ private:
 #include <QRect>
 #include <QFontMetrics>
 
+/**
+ * @class TeamLogoDelegate
+ * @brief Custom delegate to render team logos and names in the first column of a view.
+ *
+ * This delegate overrides the default painting behavior to display a logo (loaded from a resource path)
+ * alongside the team name. It also adjusts size hints accordingly to ensure proper layout.
+ */
 class TeamLogoDelegate : public QStyledItemDelegate
 {
 public:
+    /**
+     * @brief Constructs a TeamLogoDelegate.
+     * @param parent Optional parent object.
+     */
     TeamLogoDelegate(QObject *parent = nullptr) : QStyledItemDelegate(parent) {}
 
+
+    /**
+     * @brief Custom paint function to draw logo and team name.
+     * @param painter Painter used for rendering.
+     * @param option Style options for the item.
+     * @param index Model index of the item.
+     */
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override
     {
         if (index.column() == 0) {
@@ -195,6 +249,13 @@ public:
         }
     }
 
+
+    /**
+     * @brief Provides size hint for the custom cell.
+     * @param option Style options for the item.
+     * @param index Model index of the item.
+     * @return Suggested size for the cell.
+     */
     QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const override
     {
         if (index.column() == 0) {
@@ -229,8 +290,20 @@ public:
 #include <QSqlDatabase>
 #include <QSet>
 
+
+/**
+ * @class TeamOnlySelectionDialog
+ * @brief Dialog to select teams based on the "teams" database table.
+ *
+ * This dialog allows users to select from a list of team names. The list is populated
+ * from the `teams` table. Selected teams can be retrieved after the dialog is accepted.
+ */
 class TeamOnlySelectionDialog : public QDialog {
 public:
+    /**
+     * @brief Constructor.
+     * @param parent Optional parent widget.
+     */
     TeamOnlySelectionDialog(QWidget* parent = nullptr) : QDialog(parent) {
         setWindowTitle("Select Teams to Visit");
 
@@ -269,6 +342,11 @@ public:
         populateAvailableListFromModel();
     }
 
+
+    /**
+     * @brief Returns the selected teams.
+     * @return List of selected team names.
+     */
     QStringList getSelectedStadiums() const {
         QStringList selected;
         for (int i = 0; i < selectedList->count(); ++i) {
@@ -278,6 +356,7 @@ public:
     }
 
 private:
+    /// Populates available teams from the "teams" SQL table.
     void populateAvailableListFromModel() {
         QSqlTableModel model;
         model.setTable("teams");
@@ -301,6 +380,7 @@ private:
         availableList->sortItems();
     }
 
+    /// Moves the currently selected item from available to selected.
     void addSelected() {
         QListWidgetItem* item = availableList->currentItem();
         if (item) {
@@ -310,6 +390,7 @@ private:
         availableList->sortItems();
     }
 
+    /// Moves the currently selected item from selected back to available.
     void removeSelected() {
         QListWidgetItem* item = selectedList->currentItem();
         if (item) {
@@ -328,8 +409,19 @@ private:
 };
 
 
+/**
+ * @class StadiumSelectionDialog
+ * @brief Dialog to select stadiums based on the "stadium_distances" database table.
+ *
+ * This dialog allows users to select from a list of stadiums. The list is derived
+ * from the `origin` and `destination` fields in the `stadium_distances` table.
+ */
 class StadiumSelectionDialog : public QDialog {
 public:
+    /**
+     * @brief Constructor.
+     * @param parent Optional parent widget.
+     */
     StadiumSelectionDialog(QWidget* parent = nullptr) : QDialog(parent) {
         setWindowTitle("Select Stadiums to Visit");
 
@@ -368,6 +460,11 @@ public:
         populateAvailableListFromModel();
     }
 
+
+    /**
+     * @brief Returns the selected stadiums.
+     * @return List of selected stadium names.
+     */
     QStringList getSelectedStadiums() const {
         QStringList selected;
         for (int i = 0; i < selectedList->count(); ++i) {
@@ -377,6 +474,7 @@ public:
     }
 
 private:
+    /// Populates available stadiums from the "stadium_distances" SQL table.
     void populateAvailableListFromModel() {
         QSqlTableModel model;
         model.setTable("stadium_distances");
@@ -398,6 +496,7 @@ private:
         availableList->sortItems();
     }
 
+    /// Moves the currently selected item from available to selected.
     void addSelected() {
         QListWidgetItem* item = availableList->currentItem();
         if (item) {
@@ -407,6 +506,7 @@ private:
         availableList->sortItems();
     }
 
+    /// Moves the currently selected item from selected back to available.
     void removeSelected() {
         QListWidgetItem* item = selectedList->currentItem();
         if (item) {
@@ -435,25 +535,43 @@ private:
 
 using namespace std;
 
+/**
+ * @class GraphMST
+ * @brief Graph class to compute Minimum Spanning Tree (MST) using Kruskal's and Prim's algorithms.
+ *
+ * This class supports building an undirected weighted graph and computing
+ * the MST using either Kruskal's or Prim's algorithm. It stores the MST edges
+ * and total mileage.
+ */
 class GraphMST {
 private:
-    vector<string> vertices;
-    map<string, int> vertexIndex;
-    vector<vector<int>> adjMatrix;
-    vector<TripEntry> trip;
+    std::vector<std::string> vertices;             /**< List of vertex names */
+    std::map<std::string, int> vertexIndex;        /**< Maps vertex names to indices */
+    std::vector<std::vector<int>> adjMatrix;       /**< Adjacency matrix storing edge costs */
+    std::vector<TripEntry> trip;                   /**< Stores the MST edges */
     int total_cost;
 
 public:
-
+    /**
+     * @brief Gets the total cost of the MST.
+     * @return Total mileage of the computed MST.
+     */
     int totalCost() {
         return total_cost;
     }
 
+    /**
+     * @brief Gets the list of trip entries representing the MST edges.
+     * @return Vector of TripEntry objects.
+     */
     std::vector<TripEntry> getTrips() {
         return trip;
     }
 
-
+    /**
+     * @brief Constructs the graph with given vertex names.
+     * @param nodes List of vertex names to initialize the graph.
+     */
     GraphMST(const vector<string>& nodes) {
         vertices = nodes;
         int n = nodes.size();
@@ -463,6 +581,12 @@ public:
         }
     }
 
+    /**
+     * @brief Adds an undirected edge between two vertices.
+     * @param from Name of the starting vertex.
+     * @param to Name of the destination vertex.
+     * @param cost Weight or distance of the edge.
+     */
     void addEdge(const string& from, const string& to, int cost) {
         int u = vertexIndex[from];
         int v = vertexIndex[to];
@@ -470,6 +594,12 @@ public:
         adjMatrix[v][u] = cost;
     }
 
+    /**
+     * @brief Computes the Minimum Spanning Tree using Kruskal's algorithm.
+     *
+     * Uses union-find to efficiently determine which edges to include.
+     * Populates the `trip` vector with MST edges and computes the total mileage.
+     */
     void computeKruskalMST() {
         int n = vertices.size();
         vector<tuple<int, int, int>> edges;
@@ -527,6 +657,13 @@ public:
         //cout << "Total Mileage of MST: " << totalCost << " miles\n";
     }
 
+
+    /**
+     * @brief Computes the Minimum Spanning Tree using Prim's algorithm.
+     *
+     * Starts from the first vertex and grows the MST by selecting the edge
+     * with the smallest weight connecting to an unvisited vertex.
+     */
     void computePrimMST() {
         int n = vertices.size();
         vector<int> key(n, INT_MAX);
@@ -576,43 +713,80 @@ public:
 
 using namespace std;
 
+/**
+ * @struct AdjNode
+ * @brief Represents an adjacency list node with a destination vertex and edge weight.
+ */
 // Adjacency list node
 struct AdjNode {
-    string vertex;
-    int weight;
-    AdjNode* next;
-    AdjNode(const string& v, int w) : vertex(v), weight(w), next(nullptr) {}
+    std::string vertex;   /**< Name of the destination vertex */
+    int weight;           /**< Weight of the edge */
+    AdjNode* next;        /**< Pointer to the next adjacent node */
+
+    /**
+     * @brief Constructs an AdjNode.
+     * @param v Destination vertex name.
+     * @param w Weight of the edge.
+     */
+    AdjNode(const std::string& v, int w) : vertex(v), weight(w), next(nullptr) {}
 };
 
+/**
+ * @struct Vertex
+ * @brief Represents a vertex in the graph with an adjacency list.
+ */
 // Vertex structure
 struct Vertex {
-    string name;
-    AdjNode* adjHead;
-    Vertex(const string& n) : name(n), adjHead(nullptr) {}
+    std::string name;     /**< Name of the vertex */
+    AdjNode* adjHead;     /**< Head of the adjacency list */
+
+    /**
+     * @brief Constructs a Vertex with the given name.
+     * @param n Name of the vertex.
+     */
+    Vertex(const std::string& n) : name(n), adjHead(nullptr) {}
 };
 
+
+/**
+ * @class Graph
+ * @brief Directed graph implemented with adjacency lists and supports DFS traversal.
+ */
 class Graph {
 private:
-    vector<Vertex*> vertices;
-    unordered_map<string, int> vertexIndex;
-    set<pair<string, string>> printed;
-    unordered_map<string, string> parent;
-    unordered_map<string, int> discoverTime;
-    unordered_map<string, int> finishTime;
-    int totalDiscoveryDistance = 0;
-    int time = 0;
-    vector<TripEntry> trip;
-    int total_cost;
+    std::vector<Vertex*> vertices;                     /**< List of vertex pointers */
+    std::unordered_map<std::string, int> vertexIndex;  /**< Maps vertex names to indices */
+    std::set<std::pair<std::string, std::string>> printed; /**< Tracks printed edges */
+    std::unordered_map<std::string, std::string> parent;   /**< Parent tracking for DFS */
+    std::unordered_map<std::string, int> discoverTime;     /**< Discovery time per vertex */
+    std::unordered_map<std::string, int> finishTime;       /**< Finish time per vertex */
+    int totalDiscoveryDistance = 0;                    /**< Total distance of discovery edges */
+    int time = 0;                                      /**< Global time counter for DFS */
+    std::vector<TripEntry> trip;                       /**< Stores trip entries from DFS */
+    int total_cost;                                    /**< Total cost of traversal */
+
 
 public:
+    /**
+     * @brief Gets the total cost of all discovery edges.
+     * @return Total discovery distance.
+     */
     int totalCost() {
         return total_cost;
     }
 
+    /**
+     * @brief Retrieves the recorded trip details after traversal.
+     * @return Vector of TripEntry representing the DFS result.
+     */
     std::vector<TripEntry> getTrips() {
         return trip;
     }
 
+    /**
+     * @brief Constructs the graph with a list of vertex names.
+     * @param names Vector of unique vertex names.
+     */
     Graph(const vector<string>& names) {
         for (const auto& name : names) {
             vertices.push_back(new Vertex(name));
@@ -620,10 +794,20 @@ public:
         }
     }
 
+    /**
+     * @brief Adds a directed edge to the graph.
+     * @param from Name of the starting vertex.
+     * @param to Name of the destination vertex.
+     * @param weight Weight of the edge.
+     */
     void addEdge(const string& from, const string& to, int weight) {
         insertSorted(vertices[vertexIndex[from]]->adjHead, to, weight);  // Directed only
     }
 
+    /**
+     * @brief Starts depth-first search (DFS) traversal from a given vertex.
+     * @param start Name of the starting vertex.
+     */
     void insertSorted(AdjNode*& head, const string& to, int weight) {
         AdjNode* newNode = new AdjNode(to, weight);
         if (!head || weight < head->weight || (weight == head->weight && to < head->vertex)) {
@@ -641,6 +825,10 @@ public:
         current->next = newNode;
     }
 
+    /**
+     * @brief Starts depth-first search (DFS) traversal from a given vertex.
+     * @param start Name of the starting vertex.
+     */
     void dfs(const string& start) {
         set<string> visited;
         printed.clear();
@@ -657,6 +845,11 @@ public:
     }
 
 private:
+    /**
+     * @brief Recursive utility function for performing DFS.
+     * @param node Current vertex name.
+     * @param visited Set of visited vertices.
+     */
     void dfsUtil(const string& node, set<string>& visited) {
         visited.insert(node);
         discoverTime[node] = ++time;
@@ -700,6 +893,9 @@ private:
     }
 
 public:
+    /**
+     * @brief Destructor to clean up dynamically allocated vertices and adjacency lists.
+     */
     ~Graph() {
         for (auto v : vertices) {
             AdjNode* curr = v->adjHead;
@@ -724,25 +920,47 @@ public:
 
 using namespace std;
 
+
+/**
+ * @class GraphBFS
+ * @brief Represents a directed graph using an adjacency matrix and supports BFS traversal.
+ *
+ * This class allows for adding edges and performing a breadth-first search (BFS) traversal,
+ * capturing discovery and cross edges along with the level information. It records the traversal
+ * as a list of TripEntry objects.
+ */
 class GraphBFS {
 private:
-    vector<string> vertices;
-    map<string, int> vertexIndex;
-    vector<vector<int>> adjMatrix;
-    set<pair<string, string>> printed;
-    int totalDiscoveryDistance = 0;
-    vector<TripEntry> trip;
-    int total_cost;
+    std::vector<std::string> vertices;                         /**< List of vertex names. */
+    std::map<std::string, int> vertexIndex;                    /**< Maps vertex names to indices in the adjacency matrix. */
+    std::vector<std::vector<int>> adjMatrix;                   /**< Adjacency matrix representing edge weights. */
+    std::set<std::pair<std::string, std::string>> printed;     /**< Tracks printed edges to avoid duplicates. */
+    int totalDiscoveryDistance = 0;                            /**< Total distance of discovery edges. */
+    std::vector<TripEntry> trip;                               /**< Stores trip entries from BFS traversal. */
+    int total_cost;                                            /**< Total cost of the traversal. */
+
 
 public:
+    /**
+     * @brief Returns the total discovery cost accumulated during BFS.
+     * @return Total cost in miles.
+     */
     int totalCost() {
         return total_cost;
     }
 
+    /**
+     * @brief Returns the recorded trip entries from the BFS traversal.
+     * @return Vector of TripEntry objects.
+     */
     std::vector<TripEntry> getTrips() {
         return trip;
     }
 
+    /**
+     * @brief Constructs a GraphBFS object with given vertex names.
+     * @param nodes Vector of unique vertex names.
+     */
     GraphBFS(const vector<string>& nodes) {
         vertices = nodes;
         int n = nodes.size();
@@ -752,12 +970,23 @@ public:
         }
     }
 
+    /**
+     * @brief Adds a directed edge between two vertices with a given cost.
+     * @param from Source vertex name.
+     * @param to Destination vertex name.
+     * @param cost Edge weight (e.g., distance in miles).
+     */
     void addEdge(const string& from, const string& to, int cost) {
         int u = vertexIndex[from];
         int v = vertexIndex[to];
         adjMatrix[u][v] = cost; // directed only
     }
 
+    /**
+     * @brief Performs a breadth-first traversal starting from a specified vertex.
+     * @param start Starting vertex name.
+     * @param discovery_only If true, cross edges are not included in the traversal result.
+     */
     void bfs(const string& start, bool discovery_only = false) {
         set<string> visited;
         queue<string> q;
@@ -861,23 +1090,44 @@ public:
 
 using namespace std;
 
+/**
+ * @class GraphDijkstra
+ * @brief Represents a weighted undirected graph with Dijkstra-based traversal and pathfinding capabilities.
+ *
+ * This class supports:
+ * - Standard Dijkstra's algorithm to compute shortest paths from a single source
+ * - Traversal through all vertices using Dijkstra’s algorithm to classify discovery/back/cross edges
+ * - Optimized path through a subset of vertices (e.g., stadiums) using permutations + Dijkstra
+ */
 class GraphDijkstra {
 private:
-    vector<string> vertices;
-    map<string, int> vertexIndex;
-    vector<vector<int>> adjMatrix;
-    vector<TripEntry> trip;
-    int total_cost;
+    std::vector<std::string> vertices;                    /**< List of vertex names. */
+    std::map<std::string, int> vertexIndex;               /**< Maps vertex names to matrix indices. */
+    std::vector<std::vector<int>> adjMatrix;              /**< Adjacency matrix to store distances. */
+    std::vector<TripEntry> trip;                          /**< Stores path/trip entries for reporting. */
+    int total_cost;                                       /**< Total cost accumulated from a traversal. */
 
 public:
+    /**
+     * @brief Returns the total cost (e.g., miles) of the last traversal or route.
+     * @return Total cost in integer miles.
+     */
     int totalCost() {
         return total_cost;
     }
 
+    /**
+     * @brief Gets the recorded trip entries from the most recent traversal.
+     * @return Vector of TripEntry structs.
+     */
     std::vector<TripEntry> getTrips() {
         return trip;
     }
 
+    /**
+     * @brief Constructs a graph with a given set of node names.
+     * @param nodes Vector of unique node labels (e.g., stadium names).
+     */
     GraphDijkstra(const vector<string>& nodes) {
         vertices = nodes;
         int n = nodes.size();
@@ -887,6 +1137,12 @@ public:
         }
     }
 
+    /**
+     * @brief Adds an undirected edge between two nodes with a specified cost.
+     * @param from Source node.
+     * @param to Destination node.
+     * @param cost Distance or weight of the edge.
+     */
     void addEdge(const string& from, const string& to, int cost) {
         int u = vertexIndex[from];
         int v = vertexIndex[to];
@@ -894,6 +1150,10 @@ public:
         adjMatrix[v][u] = cost; // Remove this line if making graph directed
     }
 
+    /**
+     * @brief Computes Dijkstra’s shortest paths from a single source and stores results in `trip`.
+     * @param source Starting vertex name.
+     */
     void dijkstra(const string& source) {
         int n = vertices.size();
         vector<int> dist(n, INT_MAX);
@@ -970,6 +1230,12 @@ public:
         }
     }
 
+    /**
+     * @brief Computes Dijkstra’s path tree from a source index.
+     * @param srcIdx Index of source vertex.
+     * @param dist Vector to store shortest distances to all nodes.
+     * @param prev Vector to store parent pointers for path reconstruction.
+     */
     void dijkstraPath(int srcIdx, vector<int>& dist, vector<int>& prev) {
         int n = vertices.size();
         dist.assign(n, INT_MAX);
@@ -998,6 +1264,12 @@ public:
         }
     }
 
+    /**
+     * @brief Visits all vertices starting from a city using repeated Dijkstra's to form a connected traversal.
+     * @param startCity The starting vertex name.
+     *
+     * Classifies and prints discovery, back, and cross edges. Updates `trip` and `total_cost`.
+     */
     void traverseAllFrom(const string& startCity) {
         int totalDiscovery = 0;
         int start = vertexIndex[startCity];
@@ -1075,6 +1347,12 @@ public:
         total_cost = totalDiscovery;
     }
 
+    /**
+     * @brief Computes the optimized shortest route through a given list of stadiums.
+     * @param stadiums List of stadium names to visit in optimal order.
+     *
+     * Uses all-pairs shortest paths + permutations to find the most efficient order of visits.
+     */
     void dijkstraOptimizedRoute(const vector<string>& stadiums) {
         int k = stadiums.size();
         if (k < 2) return;
@@ -1299,15 +1577,26 @@ private:
 
 using namespace std;
 
+/**
+ * @class GraphGreedy
+ * @brief Represents an undirected weighted graph used to compute a greedy path through selected stadiums.
+ *
+ * This class is used to generate a greedy route starting from a specified stadium and visiting a set
+ * of other stadiums by always choosing the nearest unvisited neighbor.
+ */
 class GraphGreedy {
 private:
-    vector<string> vertices;
-    map<string, int> vertexIndex;
-    vector<vector<int>> adjMatrix;
-    vector<TripEntry> trip;
-    int total_cost = 0;
+    std::vector<std::string> vertices;              /**< List of vertex names (e.g., stadiums). */
+    std::map<std::string, int> vertexIndex;         /**< Maps stadium names to indices in the adjacency matrix. */
+    std::vector<std::vector<int>> adjMatrix;        /**< Adjacency matrix storing distances between stadiums. */
+    std::vector<TripEntry> trip;                    /**< List of trip entries representing the computed route. */
+    int total_cost = 0;                             /**< Total mileage of the computed greedy route. */
 
 public:
+    /**
+     * @brief Constructor that initializes the graph with given node names.
+     * @param nodes List of stadium names to use as graph vertices.
+     */
     GraphGreedy(const vector<string>& nodes) {
         vertices = nodes;
         int n = nodes.size();
@@ -1317,6 +1606,12 @@ public:
         }
     }
 
+    /**
+     * @brief Adds an undirected edge between two stadiums with the specified distance.
+     * @param from Name of the starting stadium.
+     * @param to Name of the destination stadium.
+     * @param cost Distance (in miles) between the two stadiums.
+     */
     void addEdge(const string& from, const string& to, int cost) {
         int u = vertexIndex[from];
         int v = vertexIndex[to];
@@ -1324,6 +1619,15 @@ public:
         adjMatrix[v][u] = cost; // undirected
     }
 
+    /**
+     * @brief Computes a greedy route through the specified stadiums starting from a given stadium.
+     *
+     * At each step, the algorithm moves to the nearest unvisited stadium.
+     * The resulting path and total cost are stored internally.
+     *
+     * @param startStadium The name of the stadium to start from.
+     * @param stadiumsToVisit List of stadium names to include in the trip.
+     */
     void greedyRouteThroughStadiums(const string& startStadium, const vector<string>& stadiumsToVisit) {
         if (stadiumsToVisit.empty()) return;
 
@@ -1375,10 +1679,18 @@ public:
         cout << "Total Greedy Distance: " << total_cost << " miles\n";
     }
 
+    /**
+     * @brief Retrieves the total cost (mileage) of the last computed route.
+     * @return Total distance in miles.
+     */
     int getTotalCost() const {
         return total_cost;
     }
 
+    /**
+     * @brief Retrieves the trip details (edges taken) from the last computed route.
+     * @return A vector of TripEntry structures containing origin, destination, distance, and type.
+     */
     vector<TripEntry> getTripDetails() const {
         return trip;
     }

@@ -1,5 +1,10 @@
 #include "db.h"
 
+/**
+ * @brief Inserts distance data between stadiums into the 'stadium_distances' table.
+ * @param db The active QSqlDatabase connection.
+ * @return true if data was inserted successfully, false on error.
+ */
 bool insertStadiumDistances(QSqlDatabase& db) {
     if (!db.isOpen()) {
         qWarning() << "Database is not open!";
@@ -162,7 +167,11 @@ bool insertStadiumDistances(QSqlDatabase& db) {
 }
 
 
-
+/**
+ * @brief Creates the 'stadium_distances' table if it does not exist.
+ * @param db The active QSqlDatabase connection.
+ * @return true if the table was created or already exists, false on error.
+ */
 bool createStadiumDistancesTable(QSqlDatabase& db) {
     if (!db.isOpen()) {
         qWarning() << "Database is not open!";
@@ -195,6 +204,11 @@ bool createStadiumDistancesTable(QSqlDatabase& db) {
 }
 
 
+/**
+ * @brief Creates the 'teams' table if it does not already exist in the database.
+ * @param db The database connection.
+ * @return true on successful creation; false if an error occurred.
+ */
 bool createTeamsTable(QSqlDatabase& db) {
     if (!db.isOpen()) {
         qWarning() << "Database is not open!";
@@ -235,6 +249,11 @@ bool createTeamsTable(QSqlDatabase& db) {
 }
 
 
+/**
+ * @brief Creates the 'stadium_location' table for tracking stadium widget coordinates.
+ * @param db The database connection.
+ * @return true if table creation succeeded; false otherwise.
+ */
 bool createStadiumLocationTable(QSqlDatabase& db) {
     if (!db.isOpen()) {
         qWarning() << "Database is not open!";
@@ -268,7 +287,11 @@ bool createStadiumLocationTable(QSqlDatabase& db) {
 }
 
 
-
+/**
+ * @brief Creates the 'souvenirs' table for storing souvenir items per team.
+ * @param db The database connection.
+ * @return true if the table was created successfully; false on error.
+ */
 bool createSouvenirsTable(QSqlDatabase& db) {
     if (!db.isOpen()) {
         qWarning() << "Database is not open!";
@@ -306,6 +329,12 @@ bool createSouvenirsTable(QSqlDatabase& db) {
 }
 
 
+
+/**
+ * @brief Inserts a predefined list of MLB teams and stadium data into the 'teams' table, checking for duplicates.
+ * @param db The database connection.
+ * @return true if all entries were inserted or already existed; false if a query failed.
+ */
 bool insertTeamsData(QSqlDatabase& db) {
     if (!db.isOpen()) {
         qWarning() << "Database is not open!";
@@ -395,6 +424,11 @@ bool insertTeamsData(QSqlDatabase& db) {
 }
 
 
+/**
+ * @brief Inserts default souvenir items for each team in the 'teams' table.
+ * @param db The database connection.
+ * @return true if inserts succeed; false if any fail.
+ */
 bool addDefaultSouvenirs(QSqlDatabase& db) {
     if (!db.isOpen()) {
         qWarning() << "Database is not open!";
@@ -443,6 +477,11 @@ bool addDefaultSouvenirs(QSqlDatabase& db) {
 }
 
 
+/**
+ * @brief Resets content for key tables (teams, distances, souvenirs), recreating them and repopulating with default data.
+ * @param db The database connection.
+ * @return true on successful reset; false if any drop/create/insert operation fails.
+ */
 bool resetContent(QSqlDatabase& db) {
     if (!db.isOpen()) {
         qWarning() << "Database is not open!";
@@ -498,6 +537,12 @@ bool resetContent(QSqlDatabase& db) {
     return true;
 }
 
+
+/**
+ * @brief Resets all content, including the user table, by dropping and recreating database tables.
+ * @param db The database connection.
+ * @return true if all operations succeed; false otherwise.
+ */
 bool resetAllContent(QSqlDatabase& db) {
     if (!db.isOpen()) {
         qWarning() << "Database is not open!";
@@ -520,6 +565,12 @@ bool resetAllContent(QSqlDatabase& db) {
     return true;
 }
 
+
+/**
+ * @brief Adds distances from Las Vegas Stadium to a few other stadiums in the 'stadium_distances' table.
+ * @param db The database connection.
+ * @return true on success; false if a query fails.
+ */
 bool addStadiumDistances(QSqlDatabase& db) {
     if (!db.isOpen()) {
         qWarning() << "Database is not open!";
@@ -579,6 +630,11 @@ bool addStadiumDistances(QSqlDatabase& db) {
 }
 
 
+/**
+ * @brief Inserts default (x, y) coordinates for each known stadium into 'stadium_location'.
+ * @param db The database connection.
+ * @return true on successful insert; false if a query fails.
+ */
 bool insertStadiumLocationData(QSqlDatabase& db) {
     if (!db.isOpen()) {
         qWarning() << "Database is not open!";
@@ -641,7 +697,11 @@ bool insertStadiumLocationData(QSqlDatabase& db) {
 }
 
 
-
+/**
+ * @brief Adds the Las Vegas Stadium to the 'stadium_location' table with specific coordinates.
+ * @param db The database connection.
+ * @return true if insert succeeds; false on error.
+ */
 bool addStadiumLocationData(QSqlDatabase& db) {
     if (!db.isOpen()) {
         qWarning() << "Database is not open!";
@@ -675,6 +735,11 @@ bool addStadiumLocationData(QSqlDatabase& db) {
 }
 
 
+/**
+ * @brief Adds the Las Vegas Gamblers team entry to the 'teams' table.
+ * @param db The database connection.
+ * @return true if insert is successful; false on error or duplicate.
+ */
 bool addTeamsData(QSqlDatabase& db) {
     if (!db.isOpen()) {
         qWarning() << "Database is not open!";
@@ -734,6 +799,12 @@ bool addTeamsData(QSqlDatabase& db) {
     return db.commit();
 }
 
+
+/**
+ * @brief Bulk inserts the Las Vegas team, distances, souvenir data, and location.
+ * @param db The database connection.
+ * @return true if all operations succeed; false otherwise.
+ */
 bool addBulkData(QSqlDatabase& db) {
     addTeamsData(db);
     addStadiumDistances(db);

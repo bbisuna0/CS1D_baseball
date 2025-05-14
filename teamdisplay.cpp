@@ -7,6 +7,12 @@
 #include "mapdisp.h"
 #include <QSqlDatabase>
 
+/**
+ * @brief Callback triggered when the current team record changes.
+ *
+ * Updates UI elements like the team logo and souvenir filter based on the new record.
+ * @param index Index of the current record in the model.
+ */
 void teamdisplay::onRecordChanged(int index)
 {
     // You can access the current record like this:
@@ -45,6 +51,12 @@ void teamdisplay::onRecordChanged(int index)
 }
 
 
+/**
+ * @brief Constructor for teamdisplay.
+ *
+ * Sets up the UI, loads data into models, and establishes data mappings and UI behavior.
+ * @param parent Optional parent widget.
+ */
 teamdisplay::teamdisplay(QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::teamdisplay)
@@ -231,11 +243,19 @@ teamdisplay::teamdisplay(QWidget *parent)
     //mainLayout->addLayout(buttonLayout);
 }
 
+
+/**
+ * @brief Destructor for teamdisplay.
+ */
 teamdisplay::~teamdisplay()
 {
     delete ui;
 }
 
+
+/**
+ * @brief Applies changes made in the UI to the database when "OK" is clicked.
+ */
 void teamdisplay::on_buttonBox_accepted()
 {
     if (!mapper->submit()) {
@@ -249,6 +269,9 @@ void teamdisplay::on_buttonBox_accepted()
 }
 
 
+/**
+ * @brief Discards changes when the user cancels the dialog.
+ */
 void teamdisplay::on_buttonBox_rejected()
 {
     mapper->revert();          // Reverts changes in widgets
@@ -258,6 +281,9 @@ void teamdisplay::on_buttonBox_rejected()
 }
 
 
+/**
+ * @brief Marks a team for deletion or reverts the deletion if already marked.
+ */
 void teamdisplay::on_pb_delete_clicked()
 {
     int row = mapper->currentIndex();
@@ -281,6 +307,9 @@ void teamdisplay::on_pb_delete_clicked()
 }
 
 
+/**
+ * @brief Opens the stadium location dialog for updating coordinates.
+ */
 void teamdisplay::on_pb_location_clicked()
 {
     int x = 500;
@@ -291,6 +320,9 @@ void teamdisplay::on_pb_location_clicked()
 }
 
 
+/**
+ * @brief Deletes the currently selected souvenir from the list.
+ */
 void teamdisplay::on_pb_souvenir_delete_clicked()
 {
     QModelIndex currentIndex = ui->tv_souvenirs->currentIndex();
@@ -300,6 +332,9 @@ void teamdisplay::on_pb_souvenir_delete_clicked()
 }
 
 
+/**
+ * @brief Adds a new souvenir row associated with the currently selected team.
+ */
 void teamdisplay::on_pb_souvenir_add_clicked()
 {
     int row = souvenirModel->rowCount();

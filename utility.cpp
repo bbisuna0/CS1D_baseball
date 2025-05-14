@@ -1,6 +1,11 @@
 #include "utility.h"
 #include <QMessageBox>
 
+
+/**
+ * @brief Establishes a connection to the SQLite database.
+ * @return True if the connection is successful, false otherwise.
+ */
 bool createConnection()
 {
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
@@ -13,6 +18,10 @@ bool createConnection()
     return true;
 }
 
+
+/**
+ * @brief Creates the 'user' table in the database if it doesn't already exist.
+ */
 void createUserTable() // QSqlDatabase &db
 {
     /*
@@ -38,6 +47,10 @@ void createUserTable() // QSqlDatabase &db
 }
 
 
+/**
+ * @brief Checks whether the 'user' table exists in the database.
+ * @return True if the table exists, false otherwise.
+ */
 bool checkUserTable() // check if user table exists
 {
     QString checkUser;
@@ -56,6 +69,10 @@ bool checkUserTable() // check if user table exists
 }
 
 
+/**
+ * @brief Checks whether the 'stadium_location' table exists in the database.
+ * @return True if the table exists, false otherwise.
+ */
 bool checkStadiumLocationTable() // check if stadium_location table exists
 {
     QString checkQueryStr = "SELECT name FROM sqlite_master WHERE type='table' AND name='stadium_location';";
@@ -74,6 +91,13 @@ bool checkStadiumLocationTable() // check if stadium_location table exists
 }
 
 
+/**
+ * @brief Inserts a new user into the 'user' table.
+ * @param ID Not used (set to auto-increment).
+ * @param username Username to insert.
+ * @param password Password to insert.
+ * @param admin Whether the user has administrative privileges.
+ */
 void addUser(int ID, QString username, QString password, bool admin) // add user data into database
 {
     QString addUser = "INSERT INTO user ("
@@ -98,6 +122,14 @@ void addUser(int ID, QString username, QString password, bool admin) // add user
     return;
 }
 
+
+/**
+ * @brief Validates the provided username and password against the database.
+ * @param uname The username to validate.
+ * @param pass The password to validate.
+ * @param admin Output parameter to determine if the user is an admin.
+ * @return True if the credentials are valid, false otherwise.
+ */
 //bool checkPassword(QString uname, QString pass, bool &admin, QString &uid) // check if user table exists
 bool checkPassword(QString uname, QString pass, bool &admin) // check if user table exists
 {
@@ -129,6 +161,13 @@ bool checkPassword(QString uname, QString pass, bool &admin) // check if user ta
     }
 }
 
+
+/**
+ * @brief Checks whether a specific table exists in the provided database connection.
+ * @param db The database connection.
+ * @param tableName The name of the table to check.
+ * @return True if the table exists, false otherwise.
+ */
 bool tableExists(QSqlDatabase& db, const QString& tableName) {
     return db.tables().contains(tableName);
 }

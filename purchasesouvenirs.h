@@ -8,12 +8,29 @@
 #include <QStyledItemDelegate>
 #include <QSpinBox>
 
+
+/**
+ * @class SpinBoxDelegate
+ * @brief A delegate for editing table cells using a QSpinBox.
+ *
+ * This delegate is used to edit integer values (quantities) in a table view using a spin box widget.
+ */
 class SpinBoxDelegate : public QStyledItemDelegate {
     Q_OBJECT
 
 public:
+    /**
+     * @brief Constructs the SpinBoxDelegate.
+     * @param parent Optional parent object.
+     */
     explicit SpinBoxDelegate(QObject* parent = nullptr) : QStyledItemDelegate(parent) {}
 
+
+    /**
+     * @brief Creates the spin box editor widget.
+     * @param parent Parent widget.
+     * @return A pointer to the created spin box.
+     */
     QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex&) const override {
         QSpinBox* editor = new QSpinBox(parent);
         editor->setMinimum(0);  // Allow 0 and positive numbers only
@@ -21,17 +38,37 @@ public:
         return editor;
     }
 
+
+    /**
+     * @brief Sets the editor's value from the model data.
+     * @param editor The spin box widget.
+     * @param index The model index containing the data.
+     */
     void setEditorData(QWidget* editor, const QModelIndex& index) const override {
         int value = index.model()->data(index, Qt::EditRole).toInt();
         QSpinBox* spinBox = qobject_cast<QSpinBox*>(editor);
         spinBox->setValue(value);
     }
 
+
+    /**
+     * @brief Updates the model with the editor's value.
+     * @param editor The spin box widget.
+     * @param model The model to update.
+     * @param index The index in the model to update.
+     */
     void setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const override {
         QSpinBox* spinBox = qobject_cast<QSpinBox*>(editor);
         model->setData(index, spinBox->value(), Qt::EditRole);
     }
 
+
+    /**
+     * @brief Sets the geometry of the editor widget.
+     * @param editor The spin box widget.
+     * @param option The style options.
+     * @param index The index in the model.
+     */
     void updateEditorGeometry(QWidget* editor, const QStyleOptionViewItem& option, const QModelIndex&) const override {
         editor->setGeometry(option.rect);
     }
@@ -46,7 +83,7 @@ class purchasesouvenirs;
  * @brief Dialog for purchasing souvenirs.
  *
  * This class provides a user interface for selecting and purchasing souvenirs.
- * It manages a list of available souvenir purchases and interacts with the UI.
+ * It manages a list of available souvenir purchases and allows users to specify quantities.
  */
 class purchasesouvenirs : public QDialog
 {
@@ -66,11 +103,16 @@ public:
      */
     explicit purchasesouvenirs(const std::vector<SouvenirPurchase>& data, QWidget *parent = nullptr);
 
-    /// @brief Destructor for purchasesouvenirs.
+    /**
+     * @brief Destructor for purchasesouvenirs.
+     */
     ~purchasesouvenirs();
 
 private slots:
-    /// @brief Handles the event when the purchase button is clicked.
+    /**
+     * @brief Slot triggered when the "Purchase" button is clicked.
+     * Displays the purchase summary dialog.
+     */
     void on_purchaseButton_clicked();
 
 private:

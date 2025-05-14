@@ -14,8 +14,9 @@
  * @class MergedTableView
  * @brief A custom QTableView with merged cells functionality.
  *
- * This class extends QTableView to provide the ability to merge consecutive
- * cells in a specified column if they contain the same value.
+ * This class extends QTableView to provide the ability to merge visually
+ * consecutive cells in a specified column when they contain the same value.
+ * It is useful for grouped visual representation of table data.
  */
 class MergedTableView : public QTableView {
 public:
@@ -27,11 +28,11 @@ public:
 
 protected:
     /**
-     * @brief Handles the paint event to merge table cells.
+     * @brief Overrides the paint event to visually merge cells in a column.
      * @param event The paint event.
      *
-     * This function iterates through the model and merges consecutive rows
-     * in a specified column if they contain the same value.
+     * This function traverses the table and, for a specified column, merges
+     * rows with identical consecutive values by drawing them as a single block.
      */
     void paintEvent(QPaintEvent *event) override {
         QTableView::paintEvent(event);
@@ -42,7 +43,7 @@ protected:
         QStandardItemModel *model = qobject_cast<QStandardItemModel*>(this->model());
         if (!model) return;
 
-        int mergeColumn = 0; // Column to merge by (adjust as needed)
+        int mergeColumn = 0; // Column index to apply merging
         QString previousValue;
         int mergeStartRow = -1;
 
@@ -75,13 +76,13 @@ protected:
 
 private:
     /**
-     * @brief Merges consecutive cells in a column.
-     * @param column The column in which merging should occur.
-     * @param startRow The starting row of the merge.
-     * @param endRow The ending row of the merge.
+     * @brief Merges consecutive cells in a column by clearing duplicates.
+     * @param column The column to apply merging to.
+     * @param startRow The starting row index for the merge.
+     * @param endRow The ending row index for the merge.
      *
-     * This function visually merges consecutive cells in the given column
-     * by setting only the first cell's data and clearing the others.
+     * This function keeps the content in the top cell and clears the data
+     * in subsequent cells to simulate a merged cell appearance.
      */
     void mergeCells(int column, int startRow, int endRow) {
         QStandardItemModel *model = qobject_cast<QStandardItemModel*>(this->model());

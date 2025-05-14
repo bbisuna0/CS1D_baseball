@@ -3,6 +3,11 @@
 #include <QSqlRecord>
 #include "utility.h"
 
+
+/**
+ * @class DisplayStadiums
+ * @brief A QWidget-based class for displaying and sorting MLB stadium data.
+ */
 DisplayStadiums::DisplayStadiums(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::DisplayStadiums)
@@ -39,17 +44,28 @@ DisplayStadiums::DisplayStadiums(QWidget *parent)
     ui->pb_stadium->click();
 }
 
+
+/**
+ * @brief Destructor for DisplayStadiums.
+ */
 DisplayStadiums::~DisplayStadiums()
 {
     delete ui;
 }
 
+
+/**
+ * @brief Closes the stadium display window.
+ */
 void DisplayStadiums::on_pb_exit_clicked()
 {
     this->close();
 }
 
 
+/**
+ * @brief Sorts and displays stadium data alphabetically by stadium name.
+ */
 void DisplayStadiums::on_pb_stadium_clicked()
 {
     // QVariant header = team_data->headerData(1,Qt::Horizontal, Qt::DisplayRole);
@@ -90,6 +106,9 @@ void DisplayStadiums::on_pb_stadium_clicked()
 }
 
 
+/**
+ * @brief Sorts and displays stadiums alphabetically by ballpark typology.
+ */
 void DisplayStadiums::on_pb_typology_clicked()
 {
     team_data->setSort(team_data->fieldIndex("ballpark_typology"), Qt::AscendingOrder);
@@ -121,6 +140,10 @@ void DisplayStadiums::on_pb_typology_clicked()
 }
 
 
+/**
+ * @brief Filters the display to show only stadiums with an "Open" roof type.
+ *        Also appends a summary row showing the total count.
+ */
 void DisplayStadiums::on_pb_openroof_clicked()
 {
     team_data->setSort(team_data->fieldIndex("team_name"), Qt::AscendingOrder);
@@ -166,6 +189,9 @@ void DisplayStadiums::on_pb_openroof_clicked()
 }
 
 
+/**
+ * @brief Sorts and displays stadiums by date opened, in ascending order.
+ */
 void DisplayStadiums::on_pb_chronological_clicked()
 {
     team_data->setSort(team_data->fieldIndex("date_opened"), Qt::AscendingOrder);
@@ -197,6 +223,9 @@ void DisplayStadiums::on_pb_chronological_clicked()
 }
 
 
+/**
+ * @brief Sorts stadiums by seating capacity and appends a row showing the total capacity.
+ */
 void DisplayStadiums::on_pb_seating_clicked()
 {
     team_data->setSort(team_data->fieldIndex("seating_capacity"), Qt::AscendingOrder);
@@ -250,6 +279,9 @@ void DisplayStadiums::on_pb_seating_clicked()
 }
 
 
+/**
+ * @brief Filters the table to show the stadium(s) with the largest center field distance.
+ */
 void DisplayStadiums::on_pb_largedistance_clicked()
 {
     team_data->setSort(team_data->fieldIndex("distance_to_center_field"), Qt::DescendingOrder);
@@ -285,6 +317,9 @@ void DisplayStadiums::on_pb_largedistance_clicked()
 }
 
 
+/**
+ * @brief Filters the table to show the stadium(s) with the smallest center field distance.
+ */
 void DisplayStadiums::on_pb_smalldistance_clicked()
 {
     team_data->setSort(team_data->fieldIndex("distance_to_center_field"), Qt::AscendingOrder);
