@@ -12,13 +12,18 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Core Sql)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Core Sql)
 
+# Add GoogleTest
+enable_testing()
+add_subdirectory(googletest)  # assumes googletest is in subdirectory
+include(GoogleTest)
+
 set(PROJECT_SOURCES
-        main.cpp
-        loginwindow.cpp
-        loginwindow.h
-        loginwindow.ui
-        mergedtableview.h
-        mergedtableview.cpp
+    main.cpp
+    loginwindow.cpp
+    loginwindow.h
+    loginwindow.ui
+    mergedtableview.h
+    mergedtableview.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -53,37 +58,20 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         #souvenirdialog.cpp souvenirdialog.h
     )
 
-# Define target properties for Android with Qt 6 as:
-#    set_property(TARGET CS1D_baseball APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
-#                 ${CMAKE_CURRENT_SOURCE_DIR}/android)
-# For more information, see https://doc.qt.io/qt-6/qt-add-executable.html#target-creation
-
-target_include_directories(CS1D_baseball PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+    target_include_directories(CS1D_baseball PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 else()
     if(ANDROID)
-        add_library(CS1D_baseball SHARED
-            ${PROJECT_SOURCES}
-        )
-# Define properties for Android with Qt 5 after find_package() calls as:
-#    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
+        add_library(CS1D_baseball SHARED ${PROJECT_SOURCES})
     else()
-        add_executable(CS1D_baseball
-            ${PROJECT_SOURCES}
-        )
+        add_executable(CS1D_baseball ${PROJECT_SOURCES})
     endif()
 endif()
 
 target_link_libraries(CS1D_baseball PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt6::Sql Qt6::Core)
 
-# Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
-# If you are developing for iOS or macOS you should consider setting an
-# explicit, fixed bundle identifier manually though.
-if(${QT_VERSION} VERSION_LESS 6.1.0)
-  set(BUNDLE_ID_OPTION MACOSX_BUNDLE_GUI_IDENTIFIER com.example.CS1D_baseball)
-endif()
 set_target_properties(CS1D_baseball PROPERTIES
-    ${BUNDLE_ID_OPTION}
+    MACOSX_BUNDLE_GUI_IDENTIFIER com.example.CS1D_baseball
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
     MACOSX_BUNDLE TRUE
@@ -100,3 +88,21 @@ install(TARGETS CS1D_baseball
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(CS1D_baseball)
 endif()
+
+# -------------------------------
+# GoogleTest Unit Test Section
+# -------------------------------
+# Add your test source file(s) here
+add_executable(baseball_tests
+    tests/test_main.cpp
+    #tests/test_graph.cpp
+    # add more test files as needed
+)
+
+target_include_directories(baseball_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(baseball_tests
+    GTest::gtest_main
+    GTest::gmock_main
+)
+
+gtest_discover_tests(baseball_tests)
