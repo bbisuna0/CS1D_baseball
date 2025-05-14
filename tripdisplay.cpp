@@ -121,6 +121,25 @@ void tripdisplay::on_saddlebackPB_clicked()
 void tripdisplay::on_pbMap_clicked()
 {
     mapdisp *mapWin = new mapdisp();
+
+    int rowCount = model->rowCount();
+    int columnCount = model->columnCount();
+
+    for (int row = 0; row < rowCount; ++row) {
+        QString start;
+        QString end;
+        QString type;
+        if (model->item(row,3)->text() == "discovery" || model->item(row,3)->text() == "cross") {
+            start = model->item(row,0)->text();
+            end = model->item(row,1)->text();
+            if(model->item(row,3)->text() == "discovery")
+                type = "blink";
+            else
+                type = "dashed";
+            mapWin->routeAdd(start, end, type);
+        }
+    }
+
     mapWin->show();
 }
 

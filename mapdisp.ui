@@ -65,7 +65,7 @@
        </font>
       </property>
       <property name="text">
-       <string>Animate Route</string>
+       <string>Display Back/Cross Edges</string>
       </property>
      </widget>
     </item>
@@ -78,7 +78,7 @@
        </font>
       </property>
       <property name="text">
-       <string>Display Back/Cross Edges</string>
+       <string>Display All</string>
       </property>
      </widget>
     </item>
@@ -91,7 +91,7 @@
        </font>
       </property>
       <property name="text">
-       <string>Display All</string>
+       <string>Animate Route</string>
       </property>
      </widget>
     </item>

@@ -75,26 +75,48 @@ void mapdisp::on_pb_exit_clicked()
 
 void mapdisp::on_pb_route_clicked()
 {
-    for (int i = 0; i < 10; ++i) {
-        auto *diamond = new DiamondWidget(QString("Team %1").arg(i + 1), ui->label);
-        diamond->move(50 + i * 60, 50);  // Stagger horizontally
-        diamond->show();
-        diamonds.append(diamond);
+    // Display Route
+    if (!lines.empty()) {
+        for (ConnectionLine* conn : lines) {
+            if (conn) {
+                conn->deleteLater();  // schedule deletion
+            }
+        }
+        lines.clear();
     }
 
-    // DiamondWidget *a = new DiamondWidget("Team A", ui->label); // parent = QFrame*
-    // a->move(50, 30);  // Position it inside the frame
-    // a->show();
-
-    // DiamondWidget *b = new DiamondWidget("Team B", ui->label); // parent = QFrame*
-    // b->move(490, 190);  // Position it inside the frame
-    // b->show();
+    QVector<QPair<QWidget*, QWidget*>> pendingLines;
+    for (auto a : route) {
+        if(a.type == "blink") {
+            pendingLines.push_back({diamonds[findDiamondIndexByLabel(a.origin)],diamonds[findDiamondIndexByLabel(a.destination)]});
+        }
+    }
+    for (auto pair : pendingLines)
+        lines.push_back(new ConnectionLine(ui->label, pair.first, pair.second, ConnectionLine::Solid));
 }
 
 
 void mapdisp::on_pb_animate_clicked()
 {
+    // Display Cross/Back Edges
 
+    if (!lines.empty()) {
+        for (ConnectionLine* conn : lines) {
+            if (conn) {
+                conn->deleteLater();  // schedule deletion
+            }
+        }
+        lines.clear();
+    }
+
+    QVector<QPair<QWidget*, QWidget*>> pendingLines;
+    for (auto a : route) {
+        if(a.type == "dashed") {
+            pendingLines.push_back({diamonds[findDiamondIndexByLabel(a.origin)],diamonds[findDiamondIndexByLabel(a.destination)]});
+        }
+    }
+    for (auto pair : pendingLines)
+        lines.push_back(new ConnectionLine(ui->label, pair.first, pair.second, ConnectionLine::Dashed));
 }
 
 
@@ -137,23 +159,33 @@ void mapdisp::on_pb_save_clicked()
 
 void mapdisp::on_pb_all_clicked()
 {
-    QVector<QPair<QWidget*, QWidget*>> pendingLines = {
-        {diamonds[0], diamonds[1]},
-        {diamonds[1], diamonds[2]},
-        {diamonds[2], diamonds[3]},
-        {diamonds[3], diamonds[4]},
-        {diamonds[4], diamonds[5]}
-    };
+    // Animate Route
+    if (!lines.empty()) {
+        for (ConnectionLine* conn : lines) {
+            if (conn) {
+                conn->deleteLater();  // schedule deletion
+            }
+        }
+        lines.clear();
+    }
+
+    QVector<QPair<QWidget*, QWidget*>> pendingLines;
+    for (auto a : route) {
+        if(a.type == "blink") {
+            pendingLines.push_back({diamonds[findDiamondIndexByLabel(a.origin)],diamonds[findDiamondIndexByLabel(a.destination)]});
+        }
+    }
+
 
     int currentIndex = 0;
 
     QTimer *lineTimer = new QTimer(this);
-    lineTimer->setInterval(1500);  // Draw one line every 500 ms
+    lineTimer->setInterval(500);  // Draw one line every 500 ms
 
     connect(lineTimer, &QTimer::timeout, this, [=]() mutable {
         if (currentIndex < pendingLines.size()) {
             auto pair = pendingLines[currentIndex++];
-            new ConnectionLine(ui->label, pair.first, pair.second, ConnectionLine::Dashed);
+            lines.push_back(new ConnectionLine(ui->label, pair.first, pair.second, ConnectionLine::Blink));
         } else {
             lineTimer->stop();
             lineTimer->deleteLater();
@@ -161,6 +193,26 @@ void mapdisp::on_pb_all_clicked()
     });
 
     lineTimer->start();
+}
 
+
+void mapdisp::on_pb_backedges_clicked()
+{
+    // Display all
+    if (!lines.empty()) {
+        for (ConnectionLine* conn : lines) {
+            if (conn) {
+                conn->deleteLater();  // schedule deletion
+            }
+        }
+        lines.clear();
+    }
+
+    for (auto a : route) {
+        if(a.type == "blink")
+            lines.push_back(new ConnectionLine(ui->label, diamonds[findDiamondIndexByLabel(a.origin)], diamonds[findDiamondIndexByLabel(a.destination)], ConnectionLine::Solid));
+        else
+            lines.push_back(new ConnectionLine(ui->label, diamonds[findDiamondIndexByLabel(a.origin)], diamonds[findDiamondIndexByLabel(a.destination)], ConnectionLine::Dashed));
+    }
 }
 

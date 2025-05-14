@@ -96,14 +96,13 @@ public:
     explicit DiamondWidget(const QString& text, QWidget *parent = nullptr)
         : QWidget(parent), label(text)
     {
-        setFixedSize(60, 40);  // Size for diamond + text
+        setFixedSize(70, 55);  // Size for diamond + wrapped text
         setMouseTracking(true);
     }
 
     QString getLabel() const {
         return label;
     }
-
 
 protected:
     void paintEvent(QPaintEvent *) override {
@@ -125,12 +124,16 @@ protected:
 
         painter.drawPolygon(diamond);
 
-        // Draw label below diamond
+        // Draw smart-wrapped label below the diamond
         QFont font = painter.font();
         font.setPointSize(7);
         painter.setFont(font);
         painter.setPen(Qt::black);
-        painter.drawText(QRect(0, center.y() + half + 2, width(), 20), Qt::AlignHCenter | Qt::AlignTop, label);
+
+        QString wrappedLabel = wrapLabel(label, width(), font);
+        painter.drawText(QRect(0, center.y() + half + 2, width(), 20),
+                         Qt::AlignHCenter | Qt::AlignTop,
+                         wrappedLabel);
     }
 
     void mousePressEvent(QMouseEvent *event) override {
@@ -153,6 +156,24 @@ signals:
 private:
     QString label;
     QPoint dragStart;
+
+    QString wrapLabel(const QString& input, int maxWidth, const QFont& font) const {
+        QFontMetrics fm(font);
+        QStringList words = input.split(' ');
+        QString result, line;
+
+        for (const QString& word : words) {
+            QString testLine = line.isEmpty() ? word : line + " " + word;
+            if (fm.horizontalAdvance(testLine) > maxWidth) {
+                if (!line.isEmpty()) result += line + '\n';
+                line = word;
+            } else {
+                line = testLine;
+            }
+        }
+        result += line;
+        return result;
+    }
 };
 
 
@@ -198,6 +219,8 @@ private slots:
     void on_pb_save_clicked();
 
     void on_pb_all_clicked();
+
+    void on_pb_backedges_clicked();
 
 private:
     Ui::mapdisp *ui;
