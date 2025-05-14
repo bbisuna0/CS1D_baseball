@@ -37,9 +37,18 @@ purchasesouvenirs::purchasesouvenirs(const std::vector<SouvenirPurchase>& data, 
         rowItems.append(new QStandardItem(entry.price));
 
         // Quantity
-        QStandardItem* quantityItem = new QStandardItem(entry.quantity);
-        quantityItem->setData(entry.quantity, Qt::UserRole); // Store the int value for data integrity
+        //QStandardItem* quantityItem = new QStandardItem(entry.quantity);
+
+        // Create and set the delegate for the "Quantity" column (index 3)
+        SpinBoxDelegate* spinDelegate = new SpinBoxDelegate(this);
+        ui->tableView->setItemDelegateForColumn(3, spinDelegate);
+
+        QStandardItem* quantityItem = new QStandardItem();
+        quantityItem->setData(entry.quantity, Qt::EditRole);  // sets display + editing
         rowItems.append(quantityItem);
+
+        // quantityItem->setData(entry.quantity, Qt::UserRole); // Store the int value for data integrity
+        // rowItems.append(quantityItem);
 
 /*        qDebug() << QString::fromStdString(entry.college);
         qDebug() << QString::fromStdString(entry.souvenir)*/;

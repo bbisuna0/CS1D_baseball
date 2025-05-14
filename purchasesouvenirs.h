@@ -6,6 +6,37 @@
 #include <QStandardItemModel>
 #include "mergedtableview.h"
 
+#include <QStyledItemDelegate>
+#include <QSpinBox>
+
+class SpinBoxDelegate : public QStyledItemDelegate {
+    Q_OBJECT
+
+public:
+    explicit SpinBoxDelegate(QObject* parent = nullptr) : QStyledItemDelegate(parent) {}
+
+    QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex&) const override {
+        QSpinBox* editor = new QSpinBox(parent);
+        editor->setMinimum(0);  // Allow 0 and positive numbers only
+        editor->setMaximum(1000);  // Arbitrary high limit
+        return editor;
+    }
+
+    void setEditorData(QWidget* editor, const QModelIndex& index) const override {
+        int value = index.model()->data(index, Qt::EditRole).toInt();
+        QSpinBox* spinBox = qobject_cast<QSpinBox*>(editor);
+        spinBox->setValue(value);
+    }
+
+    void setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const override {
+        QSpinBox* spinBox = qobject_cast<QSpinBox*>(editor);
+        model->setData(index, spinBox->value(), Qt::EditRole);
+    }
+
+    void updateEditorGeometry(QWidget* editor, const QStyleOptionViewItem& option, const QModelIndex&) const override {
+        editor->setGeometry(option.rect);
+    }
+};
 
 namespace Ui {
 class purchasesouvenirs;
