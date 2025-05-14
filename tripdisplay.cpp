@@ -137,6 +137,9 @@ void tripdisplay::on_saddlebackPB_clicked()
     c.exec();
 }
 
+bool containsArrow(const QString& input) {
+    return input.contains("->");
+}
 
 /**
  * @brief Displays a graphical map of the trip route.
@@ -155,15 +158,34 @@ void tripdisplay::on_pbMap_clicked()
         QString start;
         QString end;
         QString type;
-        if (model->item(row,3)->text() == "discovery" || model->item(row,3)->text() == "cross") {
-            start = model->item(row,0)->text();
-            end = model->item(row,1)->text();
-            if(model->item(row,3)->text() == "discovery")
+        // if true, means the path is a dijkstra path
+        if (containsArrow(model->item(row,1)->text()))
+        {
+            QString path = model->item(row,1)->text();
+            QStringList stadiums = path.split("->", Qt::SkipEmptyParts);
+
+            for (QString& stadium : stadiums) {
+                stadium = stadium.trimmed();  // Remove leading/trailing spaces
+            }
+
+            for (int i = 0; i < stadiums.size() - 1; ++i) {
+                qDebug() << "(" << stadiums[i] << "," << stadiums[i + 1] << ")";
+                start = stadiums[i];
+                end = stadiums[i+1];
                 type = "blink";
-            else
-                type = "dashed";
-            mapWin->routeAdd(start, end, type);
+                mapWin->routeAdd(start, end, type);
+            }
         }
+        else
+            if (model->item(row,3)->text() == "discovery" || model->item(row,3)->text() == "cross") {
+                start = model->item(row,0)->text();
+                end = model->item(row,1)->text();
+                if(model->item(row,3)->text() == "discovery")
+                    type = "blink";
+                else
+                    type = "dashed";
+                mapWin->routeAdd(start, end, type);
+            }
     }
 
     mapWin->show();
