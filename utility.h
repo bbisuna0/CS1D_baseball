@@ -1381,6 +1381,395 @@ public:
     vector<TripEntry> getTripDetails() const {
         return trip;
     }
+
 };
+
+
+
+#include <iostream>
+#include <vector>
+#include <map>
+#include <set>
+#include <queue>
+#include <algorithm>
+#include <climits>
+
+using namespace std;
+
+class GraphGreedyThrough {
+private:
+    vector<string> vertices;
+    map<string, int> vertexIndex;
+    vector<vector<int>> adjMatrix;
+    vector<TripEntry> trip;
+    int total_cost = 0;
+
+public:
+    GraphGreedyThrough(const vector<string>& nodes) {
+        vertices = nodes;
+        int n = nodes.size();
+        adjMatrix.resize(n, vector<int>(n, -1));
+        for (int i = 0; i < n; i++) {
+            vertexIndex[nodes[i]] = i;
+        }
+    }
+
+    void addEdge(const string& from, const string& to, int cost) {
+        int u = vertexIndex[from];
+        int v = vertexIndex[to];
+        adjMatrix[u][v] = cost;
+        adjMatrix[v][u] = cost; // undirected
+    }
+
+    int bfsShortestPath(int start, int end, vector<int>& path) {
+        int n = vertices.size();
+        vector<bool> visited(n, false);
+        vector<int> prev(n, -1);
+        queue<int> q;
+        q.push(start);
+        visited[start] = true;
+
+        while (!q.empty()) {
+            int u = q.front(); q.pop();
+            if (u == end) break;
+
+            for (int v = 0; v < n; ++v) {
+                if (adjMatrix[u][v] != -1 && !visited[v]) {
+                    visited[v] = true;
+                    prev[v] = u;
+                    q.push(v);
+                }
+            }
+        }
+
+        if (!visited[end]) return -1; // unreachable
+
+        // Reconstruct path
+        for (int at = end; at != -1; at = prev[at])
+            path.push_back(at);
+        reverse(path.begin(), path.end());
+
+        // Calculate total distance
+        int total = 0;
+        for (size_t i = 0; i < path.size() - 1; ++i)
+            total += adjMatrix[path[i]][path[i + 1]];
+
+        return total;
+    }
+
+
+    void visitAllFromMarlinsShortest() {
+        const string startStadium = "Marlins Park";
+        int startIdx = vertexIndex[startStadium];
+        int n = vertices.size();
+
+        // Step 1: Compute all-pairs shortest path distance matrix
+        vector<vector<int>> dist(n, vector<int>(n, INT_MAX));
+        vector<vector<vector<int>>> paths(n, vector<vector<int>>(n));
+
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                vector<int> path;
+                int cost = bfsShortestPath(i, j, path);
+                if (cost != -1) {
+                    dist[i][j] = cost;
+                    paths[i][j] = path;
+                }
+            }
+        }
+
+        // Step 2: Held-Karp TSP (no return to start)
+        int VISITED_ALL = (1 << n) - 1;
+        vector<vector<int>> dp(n, vector<int>(1 << n, INT_MAX));
+        vector<vector<int>> parent(n, vector<int>(1 << n, -1));
+        dp[startIdx][1 << startIdx] = 0;
+
+        for (int mask = 0; mask < (1 << n); ++mask) {
+            for (int u = 0; u < n; ++u) {
+                if (!(mask & (1 << u))) continue;
+                for (int v = 0; v < n; ++v) {
+                    if ((mask & (1 << v)) || dist[u][v] == INT_MAX) continue;
+                    int nextMask = mask | (1 << v);
+                    int newDist = dp[u][mask] + dist[u][v];
+                    if (newDist < dp[v][nextMask]) {
+                        dp[v][nextMask] = newDist;
+                        parent[v][nextMask] = u;
+                    }
+                }
+            }
+        }
+
+        // Step 3: Find best endpoint (no return to start)
+        int endIdx = -1;
+        int minTourCost = INT_MAX;
+        for (int i = 0; i < n; ++i) {
+            if (i == startIdx) continue;
+            if (dp[i][VISITED_ALL] < minTourCost) {
+                minTourCost = dp[i][VISITED_ALL];
+                endIdx = i;
+            }
+        }
+
+        // Step 4: Reconstruct the path
+        trip.clear();
+        total_cost = 0;
+        int mask = VISITED_ALL;
+        vector<int> tour;
+        int curr = endIdx;
+        while (curr != -1) {
+            tour.push_back(curr);
+            int prev = parent[curr][mask];
+            mask ^= (1 << curr);
+            curr = prev;
+        }
+        reverse(tour.begin(), tour.end());
+
+        cout << "Optimal Route Starting at Marlins Park:\n";
+        for (size_t i = 0; i < tour.size() - 1; ++i) {
+            const auto& segment = paths[tour[i]][tour[i + 1]];
+            for (size_t j = 0; j < segment.size() - 1; ++j) {
+                int from = segment[j], to = segment[j + 1];
+                TripEntry entry;
+                entry.origin = QString::fromStdString(vertices[from]);
+                entry.destination = QString::fromStdString(vertices[to]);
+                entry.distance = adjMatrix[from][to];
+                entry.type = "forward";
+                trip.push_back(entry);
+                total_cost += adjMatrix[from][to];
+
+                cout << "\"" << vertices[from] << "\"  -  \"" << vertices[to] << "\"  =   "
+                     << adjMatrix[from][to] << "  :  \"forward\"\n";
+            }
+        }
+
+        cout << "Total Distance (shortest path through all stadiums): " << total_cost << " miles\n";
+    }
+
+
+    void visitAllFromMarlinsGreedy() {
+        const string startStadium = "Marlins Park";
+        if (vertexIndex.find(startStadium) == vertexIndex.end()) {
+            cout << "Error: Marlins Park not found in graph.\n";
+            return;
+        }
+
+        trip.clear();
+        total_cost = 0;
+
+        // Initialize all stadium indices as unvisited except start
+        set<int> unvisited;
+        for (int i = 0; i < vertices.size(); ++i) {
+            if (vertices[i] != startStadium)
+                unvisited.insert(i);
+        }
+
+        int currentIdx = vertexIndex[startStadium];
+        cout << "Starting at: " << vertices[currentIdx] << "\n";
+
+        while (!unvisited.empty()) {
+            int nextIdx = -1;
+            vector<int> bestPath;
+            int minCost = INT_MAX;
+
+            for (int candidate : unvisited) {
+                vector<int> path;
+                int cost = dijkstraShortestPath(currentIdx, candidate, path);
+                if (cost != -1 && cost < minCost) {
+                    minCost = cost;
+                    nextIdx = candidate;
+                    bestPath = path;
+                }
+            }
+
+            if (nextIdx == -1) {
+                cout << "No more reachable unvisited stadiums from " << vertices[currentIdx] << ".\n";
+                break;
+            }
+
+            // Record each step in the Dijkstra path
+            for (size_t i = 0; i < bestPath.size() - 1; ++i) {
+                int from = bestPath[i];
+                int to = bestPath[i + 1];
+
+                TripEntry entry;
+                entry.origin = QString::fromStdString(vertices[from]);
+                entry.destination = QString::fromStdString(vertices[to]);
+                entry.distance = adjMatrix[from][to];
+                entry.type = "forward";
+                trip.push_back(entry);
+
+                cout << "\"" << vertices[from] << "\"  -  \"" << vertices[to] << "\"  =   "
+                     << adjMatrix[from][to] << "  :  \"forward\"\n";
+
+                total_cost += adjMatrix[from][to];
+            }
+
+            currentIdx = nextIdx;
+            unvisited.erase(currentIdx);
+        }
+
+        cout << "Total Greedy Distance from Marlins Park (Dijkstra routing): " << total_cost << " miles\n";
+    }
+
+
+    int dijkstraShortestPath(int start, int end, vector<int>& path) {
+        int n = vertices.size();
+        vector<int> dist(n, INT_MAX);
+        vector<int> prev(n, -1);
+        vector<bool> visited(n, false);
+
+        dist[start] = 0;
+        using pii = pair<int, int>;
+        priority_queue<pii, vector<pii>, greater<pii>> pq;
+        pq.push({0, start});
+
+        while (!pq.empty()) {
+            auto [d, u] = pq.top(); pq.pop();
+            if (visited[u]) continue;
+            visited[u] = true;
+
+            for (int v = 0; v < n; ++v) {
+                if (adjMatrix[u][v] != -1) {
+                    int newDist = dist[u] + adjMatrix[u][v];
+                    if (newDist < dist[v]) {
+                        dist[v] = newDist;
+                        prev[v] = u;
+                        pq.push({newDist, v});
+                    }
+                }
+            }
+        }
+
+        if (dist[end] == INT_MAX) return -1;
+
+        for (int at = end; at != -1; at = prev[at])
+            path.push_back(at);
+        reverse(path.begin(), path.end());
+
+        return dist[end];
+    }
+
+    void dreamVacationRoute(const string& startStadium, const vector<string>& orderedDestinations) {
+        trip.clear();
+        total_cost = 0;
+
+        string current = startStadium;
+
+        cout << "Dream Vacation Route Starting from: " << current << "\n";
+
+        for (const string& nextStadium : orderedDestinations) {
+            if (vertexIndex.find(current) == vertexIndex.end() || vertexIndex.find(nextStadium) == vertexIndex.end()) {
+                cout << "Invalid stadium name: " << current << " or " << nextStadium << ".\n";
+                continue;
+            }
+
+            int u = vertexIndex[current];
+            int v = vertexIndex[nextStadium];
+
+            vector<int> path;
+            int pathCost = dijkstraShortestPath(u, v, path);
+
+            if (pathCost == -1) {
+                cout << "No path from " << current << " to " << nextStadium << ".\n";
+                continue;
+            }
+
+            for (size_t i = 0; i < path.size() - 1; ++i) {
+                int from = path[i];
+                int to = path[i + 1];
+
+                TripEntry entry;
+                entry.origin = QString::fromStdString(vertices[from]);
+                entry.destination = QString::fromStdString(vertices[to]);
+                entry.distance = adjMatrix[from][to];
+                entry.type = "segment";
+                trip.push_back(entry);
+
+                cout << "\"" << vertices[from] << "\"  -  \"" << vertices[to] << "\"  =   "
+                     << adjMatrix[from][to] << "  :  \"segment\"\n";
+
+                total_cost += adjMatrix[from][to];
+            }
+
+            current = nextStadium;
+        }
+
+        cout << "Total Dream Vacation Distance: " << total_cost << " miles\n";
+    }
+
+
+    void greedyRouteThroughStadiums(const string& startStadium, const vector<string>& stadiumsToVisit) {
+        if (stadiumsToVisit.empty()) return;
+
+        trip.clear();
+        total_cost = 0;
+
+        set<string> remaining(stadiumsToVisit.begin(), stadiumsToVisit.end());
+        remaining.insert(startStadium); // ensure start is valid
+        string current = startStadium;
+        remaining.erase(current);
+
+        cout << "Greedy Route Starting from: " << current << "\n";
+
+        while (!remaining.empty()) {
+            int u = vertexIndex[current];
+            string nextStadium;
+            vector<int> bestPath;
+            int shortestPathCost = INT_MAX;
+
+            for (const string& candidate : remaining) {
+                int v = vertexIndex[candidate];
+                vector<int> path;
+                int cost = bfsShortestPath(u, v, path);  // path may backtrack
+
+                if (cost != -1 && cost < shortestPathCost) {
+                    nextStadium = candidate;
+                    shortestPathCost = cost;
+                    bestPath = path;
+                }
+            }
+
+            if (nextStadium.empty()) {
+                cout << "No reachable unvisited stadiums from " << current << ". Remaining: ";
+                for (const string& s : remaining) cout << s << ", ";
+                cout << endl;
+                break;
+            }
+
+            for (size_t i = 0; i < bestPath.size() - 1; ++i) {
+                int from = bestPath[i];
+                int to = bestPath[i + 1];
+
+                TripEntry entry;
+                entry.origin = QString::fromStdString(vertices[from]);
+                entry.destination = QString::fromStdString(vertices[to]);
+                entry.distance = adjMatrix[from][to];
+                entry.type = "greedy";
+                trip.push_back(entry);
+
+                cout << "\"" << vertices[from] << "\"  -  \"" << vertices[to] << "\"  =   "
+                     << adjMatrix[from][to] << "  :  \"forward\"\n";
+                total_cost += adjMatrix[from][to];
+            }
+
+            current = nextStadium;
+            remaining.erase(current);
+        }
+
+        cout << "Total Greedy Distance: " << total_cost << " miles\n";
+    }
+
+    int getTotalCost() const {
+        return total_cost;
+    }
+
+    vector<TripEntry> getTripDetails() const {
+        return trip;
+    }
+};
+
+
+
+
 
 #endif // UTILITY_H
