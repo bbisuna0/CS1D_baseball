@@ -46,6 +46,19 @@
     <widget class="QTableView" name="tableView"/>
    </item>
    <item>
+    <widget class="QPushButton" name="pbMap">
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Map</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QPushButton" name="saddlebackPB">
      <property name="font">
       <font>

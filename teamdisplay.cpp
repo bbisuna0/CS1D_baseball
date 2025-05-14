@@ -139,8 +139,19 @@ teamdisplay::teamdisplay(QWidget *parent)
 
     mapper->toFirst(); // Or to a specific row: mapper->setCurrentIndex(rowIndex);
 
-    connect(ui->pb_right, &QPushButton::clicked, mapper, &QDataWidgetMapper::toNext);
-    connect(ui->pb_left, &QPushButton::clicked, mapper, &QDataWidgetMapper::toPrevious);
+    // connect(ui->pb_right, &QPushButton::clicked, mapper, &QDataWidgetMapper::toNext);
+    // connect(ui->pb_left, &QPushButton::clicked, mapper, &QDataWidgetMapper::toPrevious);
+    connect(ui->pb_right, &QPushButton::clicked, this, [=]() {
+        mapper->submit();            // commit changes to model
+        souvenirModel->submitAll();
+        mapper->toNext();            // move to next record
+    });
+
+    connect(ui->pb_left, &QPushButton::clicked, this, [=]() {
+        mapper->submit();            // commit changes to model
+        souvenirModel->submitAll();
+        mapper->toPrevious();        // move to previous record
+    });
 
     bool editable = true;
     if (!myUser.admin)
