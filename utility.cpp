@@ -37,6 +37,7 @@ void createUserTable() // QSqlDatabase &db
     return;
 }
 
+
 bool checkUserTable() // check if user table exists
 {
     QString checkUser;
@@ -53,6 +54,25 @@ bool checkUserTable() // check if user table exists
         return false;
     }
 }
+
+
+bool checkStadiumLocationTable() // check if stadium_location table exists
+{
+    QString checkQueryStr = "SELECT name FROM sqlite_master WHERE type='table' AND name='stadium_location';";
+    QSqlQuery query;
+    query.prepare(checkQueryStr);
+
+    if (query.exec()) // found
+    {
+        return query.next(); // true if table exists, false otherwise
+    }
+    else // error occurred
+    {
+        qDebug() << query.lastError().text() << Qt::endl;
+        return false;
+    }
+}
+
 
 void addUser(int ID, QString username, QString password, bool admin) // add user data into database
 {

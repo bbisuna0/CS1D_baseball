@@ -34,6 +34,7 @@
 // Function declarations
 void createUserTable(); // QSqlDatabase &db
 bool checkUserTable(); // check if user table exists
+bool checkStadiumLocationTable();
 void addUser(int ID, QString username, QString password, bool admin); // add user data into database
 bool checkPassword(QString uname, QString pass, bool &admin); // check if user table exists
 bool tableExists(QSqlDatabase& db, const QString& tableName);

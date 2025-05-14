@@ -235,6 +235,40 @@ bool createTeamsTable(QSqlDatabase& db) {
 }
 
 
+bool createStadiumLocationTable(QSqlDatabase& db) {
+    if (!db.isOpen()) {
+        qWarning() << "Database is not open!";
+        return false;
+    }
+
+    QSqlQuery query(db);
+
+    // Check if table exists
+    if (db.tables().contains("stadium_location")) {
+        qDebug() << "Table 'stadium_location' already exists.";
+        return false;
+    }
+
+    // Create the stadium_location table
+    QString createTableSQL = R"(
+        CREATE TABLE stadium_location (
+            stadium_name TEXT,
+            x_loc INTEGER,
+            y_loc INTEGER
+        );
+    )";
+
+    if (!query.exec(createTableSQL)) {
+        qWarning() << "Failed to create 'stadium_location' table:" << query.lastError().text();
+        return false;
+    }
+
+    qDebug() << "'stadium_location' table created successfully!";
+    return true;
+}
+
+
+
 bool createSouvenirsTable(QSqlDatabase& db) {
     if (!db.isOpen()) {
         qWarning() << "Database is not open!";
@@ -531,6 +565,69 @@ bool addStadiumDistances(QSqlDatabase& db) {
     }
 
     return db.commit();
+}
+
+
+bool insertStadiumLocationData(QSqlDatabase& db) {
+    if (!db.isOpen()) {
+        qWarning() << "Database is not open!";
+        return false;
+    }
+
+    QSqlQuery query(db);
+
+    query.prepare(R"(
+        INSERT INTO stadium_location (stadium_name, x_loc, y_loc)
+        VALUES (?, ?, ?);
+    )");
+
+    QStringList stadiums = {
+        "Chase Field",
+        "SunTrust Park",
+        "Oriole Park at Camden Yards",
+        "Fenway Park",
+        "Wrigley Field",
+        "Guaranteed Rate Field",
+        "Great American Ball Park",
+        "Progressive Field",
+        "Coors Field",
+        "Comerica Park",
+        "Minute Maid Park",
+        "Kauffman Stadium",
+        "Angel Stadium",
+        "Dodger Stadium",
+        "Marlins Park",
+        "Miller Park",
+        "Target Field",
+        "Citi Field",
+        "Yankee Stadium",
+        "Oakland-Alameda County Coliseum",
+        "Citizens Bank Park",
+        "PNC Park",
+        "Petco Park",
+        "Oracle Park",
+        "Safeco Field",
+        "Busch Stadium",
+        "Tropicana Field",
+        "Globe Life Park in Arlington",
+        "Rogers Centre",
+        "Nationals Park",
+        "Las Vegas Stadium"
+    };
+
+    for (const QString& stadium : stadiums) {
+        query.addBindValue(stadium);
+        query.addBindValue(100);  // default x_loc
+        query.addBindValue(100);  // default y_loc
+
+        if (!query.exec()) {
+            qWarning() << "Failed to insert into 'stadium_location':" << query.lastError().text();
+            return false;
+        }
+    }
+
+    qDebug() << "'stadium_location' data inserted successfully!";
+    return true;
 }
 
 

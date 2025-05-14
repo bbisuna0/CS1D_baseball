@@ -113,6 +113,14 @@ int main(int argc, char *argv[])
     if (create)
         addDefaultSouvenirs(db);
 
+    if (!(checkStadiumLocationTable()))
+    {
+        qDebug() << "Stadium Location table not found!\nCreating Stadium Location table.\n";
+        create = createStadiumLocationTable(db);
+    }
+    if (create)
+        insertStadiumLocationData(db);
+
     a.setWindowIcon(QIcon(":/logos/baseball.ico")); // From qrc
     LoginWindow w;
     w.setWindowModality(Qt::ApplicationModal);

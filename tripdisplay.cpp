@@ -120,7 +120,7 @@ void tripdisplay::on_saddlebackPB_clicked()
 
 void tripdisplay::on_pbMap_clicked()
 {
-    mapdisp *mapWin = new mapdisp(false);
+    mapdisp *mapWin = new mapdisp();
     mapWin->show();
 }
 
