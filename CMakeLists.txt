@@ -68,6 +68,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         mergedtableview.h
         mergedtableview.cpp
         purchasesouvenirs.cpp purchasesouvenirs.h purchasesouvenirs.ui
+
+
     )
 
     target_include_directories(CS1D_baseball PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
@@ -106,6 +108,7 @@ endif()
 # -------------------------------
 add_executable(baseball_tests
     tests/test_main.cpp
+
     #tests/test_graph.cpp
 )
 
@@ -114,6 +117,16 @@ target_link_libraries(baseball_tests
     GTest::gtest_main
     GTest::gmock_main
 )
+
+target_link_libraries(baseball_tests
+    Qt${QT_VERSION_MAJOR}::Core
+    Qt${QT_VERSION_MAJOR}::Sql        # if needed
+    Qt${QT_VERSION_MAJOR}::Widgets    # if used in test headers
+    GTest::gtest_main
+    GTest::gmock_main
+)
+
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Core Sql)
 
 include(GoogleTest)
 gtest_discover_tests(baseball_tests)
