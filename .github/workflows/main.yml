@@ -54,8 +54,8 @@ jobs:
 
       - name: (Optional) Run tests
         run: |
-          if exist "${{ env.BUILD_DIR }}\tests\my_tests.exe" (
-            "${{ env.BUILD_DIR }}\tests\my_tests.exe"
+          if exist "${{ env.BUILD_DIR }}\tests\baseball_tests.exe" (
+            "${{ env.BUILD_DIR }}\tests\baseball_tests.exe"
           )
         shell: cmd
 
