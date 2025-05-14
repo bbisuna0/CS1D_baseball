@@ -285,8 +285,9 @@ void teamdisplay::on_pb_location_clicked()
 {
     int x = 500;
     int y = 170;
-    //map *mapWin = new map(false, x, y);
-    //mapWin->show();
+
+    mapdisp *mapWin = new mapdisp(false, x, y);
+    mapWin->show();
 }
 
 
