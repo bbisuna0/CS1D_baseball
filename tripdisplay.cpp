@@ -6,6 +6,8 @@
 #include "purchasesouvenirs.h"
 #include "utility.h"
 #include <QDebug>
+#include "mapdisp.h"
+#include "ui_mapdisp.h"
 
 tripdisplay::tripdisplay(QWidget *parent)
     : QDialog(parent)
@@ -113,5 +115,12 @@ void tripdisplay::on_saddlebackPB_clicked()
 
     purchasesouvenirs c(editData, this);
     c.exec();
+}
+
+
+void tripdisplay::on_pbMap_clicked()
+{
+    mapdisp *mapWin = new mapdisp(false);
+    mapWin->show();
 }
 

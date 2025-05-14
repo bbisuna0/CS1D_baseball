@@ -50,6 +50,8 @@ private slots:
     /// @brief Handles the event when the Saddleback button is clicked.
     void on_saddlebackPB_clicked();
 
+    void on_pbMap_clicked();
+
 public slots:
     /**
      * @brief Filters the table based on user input.

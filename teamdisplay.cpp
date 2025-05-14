@@ -118,6 +118,7 @@ teamdisplay::teamdisplay(QWidget *parent)
 
     teamModel = new QSqlTableModel(this);
     teamModel->setTable("teams"); // your actual table name
+    teamModel->setSort(0, Qt::AscendingOrder);
     teamModel->select();
     teamModel->setEditStrategy(QSqlTableModel::OnManualSubmit);
 
