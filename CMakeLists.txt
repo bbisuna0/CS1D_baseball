@@ -12,10 +12,23 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Core Sql)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Core Sql)
 
-# Add GoogleTest
+# -------------------------------
+# GoogleTest FetchContent Setup
+# -------------------------------
+include(FetchContent)
+
+FetchContent_Declare(
+  googletest
+  GIT_REPOSITORY https://github.com/google/googletest.git
+  GIT_TAG v1.14.0
+)
+
+# Prevent overriding your MinGW runtime settings
+set(gtest_force_shared_crt OFF CACHE BOOL "" FORCE)
+
+FetchContent_MakeAvailable(googletest)
+
 enable_testing()
-add_subdirectory(googletest)  # assumes googletest is in subdirectory
-include(GoogleTest)
 
 set(PROJECT_SOURCES
     main.cpp
@@ -55,7 +68,6 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         mergedtableview.h
         mergedtableview.cpp
         purchasesouvenirs.cpp purchasesouvenirs.h purchasesouvenirs.ui
-        #souvenirdialog.cpp souvenirdialog.h
     )
 
     target_include_directories(CS1D_baseball PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
@@ -92,11 +104,9 @@ endif()
 # -------------------------------
 # GoogleTest Unit Test Section
 # -------------------------------
-# Add your test source file(s) here
 add_executable(baseball_tests
     tests/test_main.cpp
     #tests/test_graph.cpp
-    # add more test files as needed
 )
 
 target_include_directories(baseball_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
@@ -105,4 +115,5 @@ target_link_libraries(baseball_tests
     GTest::gmock_main
 )
 
+include(GoogleTest)
 gtest_discover_tests(baseball_tests)
