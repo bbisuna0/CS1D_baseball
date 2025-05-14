@@ -5,7 +5,6 @@
 #include "utility.h"
 #include <QStandardItemModel>
 #include "mergedtableview.h"
-
 #include <QStyledItemDelegate>
 #include <QSpinBox>
 

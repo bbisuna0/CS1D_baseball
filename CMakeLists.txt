@@ -17,6 +17,8 @@ set(PROJECT_SOURCES
         loginwindow.cpp
         loginwindow.h
         loginwindow.ui
+        mergedtableview.h
+        mergedtableview.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -45,9 +47,9 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         mapdisp.h mapdisp.cpp mapdisp.ui
         tripdisplay.cpp tripdisplay.h tripdisplay.ui
         teamselectdialog.h
+        mergedtableview.h
+        mergedtableview.cpp
         purchasesouvenirs.cpp purchasesouvenirs.h purchasesouvenirs.ui
-        mergedtableview.h
-        mergedtableview.h
         #souvenirdialog.cpp souvenirdialog.h
     )
 
@@ -55,6 +57,9 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
 #    set_property(TARGET CS1D_baseball APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
 #                 ${CMAKE_CURRENT_SOURCE_DIR}/android)
 # For more information, see https://doc.qt.io/qt-6/qt-add-executable.html#target-creation
+
+target_include_directories(CS1D_baseball PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+
 else()
     if(ANDROID)
         add_library(CS1D_baseball SHARED
