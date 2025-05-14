@@ -518,7 +518,7 @@ public:
                 trip_detail.origin = QString::fromStdString(vertices[u]);
                 trip_detail.destination = QString::fromStdString(vertices[v]);
                 trip_detail.distance = cost;
-                trip_detail.type = "forward";
+                trip_detail.type = "discovery";
                 trip.push_back(trip_detail);
                 totalCost += cost;
             }
@@ -1534,7 +1534,7 @@ public:
                 entry.origin = QString::fromStdString(vertices[from]);
                 entry.destination = QString::fromStdString(vertices[to]);
                 entry.distance = adjMatrix[from][to];
-                entry.type = "forward";
+                entry.type = "discovery";
                 trip.push_back(entry);
                 total_cost += adjMatrix[from][to];
 
@@ -1625,7 +1625,7 @@ public:
                 entry.origin = QString::fromStdString(vertices[from]);
                 entry.destination = QString::fromStdString(vertices[to]);
                 entry.distance = adjMatrix[from][to];
-                entry.type = "2-opt";
+                entry.type = "discovery";
                 trip.push_back(entry);
                 total_cost += adjMatrix[from][to];
 
@@ -1688,7 +1688,7 @@ public:
                 entry.origin = QString::fromStdString(vertices[from]);
                 entry.destination = QString::fromStdString(vertices[to]);
                 entry.distance = adjMatrix[from][to];
-                entry.type = "forward";
+                entry.type = "discovery";
                 trip.push_back(entry);
 
                 cout << "\"" << vertices[from] << "\"  -  \"" << vertices[to] << "\"  =   "
@@ -1775,7 +1775,7 @@ public:
                 entry.origin = QString::fromStdString(vertices[from]);
                 entry.destination = QString::fromStdString(vertices[to]);
                 entry.distance = adjMatrix[from][to];
-                entry.type = "segment";
+                entry.type = "discovery";
                 trip.push_back(entry);
 
                 cout << "\"" << vertices[from] << "\"  -  \"" << vertices[to] << "\"  =   "
@@ -1837,7 +1837,7 @@ public:
                 entry.origin = QString::fromStdString(vertices[from]);
                 entry.destination = QString::fromStdString(vertices[to]);
                 entry.distance = adjMatrix[from][to];
-                entry.type = "greedy";
+                entry.type = "discovery";
                 trip.push_back(entry);
 
                 cout << "\"" << vertices[from] << "\"  -  \"" << vertices[to] << "\"  =   "

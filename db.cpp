@@ -484,6 +484,17 @@ bool resetContent(QSqlDatabase& db) {
         }
     }
 
+    query.prepare(R"(
+    DELETE FROM stadium_location
+    WHERE stadium_name = ?;)");
+    query.addBindValue("Las Vegas Stadium");
+
+    if (!query.exec()) {
+        qWarning() << "Failed to delete stadium:" << query.lastError().text();
+    } else {
+        qDebug() << "Las Vegas Stadium deleted from stadium_location.";
+    }
+
     return true;
 }
 
@@ -611,14 +622,47 @@ bool insertStadiumLocationData(QSqlDatabase& db) {
         "Tropicana Field",
         "Globe Life Park in Arlington",
         "Rogers Centre",
-        "Nationals Park",
-        "Las Vegas Stadium"
+        "Nationals Park"
     };
 
     for (const QString& stadium : stadiums) {
         query.addBindValue(stadium);
         query.addBindValue(100);  // default x_loc
         query.addBindValue(100);  // default y_loc
+
+        if (!query.exec()) {
+            qWarning() << "Failed to insert into 'stadium_location':" << query.lastError().text();
+            return false;
+        }
+    }
+
+    qDebug() << "'stadium_location' data inserted successfully!";
+    return true;
+}
+
+
+
+bool addStadiumLocationData(QSqlDatabase& db) {
+    if (!db.isOpen()) {
+        qWarning() << "Database is not open!";
+        return false;
+    }
+
+    QSqlQuery query(db);
+
+    query.prepare(R"(
+        INSERT INTO stadium_location (stadium_name, x_loc, y_loc)
+        VALUES (?, ?, ?);
+    )");
+
+    QStringList stadiums = {
+        "Las Vegas Stadium"
+    };
+
+    for (const QString& stadium : stadiums) {
+        query.addBindValue(stadium);
+        query.addBindValue(138);  // default x_loc
+        query.addBindValue(232);  // default y_loc
 
         if (!query.exec()) {
             qWarning() << "Failed to insert into 'stadium_location':" << query.lastError().text();
@@ -694,6 +738,7 @@ bool addBulkData(QSqlDatabase& db) {
     addTeamsData(db);
     addStadiumDistances(db);
     addDefaultSouvenirs(db);
+    addStadiumLocationData(db);
     return true;
 }
 

@@ -86,6 +86,7 @@ bool addStadiumDistances(QSqlDatabase& db);
 bool addBulkData(QSqlDatabase& db);
 bool createStadiumLocationTable(QSqlDatabase& db);
 bool insertStadiumLocationData(QSqlDatabase& db);
+bool addStadiumLocationData(QSqlDatabase& db);
 
 
 #endif // DB_H

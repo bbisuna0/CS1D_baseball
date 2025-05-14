@@ -1,6 +1,7 @@
 #include "mapdisp.h"
 #include "ui_mapdisp.h"
 #include <QTimer>
+#include <QSqlTableModel>
 
 ConnectionLine* drawLine(QWidget *container, DiamondWidget *from, DiamondWidget *to, const QString &modeStr) {
     ConnectionLine::LineMode mode;
@@ -38,6 +39,27 @@ mapdisp::mapdisp(bool disp, const int& x, const int& y, QWidget *parent)
         ui->pb_backedges->hide();
         ui->pb_route->hide();
     }
+    QSqlTableModel *stadium_loc;
+    stadium_loc = new QSqlTableModel(this);
+    stadium_loc->setTable("stadium_location");
+    stadium_loc->select();
+
+    for (int row = 0; row < stadium_loc->rowCount(); ++row) {
+        QModelIndex index = stadium_loc->index(row, 0); //stadium name
+        QVariant value = stadium_loc->data(index);
+        std::string stadium_name = value.toString().toStdString();
+        index = stadium_loc->index(row, 1); //x_loc
+        value = stadium_loc->data(index);
+        int xloc = value.toInt();
+        index = stadium_loc->index(row, 2); //y_loc
+        value = stadium_loc->data(index);
+        int yloc = value.toInt();
+        auto *diamond = new DiamondWidget(QString::fromStdString(stadium_name), ui->label);
+        qDebug() << stadium_name << " x:" << xloc << " y:" << yloc;
+        diamond->move(xloc,yloc);
+        diamond->show();
+        diamonds.append(diamond);
+    }
 }
 
 mapdisp::~mapdisp()
@@ -72,21 +94,7 @@ void mapdisp::on_pb_route_clicked()
 
 void mapdisp::on_pb_animate_clicked()
 {
-    ConnectionLine *lineA = drawLine(ui->label, diamonds[0], diamonds[1], "blink");
-    QTimer::singleShot(500, this, SLOT(on_pb_animate_clicked()));
-    this->update();
-    ConnectionLine *lineB = drawLine(ui->label, diamonds[1], diamonds[2], "blink");
-    QTimer::singleShot(500, this, SLOT(on_pb_animate_clicked()));
-    this->update();
-    ConnectionLine *lineC = drawLine(ui->label, diamonds[2], diamonds[3], "blink");
-    QTimer::singleShot(500, this, SLOT(on_pb_animate_clicked()));
-    this->update();
-    ConnectionLine *lineD = drawLine(ui->label, diamonds[3], diamonds[4], "blink");
-    QTimer::singleShot(500, this, SLOT(on_pb_animate_clicked()));
-    this->update();
-    ConnectionLine *lineE = drawLine(ui->label, diamonds[4], diamonds[5], "blink");
-    QTimer::singleShot(500, this, SLOT(on_pb_animate_clicked()));
-    this->update();
+
 }
 
 
@@ -98,6 +106,31 @@ void mapdisp::on_pb_cancel_clicked()
 
 void mapdisp::on_pb_save_clicked()
 {
+    QSqlTableModel *stadium_loc;
+    stadium_loc = new QSqlTableModel(this);
+    stadium_loc->setTable("stadium_location");
+    stadium_loc->select();
+
+    for (auto stadium : diamonds) {
+        QString stadiumName = stadium->getLabel();  // You’ll need a getter for `label`
+        int x = stadium->x();
+        int y = stadium->y();
+
+        for (int row = 0; row < stadium_loc->rowCount(); ++row) {
+            QModelIndex index = stadium_loc->index(row, stadium_loc->fieldIndex("stadium_name"));
+            if (stadium_loc->data(index).toString() == stadiumName) {
+                // Update x_loc and y_loc
+                stadium_loc->setData(stadium_loc->index(row, stadium_loc->fieldIndex("x_loc")), x);
+                stadium_loc->setData(stadium_loc->index(row, stadium_loc->fieldIndex("y_loc")), y);
+
+                if (!stadium_loc->submitAll()) {
+                    qWarning() << "Submit failed: " << stadiumName;
+                } else {
+                    qDebug() << "Updated " << stadiumName << "to x=" << x << ", y=" << y;
+                }
+            }
+        }
+    }
     close();
 }
 

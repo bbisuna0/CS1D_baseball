@@ -6,6 +6,12 @@
 #include <QTimer>
 #include <QMouseEvent>
 
+struct routeType {
+    QString origin;
+    QString destination;
+    QString type;
+};
+
 class ConnectionLine : public QWidget {
     Q_OBJECT
 public:
@@ -84,16 +90,20 @@ private:
 };
 
 
-
 class DiamondWidget : public QWidget {
     Q_OBJECT
 public:
     explicit DiamondWidget(const QString& text, QWidget *parent = nullptr)
         : QWidget(parent), label(text)
     {
-        setFixedSize(40, 40);  // Size for diamond + text
+        setFixedSize(60, 40);  // Size for diamond + text
         setMouseTracking(true);
     }
+
+    QString getLabel() const {
+        return label;
+    }
+
 
 protected:
     void paintEvent(QPaintEvent *) override {
@@ -117,7 +127,7 @@ protected:
 
         // Draw label below diamond
         QFont font = painter.font();
-        font.setPointSize(9);
+        font.setPointSize(7);
         painter.setFont(font);
         painter.setPen(Qt::black);
         painter.drawText(QRect(0, center.y() + half + 2, width(), 20), Qt::AlignHCenter | Qt::AlignTop, label);
@@ -159,6 +169,22 @@ class mapdisp : public QWidget
 public:
     explicit mapdisp(bool disp = true, const int &x = 570, const int &y = 270 , QWidget *parent = nullptr);
     ~mapdisp();
+    void routeAdd(QString start, QString end, QString type) {
+        routeType routeEntry;
+        routeEntry.origin = start;
+        routeEntry.destination = end;
+        routeEntry.type = type;
+        route.push_back(routeEntry);
+    }
+
+    int findDiamondIndexByLabel(const QString& targetLabel) {
+        for (int i = 0; i < diamonds.size(); ++i) {
+            if (diamonds[i]->getLabel() == targetLabel) {
+                return i;
+            }
+        }
+        return -1;  // Not found
+    }
 
 private slots:
     void on_pb_exit_clicked();
@@ -177,6 +203,10 @@ private:
     Ui::mapdisp *ui;
     QVector<DiamondWidget*> diamonds;
     QVector<ConnectionLine*> lines;
+    QVector<routeType> route;
 };
+
+
+
 
 #endif // MAPDISP_H
