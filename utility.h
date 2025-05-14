@@ -2093,6 +2093,88 @@ public:
         return dist[end];
     }
 
+
+    /**
+     * @brief Computes the dream vacation route by visiting a sequence of stadiums.
+     * @param startStadium Starting stadium name.
+     * @param orderedDestinations Sequence of stadium names to visit but pick closest.
+     */
+    void greedyVacationRoute(const string& startStadium, vector<string> orderedDestinations) {
+        trip.clear();
+        total_cost = 0;
+
+        string current = startStadium;
+
+        cout << "Greedy Vacation Route Starting from: " << current << "\n";
+
+        while (!orderedDestinations.empty()) {
+            if (vertexIndex.find(current) == vertexIndex.end()) {
+                cout << "Invalid current stadium name: " << current << "\n";
+                return;
+            }
+
+            int currentIndex = vertexIndex[current];
+            int shortestCost = INT_MAX;
+            vector<int> bestPath;
+            string nextStadium;
+            int nextStadiumIndex = -1;
+
+            // Try all remaining destinations and find the closest one
+            for (const string& candidate : orderedDestinations) {
+                if (vertexIndex.find(candidate) == vertexIndex.end()) {
+                    cout << "Invalid destination stadium name: " << candidate << "\n";
+                    continue;
+                }
+
+                int candidateIndex = vertexIndex[candidate];
+                vector<int> path;
+                int pathCost = dijkstraShortestPath(currentIndex, candidateIndex, path);
+
+                if (pathCost != -1 && pathCost < shortestCost) {
+                    shortestCost = pathCost;
+                    bestPath = path;
+                    nextStadium = candidate;
+                    nextStadiumIndex = candidateIndex;
+                }
+            }
+
+            if (nextStadiumIndex == -1) {
+                cout << "No reachable stadiums from: " << current << "\n";
+                break;
+            }
+
+            // Record trip steps
+            for (size_t i = 0; i < bestPath.size() - 1; ++i) {
+                int from = bestPath[i];
+                int to = bestPath[i + 1];
+
+                TripEntry entry;
+                entry.origin = QString::fromStdString(vertices[from]);
+                entry.destination = QString::fromStdString(vertices[to]);
+                entry.distance = adjMatrix[from][to];
+                entry.type = "discovery";
+                trip.push_back(entry);
+
+                cout << "\"" << vertices[from] << "\"  -  \"" << vertices[to] << "\"  =   "
+                     << adjMatrix[from][to] << "  :  \"segment\"\n";
+
+                total_cost += adjMatrix[from][to];
+            }
+
+            // Move to next stadium
+            current = nextStadium;
+
+            // Remove from destination list
+            orderedDestinations.erase(
+                remove(orderedDestinations.begin(), orderedDestinations.end(), nextStadium),
+                orderedDestinations.end()
+                );
+        }
+
+        cout << "Total Greedy Vacation Distance: " << total_cost << " miles\n";
+    }
+
+
     /**
      * @brief Computes the dream vacation route by visiting a sequence of stadiums.
      * @param startStadium Starting stadium name.

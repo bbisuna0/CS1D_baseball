@@ -474,7 +474,11 @@ void plantour::on_pb_plan_vacation_clicked()
 
         //graph.traverseAllFrom("Dodger Stadium");
         //graph.dijkstra("Dodger Stadium");
-        graph.greedyRouteThroughStadiums(startstadium, stadiumstovisit);
+
+        // v1
+        //graph.greedyRouteThroughStadiums(startstadium, stadiumstovisit);
+        // v2
+        graph.greedyVacationRoute(startstadium, stadiumstovisit);
 
         //cout << "-----------------------------\n";
         //graph.computePrimMST();
