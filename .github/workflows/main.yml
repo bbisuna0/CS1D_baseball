@@ -54,8 +54,8 @@ jobs:
 
       - name: (Optional) Run tests
         run: |
-          if exist "${{ env.BUILD_DIR }}\tests\baseball_tests.exe" (
-            "${{ env.BUILD_DIR }}\tests\baseball_tests.exe"
+          if exist "${{ env.BUILD_DIR }}\tests\my_tests.exe" (
+            "${{ env.BUILD_DIR }}\tests\my_tests.exe"
           )
         shell: cmd
 
@@ -69,40 +69,12 @@ jobs:
           name: Doxygen-Docs
           path: docs/html
 
-      - name: Copy built files to installer directory
-        if: runner.os == 'Windows'
-        run: |
-          mkdir installer\packages\com.mycompany.myapp\data
-          copy ${{ env.BUILD_DIR }}\Release\MyApp.exe installer\packages\com.mycompany.myapp\data\
-          copy other_required_dlls_here installer\packages\com.mycompany.myapp\data\
-
-      - name: Download Qt Installer Framework
-        if: runner.os == 'Windows'
-        run: |
-          curl -L -o qtifw.zip https://download.qt.io/official_releases/qt-installer-framework/4.7.0/QtInstallerFramework-win-x64-4.7.0.zip
-          tar -xf qtifw.zip --strip-components=1 -C $env:USERPROFILE\qtifw
-
-      - name: Create installer
-        if: runner.os == 'Windows'
-        run: |
-          $qtifw = "$env:USERPROFILE\qtifw"
-          $binarycreator = Join-Path $qtifw "bin\binarycreator.exe"
-          & $binarycreator --config installer/config/config.xml --packages installer/packages --verbose -o MyQtAppInstaller.exe
-
-      - name: Upload installer artifact
-        if: runner.os == 'Windows'
-        uses: actions/upload-artifact@v3
-        with:
-          name: QtAppInstaller
-          path: MyQtAppInstaller.exe
-
-
       - name: Create Windows Artifact
         run: |
           mkdir windows_build
           copy build\release\college.exe windows_build\
           7z a college-Windows.zip windows_build\*
-          shell: cmd
+        shell: cmd
 
       - name: Upload Executable Zip
         uses: actions/upload-artifact@v4
