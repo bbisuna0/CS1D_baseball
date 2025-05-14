@@ -92,7 +92,18 @@ void plantour::on_pb_team_details_clicked()
         }
         int total_distance = graph.totalCost();
 
+        // Setup teams selected for souvenir purchase
+        QStringList souvenirTeams = teamDialog->getSelectedTeams();
+        souvenirTeams.append("Los Angeles Dodgers");
+        souvenirTeams.sort();
+
+        std::vector<std::string> teamSouvenirs;
+
+        for(auto t : souvenirTeams)
+            teamSouvenirs.push_back(t.toStdString());
+
         tripdisplay *tripWin = new tripdisplay(trip, total_distance, true);
+        tripWin->setTeams(teamSouvenirs);
         tripWin->show();
     }
 }
@@ -178,7 +189,17 @@ void plantour::on_pb_team_report_clicked()
         }
         int total_distance = graph.getTotalCost();
 
+        // Setup teams selected for souvenir purchase
+        QStringList souvenirTeams = teamDialog->getSelectedTeams();
+        souvenirTeams.sort();
+
+        std::vector<std::string> teamSouvenirs;
+
+        for(auto t : souvenirTeams)
+            teamSouvenirs.push_back(t.toStdString());
+
         tripdisplay *tripWin = new tripdisplay(trip, total_distance, true);
+        tripWin->setTeams(teamSouvenirs);
         tripWin->show();
     }
 }
@@ -429,7 +450,18 @@ void plantour::on_pb_plan_vacation_clicked()
         }
         int total_distance = graph.getTotalCost();
 
+        // Setup teams selected for souvenir purchase
+        QStringList souvenirTeams = teamDialog->getSelectedTeams();
+        souvenirTeams.sort();
+
+        std::vector<std::string> teamSouvenirs;
+
+        for(auto t : souvenirTeams)
+            teamSouvenirs.push_back(t.toStdString());
+
         tripdisplay *tripWin = new tripdisplay(trip, total_distance, true);
+        tripWin->setTeams(teamSouvenirs);
+
         tripWin->show();
     }
 }
@@ -443,14 +475,17 @@ void plantour::on_pb_stadium_report_clicked()
     model.setTable("teams");
     model.select();
 
+    QStringList souvenirTeams;
+
     QSet<QString> seenTeams;
     for (int i = 0; i < model.rowCount(); ++i) {
         QSqlRecord record = model.record(i);
         QString teamName = record.value("stadium_name").toString();
+        souvenirTeams.append(record.value("team_name").toString());
         if (!seenTeams.contains(teamName)) {
             //if (teamName != "Marlins Park")
                 seenTeams.insert(teamName);
-            qDebug() << teamName << " = " << record.value("team_name");
+            qDebug() << teamName << " = " << record.value("team_name").toString();
         }
     }
 
@@ -519,7 +554,16 @@ void plantour::on_pb_stadium_report_clicked()
     }
     int total_distance = graph.getTotalCost();
 
+    // Setup teams selected for souvenir purchase
+
+    souvenirTeams.sort();
+    std::vector<std::string> teamSouvenirs;
+
+    for(auto t : souvenirTeams)
+        teamSouvenirs.push_back(t.toStdString());
+
     tripdisplay *tripWin = new tripdisplay(trip, total_distance, true);
+    tripWin->setTeams(teamSouvenirs);
     tripWin->show();
 }
 

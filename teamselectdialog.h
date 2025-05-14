@@ -62,6 +62,17 @@ public:
         return selectedStadiums;
     }
 
+    // Returns team names in the selected list
+    QStringList getSelectedTeams() const {
+        QStringList selectedTeams;
+        for (int i = 0; i < selectedList->count(); ++i) {
+            QListWidgetItem* item = selectedList->item(i);
+            selectedTeams.append(item->text());  // The text is the team name
+        }
+        return selectedTeams;
+    }
+
+
     // Removes a team from the available list based on team name
     void excludeTeam(const QString& teamName) {
         for (int i = 0; i < availableList->count(); ++i) {

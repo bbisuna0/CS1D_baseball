@@ -91,11 +91,16 @@ public slots:
         return false; // No match found
     }
 
+    void setTeams(const std::vector<std::string>& list) {
+        teams = list;
+    }
+
 private:
     Ui::tripdisplay *ui;  /**< Pointer to the UI instance of the tripdisplay dialog. */
     QStandardItemModel *model; /**< Pointer to the table model for displaying trip details. */
     QSortFilterProxyModel *proxyModel; /**< Proxy model for filtering trip data. */
     std::vector<SouvenirData> souvenirList; /**< List of souvenirs purchased during the trip. */
+    std::vector<std::string> teams;
 };
 
 #endif // TRIPDISPLAY_H

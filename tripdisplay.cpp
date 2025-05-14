@@ -81,6 +81,17 @@ void tripdisplay::on_saddlebackPB_clicked()
     QSqlTableModel *souvenir_data;
     souvenir_data = new QSqlTableModel(this);
     souvenir_data->setTable("souvenirs");
+    if (teams.empty())
+        souvenir_data->setFilter("0=1");
+    else {
+        // Convert std::vector<std::string> → QStringList
+        QStringList quotedTeams;
+        for (const std::string& name : teams) {
+            quotedTeams << "'" + QString::fromStdString(name).replace("'", "''") + "'";
+        }
+        QString filter = QString("team_name IN (%1)").arg(quotedTeams.join(", "));
+        souvenir_data->setFilter(filter);
+    }
     souvenir_data->select();
 
     for (int row = 0; row < souvenir_data->rowCount(); ++row) {
@@ -92,12 +103,12 @@ void tripdisplay::on_saddlebackPB_clicked()
         editRow.souvenir = value.toString();
         index = souvenir_data->index(row, 3); //price
         value = souvenir_data->data(index);
-        editRow.price = value.toFloat();
+        editRow.price = value.toString();
         editRow.quantity = 0;
-        if (isCollegeMatch(model, editRow.team)){
-            editData.push_back(editRow);
-            qDebug() << editRow.team;
-        }
+        qDebug() << editRow.team;
+        qDebug() << editRow.souvenir;
+        qDebug() << editRow.price;
+        editData.push_back(editRow);
     }
 
     purchasesouvenirs c(editData, this);

@@ -67,7 +67,7 @@ struct SouvenirData {
 struct SouvenirPurchase {
     QString team; /**< The name of the college. */
     QString souvenir; /**< The name of the souvenir. */
-    double price; /**< The cost of the souvenir. */
+    QString price; /**< The cost of the souvenir. */
     int quantity; /**< The quantity of the souvenir purchased. */
 };
 

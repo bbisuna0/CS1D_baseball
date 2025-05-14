@@ -4,6 +4,8 @@
 #include <QDialog>
 #include "utility.h"
 #include <QStandardItemModel>
+#include "mergedtableview.h"
+
 
 namespace Ui {
 class purchasesouvenirs;

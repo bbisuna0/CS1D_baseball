@@ -1,4 +1,5 @@
 #include "purchasesouvenirs.h"
+#include "mergedtableview.h"
 #include "ui_purchasesouvenirs.h"
 #include "mergedtableview.h"
 #include <QStandardItemModel>
