@@ -27,6 +27,13 @@ struct TripEntry {
     QString destination;  /**< Name of the destination stadium. */
     int distance;         /**< Distance in miles. */
     QString type;         /**< Type of trip edge (e.g., "Discovery", "Back"). */
+
+    bool operator==(const TripEntry& other) const {
+        return origin == other.origin &&
+               destination == other.destination &&
+               distance == other.distance &&
+               type == other.type;
+    }
 };
 
 /**

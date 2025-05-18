@@ -113,10 +113,6 @@ add_executable(baseball_tests
 )
 
 target_include_directories(baseball_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(baseball_tests
-    GTest::gtest_main
-    GTest::gmock_main
-)
 
 target_link_libraries(baseball_tests
     Qt${QT_VERSION_MAJOR}::Core
