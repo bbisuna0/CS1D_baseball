@@ -100,6 +100,52 @@ TEST(GraphDijkstraTest, DijkstraOptimizedRoute) {
     EXPECT_EQ(trips[1].distance, 2); // C -> D
 }
 
+
+
+/**
+ * @brief Test Kruskal's MST on a simple triangle graph.
+ */
+TEST(GraphMSTTest, KruskalMST_TriangleGraph) {
+    std::vector<std::string> nodes = {"A", "B", "C"};
+    GraphMST graph(nodes);
+
+    // Construct a triangle
+    graph.addEdge("A", "B", 4);
+    graph.addEdge("A", "C", 3);
+    graph.addEdge("B", "C", 2);
+
+    graph.computeKruskalMST();
+
+    EXPECT_EQ(graph.totalCost(), 5); // MST: edges B-C (2) and A-C (3)
+
+    std::vector<TripEntry> result = graph.getTrips();
+
+    std::vector<std::pair<std::string, std::string>> expected_edges = {
+        {"B", "C"}, {"A", "C"}
+    };
+
+    std::vector<int> expected_distances = {2, 3};
+
+    ASSERT_EQ(result.size(), 2);
+    for (int i = 0; i < result.size(); ++i) {
+        std::string u = result[i].origin.toStdString();
+        std::string v = result[i].destination.toStdString();
+        int dist = result[i].distance;
+
+        // The MST edges can be in either order
+        bool match = false;
+        for (int j = 0; j < expected_edges.size(); ++j) {
+            if (((u == expected_edges[j].first && v == expected_edges[j].second) ||
+                 (v == expected_edges[j].first && u == expected_edges[j].second)) &&
+                dist == expected_distances[j]) {
+                match = true;
+                break;
+            }
+        }
+        EXPECT_TRUE(match);
+    }
+}
+
 /**
  * @brief Creates a small triangle graph of stadiums for testing.
  * @return Initialized GraphGreedyThrough instance.
@@ -200,49 +246,5 @@ TEST(GraphGreedyThroughTest, GreedyRouteUnreachableStadium) {
     toVisit.clear();
 }
 
-
-/**
- * @brief Test Kruskal's MST on a simple triangle graph.
- */
-TEST(GraphMSTTest, KruskalMST_TriangleGraph) {
-    std::vector<std::string> nodes = {"A", "B", "C"};
-    GraphMST graph(nodes);
-
-    // Construct a triangle
-    graph.addEdge("A", "B", 4);
-    graph.addEdge("A", "C", 3);
-    graph.addEdge("B", "C", 2);
-
-    graph.computeKruskalMST();
-
-    EXPECT_EQ(graph.totalCost(), 5); // MST: edges B-C (2) and A-C (3)
-
-    std::vector<TripEntry> result = graph.getTrips();
-
-    std::vector<std::pair<std::string, std::string>> expected_edges = {
-        {"B", "C"}, {"A", "C"}
-    };
-
-    std::vector<int> expected_distances = {2, 3};
-
-    ASSERT_EQ(result.size(), 2);
-    for (int i = 0; i < result.size(); ++i) {
-        std::string u = result[i].origin.toStdString();
-        std::string v = result[i].destination.toStdString();
-        int dist = result[i].distance;
-
-        // The MST edges can be in either order
-        bool match = false;
-        for (int j = 0; j < expected_edges.size(); ++j) {
-            if (((u == expected_edges[j].first && v == expected_edges[j].second) ||
-                 (v == expected_edges[j].first && u == expected_edges[j].second)) &&
-                dist == expected_distances[j]) {
-                match = true;
-                break;
-            }
-        }
-        EXPECT_TRUE(match);
-    }
-}
 
 
