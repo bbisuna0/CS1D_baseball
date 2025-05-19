@@ -62,6 +62,7 @@ TEST(GraphGreedyThroughTest, GreedyVacationRouteOrderMatters) {
     EXPECT_EQ(trips[1].origin.toStdString(), "Yankee Stadium");
     EXPECT_EQ(trips[1].destination.toStdString(), "Fenway Park");
     EXPECT_EQ(trips[1].distance, 5);
+    trips.clear();
 }
 
 /**
@@ -86,6 +87,7 @@ TEST(GraphGreedyThroughTest, DreamVacationRouteStrictOrder) {
     EXPECT_EQ(trips[1].origin.toStdString(), "Yankee Stadium");
     EXPECT_EQ(trips[1].destination.toStdString(), "Fenway Park");
     EXPECT_EQ(trips[1].distance, 5);
+    trips.clear();
 }
 
 /**
@@ -121,6 +123,8 @@ TEST(GraphGreedyThroughTest, GreedyRouteUnreachableStadium) {
 
     // EXPECT_TRUE(output.find("Invalid destination") != std::string::npos ||
     //             output.find("No reachable") != std::string::npos);
+    nodes.clear();
+    toVisit.clear();
 }
 
 
