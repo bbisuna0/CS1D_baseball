@@ -26,6 +26,79 @@ int main(int argc, char **argv) {
  * @brief Unit tests for the GraphGreedyThrough class using Google Test.
  */
 
+/**
+ * @brief Helper to create a basic test graph with 4 stadiums.
+ */
+GraphDijkstra createBasicGraph() {
+    std::vector<std::string> nodes = {"A", "B", "C", "D"};
+    GraphDijkstra graph(nodes);
+    graph.addEdge("A", "B", 3);
+    graph.addEdge("B", "C", 4);
+    graph.addEdge("A", "D", 10);
+    graph.addEdge("C", "D", 2);
+    return graph;
+}
+
+/**
+ * @test DijkstraSingleSource
+ * @brief Verifies basic Dijkstra computation from a single source.
+ */
+TEST(GraphDijkstraTest, DijkstraSingleSource) {
+    auto graph = createBasicGraph();
+    graph.dijkstra("A");
+
+    auto trips = graph.getTrips();
+    std::map<std::string, int> expectedDistances = {
+        {"B", 3},
+        {"C", 7}, // A -> B -> C
+        {"D", 9}  // A -> B -> C -> D
+    };
+
+    for (const auto& trip : trips) {
+        std::string dest = trip.destination.toStdString();
+        if (dest.find(" -> ") == std::string::npos) continue; // Skip origin marker
+        std::string finalNode = dest.substr(dest.rfind(" ") + 1);
+        EXPECT_EQ(trip.distance, expectedDistances[finalNode]);
+    }
+}
+
+/**
+ * @test TraverseAllFromDijkstra
+ * @brief Tests discovery traversal with Dijkstra.
+ */
+TEST(GraphDijkstraTest, TraverseAllFromDijkstra) {
+    auto graph = createBasicGraph();
+    testing::internal::CaptureStdout();
+    graph.traverseAllFrom("A");
+    std::string output = testing::internal::GetCapturedStdout();
+
+    EXPECT_TRUE(output.find("Discovery Edge") != std::string::npos);
+    //EXPECT_TRUE(output.find("Back Edge") != std::string::npos || output.find("Cross Edge") != std::string::npos);
+    EXPECT_EQ(graph.totalCost(), 9);
+}
+
+/**
+ * @test DijkstraOptimizedRoute
+ * @brief Verifies shortest route computation through permutations.
+ */
+TEST(GraphDijkstraTest, DijkstraOptimizedRoute) {
+    auto graph = createBasicGraph();
+    std::vector<std::string> stadiums = {"A", "C", "D"};
+
+    testing::internal::CaptureStdout();
+    graph.dijkstraOptimizedRoute(stadiums);
+    std::string output = testing::internal::GetCapturedStdout();
+
+    auto trips = graph.getTrips();
+    EXPECT_EQ(graph.totalCost(), 9); // A -> B -> C -> D
+
+    ASSERT_EQ(trips.size(), 2);
+    EXPECT_EQ(trips[0].origin.toStdString(), "A");
+    EXPECT_EQ(trips[0].distance, 7); // A -> B -> C
+
+    EXPECT_EQ(trips[1].origin.toStdString(), "C");
+    EXPECT_EQ(trips[1].distance, 2); // C -> D
+}
 
 /**
  * @brief Creates a small triangle graph of stadiums for testing.
@@ -40,30 +113,30 @@ GraphGreedyThrough createTestGraph() {
     return graph;
 }
 
-// /**
-//  * @test GreedyVacationRouteOrderMatters
-//  * @brief Tests greedy path selection with order-dependent destinations.
-//  */
-// TEST(GraphGreedyThroughTest, GreedyVacationRouteOrderMatters) {
-//     auto graph = createTestGraph();
+/**
+ * @test GreedyVacationRouteOrderMatters
+ * @brief Tests greedy path selection with order-dependent destinations.
+ */
+TEST(GraphGreedyThroughTest, GreedyVacationRouteOrderMatters) {
+    auto graph = createTestGraph();
 
-//     std::vector<std::string> destinations = {"Fenway Park", "Yankee Stadium"};
-//     graph.greedyVacationRoute("Marlins Park", destinations);
+    std::vector<std::string> destinations = {"Fenway Park", "Yankee Stadium"};
+    graph.greedyVacationRoute("Marlins Park", destinations);
 
-//     EXPECT_EQ(graph.getTotalCost(), 15);
+    EXPECT_EQ(graph.getTotalCost(), 15);
 
-//     auto trips = graph.getTripDetails();
-//     ASSERT_EQ(trips.size(), 2);
+    auto trips = graph.getTripDetails();
+    ASSERT_EQ(trips.size(), 2);
 
-//     EXPECT_EQ(trips[0].origin.toStdString(), "Marlins Park");
-//     EXPECT_EQ(trips[0].destination.toStdString(), "Yankee Stadium");
-//     EXPECT_EQ(trips[0].distance, 10);
+    EXPECT_EQ(trips[0].origin.toStdString(), "Marlins Park");
+    EXPECT_EQ(trips[0].destination.toStdString(), "Yankee Stadium");
+    EXPECT_EQ(trips[0].distance, 10);
 
-//     EXPECT_EQ(trips[1].origin.toStdString(), "Yankee Stadium");
-//     EXPECT_EQ(trips[1].destination.toStdString(), "Fenway Park");
-//     EXPECT_EQ(trips[1].distance, 5);
-//     trips.clear();
-// }
+    EXPECT_EQ(trips[1].origin.toStdString(), "Yankee Stadium");
+    EXPECT_EQ(trips[1].destination.toStdString(), "Fenway Park");
+    EXPECT_EQ(trips[1].distance, 5);
+    trips.clear();
+}
 
 /**
  * @test DreamVacationRouteStrictOrder
@@ -172,76 +245,4 @@ TEST(GraphMSTTest, KruskalMST_TriangleGraph) {
     }
 }
 
-/**
- * @brief Helper to create a basic test graph with 4 stadiums.
- */
-GraphDijkstra createBasicGraph() {
-    std::vector<std::string> nodes = {"A", "B", "C", "D"};
-    GraphDijkstra graph(nodes);
-    graph.addEdge("A", "B", 3);
-    graph.addEdge("B", "C", 4);
-    graph.addEdge("A", "D", 10);
-    graph.addEdge("C", "D", 2);
-    return graph;
-}
 
-/**
- * @test DijkstraSingleSource
- * @brief Verifies basic Dijkstra computation from a single source.
- */
-TEST(GraphDijkstraTest, DijkstraSingleSource) {
-    auto graph = createBasicGraph();
-    graph.dijkstra("A");
-
-    auto trips = graph.getTrips();
-    std::map<std::string, int> expectedDistances = {
-        {"B", 3},
-        {"C", 7}, // A -> B -> C
-        {"D", 9}  // A -> B -> C -> D
-    };
-
-    for (const auto& trip : trips) {
-        std::string dest = trip.destination.toStdString();
-        if (dest.find(" -> ") == std::string::npos) continue; // Skip origin marker
-        std::string finalNode = dest.substr(dest.rfind(" ") + 1);
-        EXPECT_EQ(trip.distance, expectedDistances[finalNode]);
-    }
-}
-
-/**
- * @test TraverseAllFromDijkstra
- * @brief Tests discovery traversal with Dijkstra.
- */
-TEST(GraphDijkstraTest, TraverseAllFromDijkstra) {
-    auto graph = createBasicGraph();
-    testing::internal::CaptureStdout();
-    graph.traverseAllFrom("A");
-    std::string output = testing::internal::GetCapturedStdout();
-
-    EXPECT_TRUE(output.find("Discovery Edge") != std::string::npos);
-    //EXPECT_TRUE(output.find("Back Edge") != std::string::npos || output.find("Cross Edge") != std::string::npos);
-    EXPECT_EQ(graph.totalCost(), 9);
-}
-
-/**
- * @test DijkstraOptimizedRoute
- * @brief Verifies shortest route computation through permutations.
- */
-TEST(GraphDijkstraTest, DijkstraOptimizedRoute) {
-    auto graph = createBasicGraph();
-    std::vector<std::string> stadiums = {"A", "C", "D"};
-
-    testing::internal::CaptureStdout();
-    graph.dijkstraOptimizedRoute(stadiums);
-    std::string output = testing::internal::GetCapturedStdout();
-
-    auto trips = graph.getTrips();
-    EXPECT_EQ(graph.totalCost(), 9); // A -> B -> C -> D
-
-    ASSERT_EQ(trips.size(), 2);
-    EXPECT_EQ(trips[0].origin.toStdString(), "A");
-    EXPECT_EQ(trips[0].distance, 7); // A -> B -> C
-
-    EXPECT_EQ(trips[1].origin.toStdString(), "C");
-    EXPECT_EQ(trips[1].distance, 2); // C -> D
-}
