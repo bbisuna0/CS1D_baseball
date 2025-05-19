@@ -52,6 +52,10 @@ jobs:
       - name: Build project
         run: cmake --build "${{ env.BUILD_DIR }}" --parallel
 
+      - name: Add MinGW to PATH
+        run: echo "${{ env.Qt6_DIR }}\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8
+        shell: powershell
+  
       - name: (Optional) Run tests
         run: |
           if exist "${{ env.BUILD_DIR }}\baseball_tests.exe" (
